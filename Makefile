@@ -6,7 +6,7 @@
 #    By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/04 12:35:54 by chsauvag         ###   ########.fr        #
+#    Updated: 2025/08/04 13:00:18 by chsauvag         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,8 @@ LIBFT   = libft/libft.a
 RM      = rm -f
 
 SRCS =	src/main.c \
+		src/window_management.c \
+		src/error_management.c \
 
 INCLUDE = -I include -I minilibx-linux
 MLX_LIB = -L ./minilibx-linux -lmlx -lXext -lX11
