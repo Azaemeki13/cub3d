@@ -1,25 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/08/04 13:14:15 by chsauvag         ###   ########.fr       */
-=======
-/*   Updated: 2025/08/04 12:52:42 by cauffret         ###   ########.fr       */
->>>>>>> f9e6739bd94da75f6a429cd6fe5725a04eed3f40
+/*   Created: 2025/08/04 13:03:49 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/04 13:06:01 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
 
-int main(int argc, char **argv)
+void print_error(const char *str)
 {
-    (void)argc;
-    (void)argv;
-    create_window();
-    return (0);
+    if (!str)
+        return ;
+    else
+    {
+        while (*str)
+            write(2, str++, 1);
+    }
 }

@@ -3,14 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   window_management.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:40:22 by chsauvag          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/08/04 13:17:31 by chsauvag         ###   ########.fr       */
+=======
+/*   Updated: 2025/08/04 12:53:03 by cauffret         ###   ########.fr       */
+>>>>>>> f9e6739bd94da75f6a429cd6fe5725a04eed3f40
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../include/cub3d.h"
 
 void create_window()
 {
