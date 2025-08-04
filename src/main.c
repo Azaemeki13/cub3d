@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ituriel <ituriel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/08/04 13:14:15 by chsauvag         ###   ########.fr       */
-=======
-/*   Updated: 2025/08/04 12:52:42 by cauffret         ###   ########.fr       */
->>>>>>> f9e6739bd94da75f6a429cd6fe5725a04eed3f40
+/*   Updated: 2025/08/04 14:10:15 by ituriel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +14,7 @@
 
 int main(int argc, char **argv)
 {
+    t_game game;
     (void)argc;
     (void)argv;
     create_window();
