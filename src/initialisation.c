@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 09:18:56 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/05 09:30:24 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,12 @@ int map_details(char *line)
     int i;
     
     i = 0;
-    while (line[i])
-    {
-        if(ft_iss)
-    }
+    while(ft_isspace(line[i]))
+        i++;
+    if (line[i] && line[i] == '1')
+        return (1);
+    else
+        return(0);
 }
 
 void check_texture_files(t_game **game)
