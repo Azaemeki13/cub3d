@@ -5,6 +5,7 @@
 ## On it : 
 - Parser (Charles)
 - Hooks & window (Chloé)
+- Raycasting (Chloe)
 
 
 ## Done  :
