@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 09:30:24 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/05 10:26:10 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,11 @@ void check_texture_files(t_game **game)
     map = (*game)->map;
     while(map->content[i])
     {
-        
+        while(!map_details(map->content[i]))
+        {
+            if (!ft_isblank(map->content[i]))
+                validate_textures()
+        }
     }
 }
 
