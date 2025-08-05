@@ -6,11 +6,11 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:40:22 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/05 10:26:13 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/05 10:29:12 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../include/cub3d.h"
 
 void create_window()
 {

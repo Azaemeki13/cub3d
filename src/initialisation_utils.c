@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 10:26:11 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/05 13:48:49 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,22 +32,51 @@ int texture_helper(char *str)
         return(0);
 }
 
-int case_texture(t_game **game, int option, char *str)
+
+void case_texture(t_game **game, int option, char *str)
 {
+    char *nav;
+    t_map *map;
     
+    map = (*game)->map;
+    extension_validator(str, game);    
+    if (option == 1)
+    {
+        nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
+        map->pn_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
+        texture_error_helper(map->pn_img, nav, game);
+        map->pn_text = true;
+    }
+    if (option == 2)
+    {
+        nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
+        map->pe_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
+        texture_error_helper(map->pe_img, nav, game);
+        map->pe_text = true;
+    }
+    case_texture_helper(game, option, str);
+    free(nav);
 }
 
-int case_rgb(t_game **game, int option, char *str)
+void case_rgb(t_game **game, int option, char *str)
 {
+    char **rgb;
     
+    rgb = verify_syntax_rgb(game, str);
+    if (option == 5)
+        (*game)->map->ceiling = add_rgb(game, rgb);
+
+    if (option == 6)
+        (*game)->map->floor = add_rgb(game, rgb);
+    ft_free_string_array(rgb);
 }
 
-int add_texture(t_game **game, int option, char *str)
+void add_texture(t_game **game, int option, char *str)
 {
-    if (option >= 4)
-        return((case_texture(game, option,str)));
+    if (option >= 5)
+        case_texture(game, option,str);
     else
-        return((case_rgb(game,option,str)));
+        case_rgb(game,option,str);
 }
 
 void validate_textures(char *str, t_game **game)
@@ -63,13 +92,14 @@ void validate_textures(char *str, t_game **game)
         option = texture_helper(str);
         if (option)
         {
-            option = add_texture(game, option, str);
-            if (!option)
-            {
-                free_game(game);
-                error_msg("Check that texture path is correct.");
-                exit(1);
-            }
+            while(ft_isalpha(*str))
+                str++;
+            while(ft_isspace(*str))
+                str++;
+            add_texture(game, option, str);
         }
+        else
+            break ;
     }
+    return ;
 }

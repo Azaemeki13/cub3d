@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 10:26:10 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/05 14:52:34 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 
 void init_struct(t_game **game, char *path)
 {
-    *game = malloc(sizeof(*game));
+    *game = malloc(sizeof(**game));
     ft_memset(*game, 0, sizeof(*game));
     (*game)->map = malloc(sizeof(t_map));
+    ft_memset((*game)->map, 0, sizeof(t_map));
     init_map(game, path);
 
 }
@@ -56,16 +57,28 @@ void check_texture_files(t_game **game)
 {
     t_map *map;
     int i;
+    bool is_begin;
+    bool is_end;
 
     i = 0;
+    is_begin = false;
+    is_end = false;
     map = (*game)->map;
     while(map->content[i])
     {
         while(!map_details(map->content[i]))
         {
             if (!ft_isblank(map->content[i]))
-                validate_textures()
+                validate_textures(map->content[i], game);
+            i++;
         }
+        while(ft_isblank(map->content[i]))
+            i++;
+        if (!map_details(map->content[i]))
+            error_msg("Line not blank and map incorrect.");
+        while(map_details(map->content[i]))
+            line_checker(map->content[i++], game);
+        break;
     }
 }
 
@@ -79,7 +92,7 @@ void init_map(t_game **game, char *path)
     i = 0;
     map = (*game)->map;
     count = count_lines(path);
-    if (count = 0)
+    if (count == 0)
     {
         error_msg("Cannot open file / File empty.");
         free_game(game);
@@ -88,8 +101,10 @@ void init_map(t_game **game, char *path)
     fd = open(path, O_RDONLY);
     map->content = malloc(sizeof(char *) * (count + 1));
     map->content[count] = NULL;
+    map->height = 200;
+    map->width = 200;
     while(i != count)
         map->content[i++] = get_next_line(fd);
-    check_textures_files(game);
+    check_texture_files(game);
     
 }
