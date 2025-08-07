@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/05 09:37:52 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/07 13:50:43 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,19 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <math.h>
-#include <stdbool.h>
+# include <stdbool.h>
 
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 768
 
+#define MAP_WIDTH 12
+#define MAP_HEIGHT 12
+
 #define ESCAPE_KEY 65307
+#define UP 65362
+#define DOWN 65364
+#define ROTATE_LEFT 65361
+#define ROTATE_RIGHT 65363
 
 typedef struct s_vector
 {
@@ -69,17 +76,28 @@ typedef struct s_map
     t_rgb *floor;
 } t_map;
 
-typedef struct s_game
-{
-    t_map *map;
-    void *mlx;
-    void *win;
+typedef struct s_game {
+    void    *mlx;
+    void    *win;
+    void    *img;
+    char    *addr;
+    int     bits_per_pixel;
+    int     line_length;
+    int     endian;
+    t_player player;
+    t_map   *map;
 } t_game;
 
+typedef struct s_drawrange
+{
+    int start;
+    int end;
+    int height;
+}t_drawrange;
 
 //window_management.c
 
-void create_window(void);
+void create_window(t_game *game);
 int close_window_hook(int keycode, t_game *game);
 int close_window_x(t_game *game);
 
@@ -108,5 +126,21 @@ void init_map(t_game **game, char *path);
 // miscs.c 
 
 int ft_isspace(char c);
+
+// raycasting_engine.c
+
+double ray_casting(int x, t_player player);
+t_drawrange calculate_draw_range(double perp_wall_dist);
+void draw_vertical_line(t_game *game_data, int x, int start, int end, int color);
+
+// rendering.c
+
+int	render_frame(void *param);
+
+//dumb_shit_to_get_rid_of_later.c
+
+int get_shade_color(int base_color, double distance);
+int create_rgb_color(int r, int g, int b);
+int key_hook(int keycode, t_game *game);
 
 #endif

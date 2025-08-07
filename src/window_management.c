@@ -3,36 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   window_management.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:40:22 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/05 10:29:12 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/07 12:13:42 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/cub3d.h"
+#include "cub3d.h"
 
-void create_window()
+void create_window(t_game *game)
 {
-    t_game game;
-
-    game.mlx = mlx_init();
-    if(game.mlx == NULL)
-    {
-        error_msg("Failed to initialize MLX");
-        return;
-    }
-    game.win = mlx_new_window(game.mlx, WIN_WIDTH, WIN_HEIGHT, "Cub3D");
-    if(game.win == NULL)
+    game->win = mlx_new_window(game->mlx, WIN_WIDTH, WIN_HEIGHT, "Cub3D");
+    if(game->win == NULL)
     {
         error_msg("Failed to create a new window");
-        mlx_destroy_display(game.mlx);
-        free(game.mlx);
+        mlx_destroy_display(game->mlx);
+        free(game->mlx);
         return;
     }
-    mlx_key_hook(game.win, close_window_hook, &game);
-    mlx_hook(game.win, 17, 0, close_window_x, &game);
-    mlx_loop(game.mlx);
+    mlx_key_hook(game->win, close_window_hook, game);
+    mlx_hook(game->win, 17, 0, close_window_x, game);
+    // Remove mlx_loop from here since it's called in main
 }
 
 int close_window_hook(int keycode, t_game *game) // ESCAPE key

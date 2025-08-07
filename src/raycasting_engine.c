@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/05 17:50:56 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/07 14:04:19 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int world_map[MAP_WIDTH][MAP_HEIGHT] = {
     {1,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,1,1,1,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,1},
@@ -187,4 +187,45 @@ double ray_casting(int x, t_player player)
         perp_wall_dist = (map_y - player.player_pos.y + (1 - step_y) / 2) / ray.ray_dir.y;
     return perp_wall_dist;
 }
-Rea
+
+// wall height : line_height = (int)(WIN_HEIGHT / perp_wall_dist);
+
+t_drawrange calculate_draw_range(double perp_wall_dist)
+{
+    t_drawrange range;
+
+    if (perp_wall_dist <= 0)
+    {
+        range.start = 0;
+        range.end = WIN_HEIGHT - 1;
+        range.height = WIN_HEIGHT;
+        return range; // Return the range structure, not WIN_HEIGHT
+    }
+    // calculate the height of the wall line
+    range.height = (int)(WIN_HEIGHT / perp_wall_dist);
+
+    // calculate the start and end of the wall line
+    range.start = -range.height / 2 + WIN_HEIGHT / 2;
+    if (range.start < 0) //out of screen bounds
+        range.start = 0;
+    range.end = range.height / 2 + WIN_HEIGHT / 2;
+    if (range.end >= WIN_HEIGHT) //out of screen bounds
+        range.end = WIN_HEIGHT - 1;
+
+    //printf("Draw range: start = %d, end = %d, height = %d\n", range.start, range.end, range.height);
+    return range;
+}
+
+void draw_vertical_line(t_game *game_data, int x, int start, int end, int color)
+{
+    int y;
+    char *dst;
+    
+    y = start;
+    while (y <= end)
+    {
+        dst = game_data->addr + (y * game_data->line_length + x * (game_data->bits_per_pixel / 8)); // frame buffer address calculation for rendering
+        *(unsigned int*)dst = color; // set pixel color
+        y++;
+    }
+}

@@ -6,7 +6,7 @@
 #    By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/04 14:29:08 by chsauvag         ###   ########.fr        #
+#    Updated: 2025/08/07 14:05:31 by chsauvag         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,14 +20,18 @@ SRCS =	src/main.c \
 		src/window_management.c \
 		src/error_management.c \
 		src/raycasting_engine.c \
+		src/rendering.c \
+		src/color.c \
+		src/key_hook_moves.c \
 
 INCLUDE = -I include -I minilibx-linux
 MLX_LIB = -L ./minilibx-linux -lmlx -lXext -lX11
+MATH_LIB = -lm
 
 OBJS = $(SRCS:.c=.o)
 
 $(NAME):	$(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX_LIB) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX_LIB) $(MATH_LIB) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
