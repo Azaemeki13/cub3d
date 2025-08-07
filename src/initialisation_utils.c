@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 13:48:49 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/07 14:36:07 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,11 @@ int texture_helper(char *str)
 
 void case_texture(t_game **game, int option, char *str)
 {
-    char *nav;
+    char *nav = NULL;
     t_map *map;
     
     map = (*game)->map;
-    extension_validator(str, game);    
+    extension_validator(str, game);
     if (option == 1)
     {
         nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
@@ -55,7 +55,8 @@ void case_texture(t_game **game, int option, char *str)
         map->pe_text = true;
     }
     case_texture_helper(game, option, str);
-    free(nav);
+    if (nav)
+        free(nav);
 }
 
 void case_rgb(t_game **game, int option, char *str)
@@ -73,7 +74,7 @@ void case_rgb(t_game **game, int option, char *str)
 
 void add_texture(t_game **game, int option, char *str)
 {
-    if (option >= 5)
+    if (option < 5)
         case_texture(game, option,str);
     else
         case_rgb(game,option,str);
@@ -81,25 +82,23 @@ void add_texture(t_game **game, int option, char *str)
 
 void validate_textures(char *str, t_game **game)
 {
-    int i;
     int option;
     
-    i = 0;
-    while(*str)
+    while(ft_isspace(*str))
+        str++;
+    option = texture_helper(str);
+    if (option)
     {
+        while(ft_isalpha(*str))
+            str++;
         while(ft_isspace(*str))
             str++;
-        option = texture_helper(str);
-        if (option)
-        {
-            while(ft_isalpha(*str))
-                str++;
-            while(ft_isspace(*str))
-                str++;
-            add_texture(game, option, str);
-        }
-        else
-            break ;
+        add_texture(game, option, str);
     }
-    return ;
-}
+    else
+    {
+        error_msg("Non texture or RGB or map found.");
+        free_game(game);
+        exit(1);
+        }
+    }

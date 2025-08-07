@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:32:37 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 10:26:11 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/07 13:34:25 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,31 @@
 int validate_arg (char *str)
 {
     char *extension;
+    if(!str)
         return (0);
-    extension = ft_strchr(str, 46);
+    extension = ft_strrchr(str, '.');
     if (!extension)
         return (0);
     else if ((ft_strncmp(extension, ".cub", 4) != 0) || (ft_strlen(extension) != 4))
         error_msg("Extension format not valid !");
     else
-        return (1);
+        return (1); 
+    return(0);
 }
 
-int validate_map(char *path, t_map **map)
+int validate_map(char *path, t_game **game)
 {
-    int fd;
     if (!validate_arg(path))
         return (0);
-    init_map(map, path);
+    init_struct(game, path);
+    return(1);
+}
+
+int validate_init(t_game **game, char *path)
+{
+    int i;
+    
+    i = validate_map(path, game);
+    ft_printf("map is Okay %d\n", i);
+    return(i);
 }

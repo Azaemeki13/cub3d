@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 13:48:55 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/07 14:02:11 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char **verify_syntax_rgb(t_game **game, char *str)
         rgb_error(game, verification);
     if ((count_strings(verification) > 3))
         rgb_error(game, verification);
-    nav = verification[3];
+    nav = verification[2];
     while(ft_isdigit(*verification[2]))
         verification[2]++;
     if (!ft_isblank(verification[2]))

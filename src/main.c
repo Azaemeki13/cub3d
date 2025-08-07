@@ -16,8 +16,13 @@ int main()
 {
     t_game game_data;
 
-    ft_memset(&game_data, 0, sizeof(t_game));
 
+    if (!validate_init(&game, path))
+    {
+        error_msg("Failed to initialise.\n");
+        exit(1);
+    }
+    ft_memset(&game_data, 0, sizeof(t_game));
     game_data.mlx = mlx_init();
     if (!game_data.mlx)
         return (1);

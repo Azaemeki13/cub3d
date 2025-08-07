@@ -69,9 +69,15 @@ typedef struct s_map
 {
     char **content;
     bool pn_text;
+    void *pn_img;
     bool pe_text;
+    void *pe_img;
     bool ps_text;
+    void *ps_img;
     bool pw_text;
+    void *pw_img;
+    int height;
+    int width;
     t_rgb *ceiling;
     t_rgb *floor;
 } t_map;
@@ -108,7 +114,8 @@ void error_msg(const char *msg);
 // parser.c
 
 int validate_arg (char *str);
-int validate_map(char *path, t_map **map);
+int validate_map(char *path, t_game **game);
+int validate_init(t_game **game, char *path);
 
 // memory.c
 
@@ -121,11 +128,43 @@ void free_game(t_game **game);
 
 void init_struct(t_game **game, char *path);
 int count_lines(char *path);
+int map_details(char *line);
+void check_texture_files(t_game **game);
 void init_map(t_game **game, char *path);
+
+//initialisation_utils.c
+
+int texture_helper(char *str);
+void case_texture(t_game **game, int option, char *str);
+void case_rgb(t_game **game, int option, char *str);
+void add_texture(t_game **game, int option, char *str);
+void validate_textures(char *str, t_game **game);
+
+//initialisation_utils2.c
+
+void extension_validator(char *str, t_game **game);
+void case_texture_helper(t_game **game, int option, char *str);
+void texture_error_helper(void *image, char *nav, t_game **game);
+
+//initialisation_utils3.c
+
+void rgb_error(t_game **game, char **str);
+void verify_rgb_number(t_game **game, char **verification);
+char **verify_syntax_rgb(t_game **game, char *str);
+t_rgb *add_rgb(t_game **game, char **rgb);
+
+//initialisation_map.c
+
+int	map_char_check(char c);
+void	line_checker(char *map_line, t_game **game);
 
 // miscs.c 
 
 int ft_isspace(char c);
+int ft_isblank(char *str);
+int ft_special_len(char *str, int separator);
+char	*ft_strndup(const char *s, size_t n);
+int count_strings(char **str);
 
 // raycasting_engine.c
 

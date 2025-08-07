@@ -1,0 +1,13 @@
+SO ./textures/blue_stone_00.xpm
+NO ./textures/blue_stone_00.xpm
+EA ./textures/blue_stone_00.xpm
+WE ./textures/blue_stone_00.xpm
+
+C 0,128,128
+F 10,10,10
+
+1 1111111 11
+1 1000001111
+111010101111
+1N0000000111
+111111111111

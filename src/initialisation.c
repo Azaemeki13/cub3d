@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 14:52:34 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/07 14:48:05 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void init_struct(t_game **game, char *path)
 {
     *game = malloc(sizeof(**game));
     ft_memset(*game, 0, sizeof(*game));
+    (*game)->mlx = mlx_init();
     (*game)->map = malloc(sizeof(t_map));
     ft_memset((*game)->map, 0, sizeof(t_map));
     init_map(game, path);
@@ -45,7 +46,9 @@ int map_details(char *line)
     int i;
     
     i = 0;
-    while(ft_isspace(line[i]))
+    if (!line)
+        return(0);
+    while(line[i] && ft_isspace(line[i]))
         i++;
     if (line[i] && line[i] == '1')
         return (1);
@@ -57,12 +60,8 @@ void check_texture_files(t_game **game)
 {
     t_map *map;
     int i;
-    bool is_begin;
-    bool is_end;
 
     i = 0;
-    is_begin = false;
-    is_end = false;
     map = (*game)->map;
     while(map->content[i])
     {
@@ -76,7 +75,7 @@ void check_texture_files(t_game **game)
             i++;
         if (!map_details(map->content[i]))
             error_msg("Line not blank and map incorrect.");
-        while(map_details(map->content[i]))
+        while(map_details(map->content[i]) && map->content[i])
             line_checker(map->content[i++], game);
         break;
     }
@@ -106,5 +105,5 @@ void init_map(t_game **game, char *path)
     while(i != count)
         map->content[i++] = get_next_line(fd);
     check_texture_files(game);
-    
+    close(fd);
 }
