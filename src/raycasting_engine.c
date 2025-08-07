@@ -3,18 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/05 14:56:11 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/05 17:50:56 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/cub3d.h"
+#include "cub3d.h"
 
-double ray_casting(int x, t_player player)
+/*double ray_casting(int x, t_player player)
 {
-    int x = 0;
     double camera_x;
     int wall_hit = 0;
 
@@ -60,8 +59,132 @@ double ray_casting(int x, t_player player)
         }
         
         /////////////////// DDA LOOP //////////////////////
-        
-        x++;
+    int hit = 0;
+    int side = 0;
+    while (hit == 0)
+    {
+        if (side_dist_x < side_dist_y)
+        {
+            side_dist_x += delta_x;
+            map_x += step_x;
+            side = 0;
+        }
+        else
+        {
+            side_dist_y += delta_y;
+            map_y += step_y;
+            side = 1;
+        }
+        if (world_map[map_x][map_y] > 0)
+            hit = 1;
     }
 
+    double perp_wall_dist;
+    if (side == 0)
+        perp_wall_dist = (map_x - player.pos.x + (1 - step_x) / 2) / ray.ray_dir.x;
+    else
+        perp_wall_dist = (map_y - player.pos.y + (1 - step_y) / 2) / ray.ray_dir.y;
+
+    printf("Column %d hit wall at distance: %f\n", x, perp_wall_dist);
+    return perp_wall_dist;
+}*/
+
+int world_map[MAP_WIDTH][MAP_HEIGHT] = {
+    {1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1},
+};
+
+double ray_casting(int x, t_player player)
+{
+    double	camera_x;
+    t_ray	ray;
+    int		map_x;
+    int		map_y;
+    double	delta_x;
+    double	delta_y;
+    int		step_x;
+    int		step_y;
+    double	side_dist_x;
+    double	side_dist_y;
+    int		hit;
+    int		side;
+    double	perp_wall_dist;
+
+    camera_x = 2 * x / (double)WIN_WIDTH - 1;
+    ray.ray_dir.x = player.vector_dir.x + player.camera_plane.x * camera_x;
+    ray.ray_dir.y = player.vector_dir.y + player.camera_plane.y * camera_x;
+    
+    map_x = (int)player.player_pos.x;
+    map_y = (int)player.player_pos.y;
+
+    if (ray.ray_dir.x == 0)
+        delta_x = 1e30;
+    else
+        delta_x = fabs(1 / ray.ray_dir.x);
+    if (ray.ray_dir.y == 0)
+        delta_y = 1e30;
+    else
+        delta_y = fabs(1 / ray.ray_dir.y);
+
+    if (ray.ray_dir.x < 0) //left
+    {
+        step_x = -1;
+        side_dist_x = (player.player_pos.x - map_x) * delta_x;
+    }
+    else //right
+    {
+        step_x = 1;
+        side_dist_x = (map_x + 1.0 - player.player_pos.x) * delta_x;
+    }
+    if (ray.ray_dir.y < 0) //up
+    {
+        step_y = -1;
+        side_dist_y = (player.player_pos.y - map_y) * delta_y;
+    }
+    else //down
+    {
+        step_y = 1;
+        side_dist_y = (map_y + 1.0 - player.player_pos.y) * delta_y;
+    }
+
+    hit = 0;
+
+    while (hit == 0)
+    {
+        if (side_dist_x < side_dist_y)
+        {
+            side_dist_x += delta_x;
+            map_x += step_x;
+            side = 0;
+        }
+        else
+        {
+            side_dist_y += delta_y;
+            map_y += step_y;
+            side = 1;
+        }
+        if (map_x < 0 || map_x >= MAP_WIDTH || map_y < 0 || map_y >= MAP_HEIGHT)
+        {
+            hit = 1;
+            break;
+        }
+        if (world_map[map_y][map_x] > 0)
+            hit = 1;
+    }
+    if (side == 0)
+        perp_wall_dist = (map_x - player.player_pos.x + (1 - step_x) / 2) / ray.ray_dir.x;
+    else
+        perp_wall_dist = (map_y - player.player_pos.y + (1 - step_y) / 2) / ray.ray_dir.y;
+    return perp_wall_dist;
 }
+Rea
