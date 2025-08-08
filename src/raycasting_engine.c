@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/07 14:04:19 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/08 09:08:29 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int world_map[MAP_WIDTH][MAP_HEIGHT] = {
     {1,1,1,1,1,1,1,1,1,1,1,1},
 };
 
-double ray_casting(int x, t_player player)
+double ray_casting(int x, t_player *player)
 {
     double	camera_x;
     t_ray	ray;
@@ -121,11 +121,11 @@ double ray_casting(int x, t_player player)
     double	perp_wall_dist;
 
     camera_x = 2 * x / (double)WIN_WIDTH - 1;
-    ray.ray_dir.x = player.vector_dir.x + player.camera_plane.x * camera_x;
-    ray.ray_dir.y = player.vector_dir.y + player.camera_plane.y * camera_x;
+    ray.ray_dir.x = player->vector_dir->x + player->camera_plane->x * camera_x;
+    ray.ray_dir.y = player->vector_dir->y + player->camera_plane->y * camera_x;
     
-    map_x = (int)player.player_pos.x;
-    map_y = (int)player.player_pos.y;
+    map_x = (int)player->player_pos->x;
+    map_y = (int)player->player_pos->y;
 
     if (ray.ray_dir.x == 0)
         delta_x = 1e30;
@@ -139,22 +139,22 @@ double ray_casting(int x, t_player player)
     if (ray.ray_dir.x < 0) //left
     {
         step_x = -1;
-        side_dist_x = (player.player_pos.x - map_x) * delta_x;
+        side_dist_x = (player->player_pos->x - map_x) * delta_x;
     }
     else //right
     {
         step_x = 1;
-        side_dist_x = (map_x + 1.0 - player.player_pos.x) * delta_x;
+        side_dist_x = (map_x + 1.0 - player->player_pos->x) * delta_x;
     }
     if (ray.ray_dir.y < 0) //up
     {
         step_y = -1;
-        side_dist_y = (player.player_pos.y - map_y) * delta_y;
+        side_dist_y = (player->player_pos->y - map_y) * delta_y;
     }
     else //down
     {
         step_y = 1;
-        side_dist_y = (map_y + 1.0 - player.player_pos.y) * delta_y;
+        side_dist_y = (map_y + 1.0 - player->player_pos->y) * delta_y;
     }
 
     hit = 0;
@@ -182,9 +182,9 @@ double ray_casting(int x, t_player player)
             hit = 1;
     }
     if (side == 0)
-        perp_wall_dist = (map_x - player.player_pos.x + (1 - step_x) / 2) / ray.ray_dir.x;
+        perp_wall_dist = (map_x - player->player_pos->x + (1 - step_x) / 2) / ray.ray_dir.x;
     else
-        perp_wall_dist = (map_y - player.player_pos.y + (1 - step_y) / 2) / ray.ray_dir.y;
+        perp_wall_dist = (map_y - player->player_pos->y + (1 - step_y) / 2) / ray.ray_dir.y;
     return perp_wall_dist;
 }
 

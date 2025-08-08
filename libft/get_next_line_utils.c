@@ -34,17 +34,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (s3);
 }
 
-size_t	ft_strlen(const char *str)
-{
-	size_t	i;
-
-	i = 0;
-	while (str[i])
-	{
-		i++;
-	}
-	return (i);
-}
 
 char	*ft_strdup(const char *s)
 {
@@ -68,26 +57,6 @@ char	*ft_strdup(const char *s)
 	}
 	dest[i] = '\0';
 	return (dest);
-}
-
-char	*ft_strchr(const char *s, int c)
-{
-	c = (unsigned char)c;
-	if (!s)
-		return (NULL);
-	while (*s)
-	{
-		if (*s == c)
-		{
-			return ((char *)s);
-		}
-		s++;
-	}
-	if (c == '\0')
-	{
-		return ((char *)s);
-	}
-	return (NULL);
 }
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)

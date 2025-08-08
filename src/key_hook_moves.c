@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/07 14:37:02 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/08 09:13:46 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,34 +35,34 @@ int key_hook(int keycode, t_game *game)
     
     if(keycode == UP)
     {
-        game->player.player_pos.x += game->player.vector_dir.x * move_speed;
-        game->player.player_pos.y += game->player.vector_dir.y * move_speed;
+        game->player->player_pos->x += game->player->vector_dir->x * move_speed;
+        game->player->player_pos->y += game->player->vector_dir->y * move_speed;
     }
     if(keycode == DOWN)
     {
-        game->player.player_pos.x -= game->player.vector_dir.x * move_speed;
-        game->player.player_pos.y -= game->player.vector_dir.y * move_speed;
+        game->player->player_pos->x -= game->player->vector_dir->x * move_speed;
+        game->player->player_pos->y -= game->player->vector_dir->y * move_speed;
     }
     //[[cos(θ), -sin(θ)], [sin(θ), cos(θ)]]
     if (keycode == ROTATE_RIGHT)
     {
-        old_dir_x = game->player.vector_dir.x;
-        game->player.vector_dir.x = game->player.vector_dir.x * cos(-rotation_speed) - game->player.vector_dir.y * sin(-rotation_speed);
-        game->player.vector_dir.y = old_dir_x * sin(-rotation_speed) + game->player.vector_dir.y * cos(-rotation_speed);
+        old_dir_x = game->player->vector_dir->x;
+        game->player->vector_dir->x = game->player->vector_dir->x * cos(-rotation_speed) - game->player->vector_dir->y * sin(-rotation_speed);
+        game->player->vector_dir->y = old_dir_x * sin(-rotation_speed) + game->player->vector_dir->y * cos(-rotation_speed);
     
-        old_plane_x = game->player.camera_plane.x;
-        game->player.camera_plane.x = game->player.camera_plane.x * cos(-rotation_speed) - game->player.camera_plane.y * sin(-rotation_speed);
-        game->player.camera_plane.y = old_plane_x * sin(-rotation_speed) + game->player.camera_plane.y * cos(-rotation_speed);
+        old_plane_x = game->player->camera_plane->x;
+        game->player->camera_plane->x = game->player->camera_plane->x * cos(-rotation_speed) - game->player->camera_plane->y * sin(-rotation_speed);
+        game->player->camera_plane->y = old_plane_x * sin(-rotation_speed) + game->player->camera_plane->y * cos(-rotation_speed);
     }
     if (keycode == ROTATE_LEFT)
     {
-        old_dir_x = game->player.vector_dir.x;
-        game->player.vector_dir.x = game->player.vector_dir.x * cos(rotation_speed) - game->player.vector_dir.y * sin(rotation_speed);
-        game->player.vector_dir.y = old_dir_x * sin(rotation_speed) + game->player.vector_dir.y * cos(rotation_speed);
+        old_dir_x = game->player->vector_dir->x;
+        game->player->vector_dir->x = game->player->vector_dir->x * cos(rotation_speed) - game->player->vector_dir->y * sin(rotation_speed);
+        game->player->vector_dir->y = old_dir_x * sin(rotation_speed) + game->player->vector_dir->y * cos(rotation_speed);
     
-        old_plane_x = game->player.camera_plane.x;
-        game->player.camera_plane.x = game->player.camera_plane.x * cos(rotation_speed) - game->player.camera_plane.y * sin(rotation_speed);
-        game->player.camera_plane.y = old_plane_x * sin(rotation_speed) + game->player.camera_plane.y * cos(rotation_speed);
+        old_plane_x = game->player->camera_plane->x;
+        game->player->camera_plane->x = game->player->camera_plane->x * cos(rotation_speed) - game->player->camera_plane->y * sin(rotation_speed);
+        game->player->camera_plane->y = old_plane_x * sin(rotation_speed) + game->player->camera_plane->y * cos(rotation_speed);
     }
     return 0;
 }

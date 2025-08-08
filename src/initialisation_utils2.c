@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/07 14:27:20 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/08 09:03:31 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,4 +64,21 @@ void texture_error_helper(void *image, char *nav, t_game **game)
         free_game(game);
         exit(1); 
     }
+}
+
+void init_player(t_game **game)
+{
+    t_player *player;
+    
+    player = (*game)->player;
+    player = malloc(sizeof(t_player));
+    player->player_pos = malloc(sizeof(t_vector));
+    player->camera_plane = malloc(sizeof(t_vector));
+    player->vector_dir = malloc(sizeof(t_vector));
+    player->player_pos->x = 6.0;
+    player->player_pos->y = 3.0;
+    player->vector_dir->x = -1.0;
+    player->vector_dir->y = 0.0;
+    player->camera_plane->x = 0.0;
+    player->camera_plane->y = 0.66;
 }

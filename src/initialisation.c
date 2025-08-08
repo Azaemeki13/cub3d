@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/07 16:21:38 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/08 09:08:55 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@ void init_struct(t_game **game, char *path)
     (*game)->map = malloc(sizeof(t_map));
     ft_memset((*game)->map, 0, sizeof(t_map));
     init_map(game, path);
-    // initialise player 
-
+    init_player(game);
 }
 
 int count_lines(char *path)

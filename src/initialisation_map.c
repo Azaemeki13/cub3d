@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:49:34 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 14:52:33 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/08 09:24:17 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ static void	is_begin(char *line, t_game **game, bool *begin)
 	{
 		while (ft_isspace(*p))
 			p++;
-		while (*p == '1')
+		while (*p == '1' || ft_isspace(*p))
 			p++;
-		if (!ft_isblank(*p))
+		if (*p != '\n')
 		{
 			error_msg("map not valid.");
 			free_game(game);
@@ -44,7 +44,7 @@ static void	is_end(char *line, t_game **game, bool *end, bool *begin)
 			p++;
 		while (*p == '1' || ft_isspace(*p))
 			p++;
-		if (*p != '\0')
+		if (!ft_isblank(p))
 		{
 			error_msg("map not valid.");
 			free_game(game);
@@ -78,7 +78,7 @@ void	line_checker(char *map_line, t_game **game)
 	i = 0;
 	while (map_line[i])
 	{
-		if (!map_char_check(map_line[i]))
+		if (!map_char_check(map_line[i]) && map_line[i] != '\n')
 		{
 			error_msg("Unauthorized character in map.");
 			free_game(game);
@@ -102,5 +102,5 @@ void	line_checker(char *map_line, t_game **game)
 		i++;
 	}
 	is_end(map_line, game, &end, &begin);
+	ft_printf("map line %s",map_line);
 }
-

@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/07 16:22:43 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/08 09:14:38 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ typedef struct s_vector
 
 typedef struct s_player
 {
-    t_vector player_pos;
-    t_vector camera_plane; //simulation of camera FOV
-    t_vector vector_dir;
+    t_vector *player_pos;
+    t_vector *camera_plane; //simulation of camera FOV
+    t_vector *vector_dir;
 } t_player;
 
 typedef struct s_ray
@@ -82,7 +82,8 @@ typedef struct s_map
     t_rgb *floor;
 } t_map;
 
-typedef struct s_game {
+typedef struct s_game 
+{
     void    *mlx;
     void    *win;
     void    *img;
@@ -90,7 +91,7 @@ typedef struct s_game {
     int     bits_per_pixel;
     int     line_length;
     int     endian;
-    t_player player;
+    t_player *player;
     t_map   *map;
 } t_game;
 
@@ -118,7 +119,7 @@ int validate_map(char *path, t_game **game);
 int validate_init(t_game **game, char *path);
 
 // memory.c
-
+    
 void	ft_free_string_array(char **arr);
 void ft_free_rgb(t_rgb *rgb);
 void ft_free_map(t_map **map);
@@ -145,6 +146,7 @@ void validate_textures(char *str, t_game **game);
 void extension_validator(char *str, t_game **game);
 void case_texture_helper(t_game **game, int option, char *str);
 void texture_error_helper(void *image, char *nav, t_game **game);
+void init_player(t_game **game);
 
 //initialisation_utils3.c
 
@@ -168,7 +170,7 @@ int count_strings(char **str);
 
 // raycasting_engine.c
 
-double ray_casting(int x, t_player player);
+double ray_casting(int x, t_player *player);
 t_drawrange calculate_draw_range(double perp_wall_dist);
 void draw_vertical_line(t_game *game_data, int x, int start, int end, int color);
 

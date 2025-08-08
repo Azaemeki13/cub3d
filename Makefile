@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+         #
+#    By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/07 14:05:31 by chsauvag         ###   ########.fr        #
+#    Updated: 2025/08/08 09:21:02 by cauffret         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,10 +19,18 @@ RM      = rm -f
 SRCS =	src/main.c \
 		src/window_management.c \
 		src/error_management.c \
+		src/initialisation_map.c \
+		src/initialisation_utils.c \
+		src/initialisation_utils2.c \
+		src/initialisation_utils3.c \
+		src/initialisation.c \
+		src/memory.c \
+		src/miscs.c \
+		src/parser.c \
 		src/raycasting_engine.c \
 		src/rendering.c \
 		src/color.c \
-		src/key_hook_moves.c \
+		src/key_hook_moves.c
 
 INCLUDE = -I include -I minilibx-linux
 MLX_LIB = -L ./minilibx-linux -lmlx -lXext -lX11
