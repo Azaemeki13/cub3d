@@ -23,11 +23,12 @@ int get_shade_color(int base_color, double distance)
     int g = (base_color >> 8) & 0xFF;
     int b = base_color & 0xFF;
     
-    double shade_factor = 1.0 / (1.0 + distance * distance * 0.1);
+    (void) distance;
+    //double shade_factor = 1.0 / (1.0 + distance * distance * 0.1);
     
-    r = (int)(r * shade_factor);
+    /*r = (int)(r * shade_factor);
     g = (int)(g * shade_factor);
-    b = (int)(b * shade_factor);
+    b = (int)(b * shade_factor);*/
     
     return create_rgb_color(r, g, b);
 }
