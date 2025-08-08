@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/08 09:14:38 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/08 10:14:07 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ typedef struct s_rgb
 typedef struct s_map
 {
     char **content;
+    char **map;
     bool pn_text;
     void *pn_img;
     bool pe_text;
@@ -147,6 +148,7 @@ void extension_validator(char *str, t_game **game);
 void case_texture_helper(t_game **game, int option, char *str);
 void texture_error_helper(void *image, char *nav, t_game **game);
 void init_player(t_game **game);
+void map_pointer(t_game **game, int i);
 
 //initialisation_utils3.c
 

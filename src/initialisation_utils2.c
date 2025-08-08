@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/08 09:03:31 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/08 10:19:55 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ void init_player(t_game **game)
 {
     t_player *player;
     
+    (*game)->player = malloc(sizeof(t_player));
     player = (*game)->player;
-    player = malloc(sizeof(t_player));
     player->player_pos = malloc(sizeof(t_vector));
     player->camera_plane = malloc(sizeof(t_vector));
     player->vector_dir = malloc(sizeof(t_vector));
@@ -81,4 +81,18 @@ void init_player(t_game **game)
     player->vector_dir->y = 0.0;
     player->camera_plane->x = 0.0;
     player->camera_plane->y = 0.66;
+}
+
+void map_pointer(t_game **game, int i)
+{
+    t_map *map;
+    char **nav;
+    int d;
+
+    d = -1;
+    map = (*game)->map;
+    nav = map->content;
+    while (++d < i)
+        nav++;
+    map->map = nav;
 }

@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/08 09:08:55 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/08 10:13:22 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ void check_texture_files(t_game **game)
             i++;
         if (!map_details(map->content[i]))
             error_msg("Line not blank and map incorrect.");
+        map_pointer(game, i);
         while(map_details(map->content[i]) && map->content[i])
             line_checker(map->content[i++], game);
         break;
@@ -105,5 +106,7 @@ void init_map(t_game **game, char *path)
     while(i != count)
         map->content[i++] = get_next_line(fd);
     check_texture_files(game);
+    for(int i = 0; (*game)->map->map[i] ; i++)
+        ft_printf("Map is %s\n",(*game)->map->map);
     close(fd);
 }
