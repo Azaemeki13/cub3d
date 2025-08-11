@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/11 13:13:45 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 14:02:50 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,14 +75,9 @@ void init_player(t_game **game)
     player->player_pos = malloc(sizeof(t_vector));
     player->camera_plane = malloc(sizeof(t_vector));
     player->vector_dir = malloc(sizeof(t_vector));
-    player->player_pos->x = 6.0;
-    player->player_pos->y = 3.0;
-    player->vector_dir->x = -1.0;
-    player->vector_dir->y = 0.0;
-    player->camera_plane->x = 0.0;
-    player->camera_plane->y = 0.66;
+
+    init_start(game); 
     init_orientation(game);
-    init_start(game);
 }
 
 void map_pointer(t_game **game, int i)

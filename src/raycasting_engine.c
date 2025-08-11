@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 11:50:38 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 14:41:14 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@
     return perp_wall_dist;
 }*/
 
-double ray_casting(int x, t_player *player, t_game *game)
+double ray_casting(int x, t_player *player, int *wall_direction, t_game *game)
 {
     double	camera_x;
     t_ray	ray;
@@ -141,9 +141,7 @@ double ray_casting(int x, t_player *player, t_game *game)
         step_y = 1;
         side_dist_y = (map_y + 1.0 - player->player_pos->y) * delta_y;
     }
-
     hit = 0;
-
     while (hit == 0)
     {
         if (side_dist_x < side_dist_y)
@@ -158,18 +156,22 @@ double ray_casting(int x, t_player *player, t_game *game)
             map_y += step_y;
             side = 1;
         }
-        if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height)
-        {
+        if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height)        {
             hit = 1;
             break;
         }
-        /*if (world_map[map_y][map_x] > 0)
-            hit = 1;*/
+        if (game->map->map[map_y][map_x] == '1')
+        {
+            hit = 1;
+        }
     }
+    *wall_direction = get_wall_direction(side, step_x, step_y);
+    
     if (side == 0)
         perp_wall_dist = (map_x - player->player_pos->x + (1 - step_x) / 2) / ray.ray_dir.x;
     else
         perp_wall_dist = (map_y - player->player_pos->y + (1 - step_y) / 2) / ray.ray_dir.y;
+    
     return perp_wall_dist;
 }
 
@@ -184,7 +186,7 @@ t_drawrange calculate_draw_range(double perp_wall_dist)
         range.start = 0;
         range.end = WIN_HEIGHT - 1;
         range.height = WIN_HEIGHT;
-        return range; // Return the range structure, not WIN_HEIGHT
+        return range;
     }
     // calculate the height of the wall line
     range.height = (int)(WIN_HEIGHT / perp_wall_dist);
@@ -196,8 +198,6 @@ t_drawrange calculate_draw_range(double perp_wall_dist)
     range.end = range.height / 2 + WIN_HEIGHT / 2;
     if (range.end >= WIN_HEIGHT) //out of screen bounds
         range.end = WIN_HEIGHT - 1;
-
-    //printf("Draw range: start = %d, end = %d, height = %d\n", range.start, range.end, range.height);
     return range;
 }
 

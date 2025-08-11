@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 13:16:16 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 13:43:54 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@
 #define ROTATE_LEFT 65361
 #define ROTATE_RIGHT 65363
 
+#define NORTH 0
+#define EAST 1
+#define SOUTH 2
+#define WEST 3
+
 typedef struct s_vector
 {
     double x;
@@ -41,7 +46,7 @@ typedef struct s_player
     t_vector *player_pos;
     t_vector *camera_plane; //simulation of camera FOV
     t_vector *vector_dir;
-    char orientation;
+    char orientation; //N, E, S, W
 } t_player;
 
 typedef struct s_ray
@@ -53,7 +58,6 @@ typedef struct s_ray
     int map_x; //current tile x
     int map_y; //current tile y
     int wall_hit; //side x or y ? 0 or 1
-    
 } t_ray;
 
 typedef struct s_rgb
@@ -82,7 +86,6 @@ typedef struct s_map
     t_rgb *ceiling;
     t_rgb *floor;
 } t_map;
-
 typedef struct s_game 
 {
     void    *mlx;
@@ -157,14 +160,6 @@ void verify_rgb_number(t_game **game, char **verification);
 char **verify_syntax_rgb(t_game **game, char *str);
 t_rgb *add_rgb(t_game **game, char **rgb);
 
-//initialisation_utils4.c
-
-void calculate_map_size(t_game **game);
-int start_helper(char c);
-void set_vector(t_vector *vector, double x, double y);
-void init_orientation(t_game **game);
-void init_start(t_game **game);
-
 //initialisation_map.c
 
 int	map_char_check(char c);
@@ -180,18 +175,27 @@ int count_strings(char **str);
 
 // raycasting_engine.c
 
-double ray_casting(int x, t_player *player, t_game *game);
+double ray_casting(int x, t_player *player, int *wall_direction, t_game *game);
 t_drawrange calculate_draw_range(double perp_wall_dist);
 void draw_vertical_line(t_game *game_data, int x, int start, int end, int color);
 
 // rendering.c
 
 int	render_frame(void *param);
+int get_wall_direction(int side, int step_x, int step_y);
+
 
 //dumb_shit_to_get_rid_of_later.c
 
 int get_shade_color(int base_color, double distance);
 int create_rgb_color(int r, int g, int b);
 int key_hook(int keycode, t_game *game);
+int get_wall_color(int wall_dir);
+
+void init_orientation(t_game **game);
+void init_start(t_game **game);
+void set_vector(t_vector *vector, double x, double y);
+int start_helper(char c);
+void calculate_map_size(t_game **game);
 
 #endif

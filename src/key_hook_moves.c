@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 12:04:55 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 14:06:22 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int key_hook(int keycode, t_game *game)
         }
     }
     //[[cos(θ), -sin(θ)], [sin(θ), cos(θ)]]
-    if (keycode == ROTATE_RIGHT)
+    if (keycode == ROTATE_LEFT)
     {
         old_dir_x = game->player->vector_dir->x;
         game->player->vector_dir->x = game->player->vector_dir->x * cos(-rotation_speed) - game->player->vector_dir->y * sin(-rotation_speed);
@@ -68,7 +68,7 @@ int key_hook(int keycode, t_game *game)
         game->player->camera_plane->x = game->player->camera_plane->x * cos(-rotation_speed) - game->player->camera_plane->y * sin(-rotation_speed);
         game->player->camera_plane->y = old_plane_x * sin(-rotation_speed) + game->player->camera_plane->y * cos(-rotation_speed);
     }
-    if (keycode == ROTATE_LEFT)
+    if (keycode == ROTATE_RIGHT)
     {
         old_dir_x = game->player->vector_dir->x;
         game->player->vector_dir->x = game->player->vector_dir->x * cos(rotation_speed) - game->player->vector_dir->y * sin(rotation_speed);

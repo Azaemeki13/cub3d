@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils4.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 11:16:22 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/11 12:00:52 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 14:41:08 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,32 @@ void init_orientation(t_game **game)
 {
     char orientation;
     t_vector *vector;
+    t_vector *plane;
 
-    vector =  (*game)->player->vector_dir;
-    orientation =(*game)->player->orientation;
+    vector = (*game)->player->vector_dir;
+    plane = (*game)->player->camera_plane;
+    orientation = (*game)->player->orientation;
+        
     if (orientation == 'N')
-        set_vector(vector, 0.0, 1.0);
-    if (orientation == 'S')
+    {
         set_vector(vector, 0.0, -1.0);
+        set_vector(plane, 0.66, 0.0);
+    }
+    if (orientation == 'S')
+    {
+        set_vector(vector, 0.0, 1.0);
+        set_vector(plane, -0.66, 0.0);
+    }
     if (orientation == 'E')
+    {
         set_vector(vector, 1.0, 0.0);
+        set_vector(plane, 0.0, 0.66);
+    }
     if (orientation == 'W')
+    {
         set_vector(vector, -1.0, 0.0);
+        set_vector(plane, 0.0, -0.66);
+    }
 }
 
 void init_start(t_game **game)
@@ -60,8 +75,8 @@ void init_start(t_game **game)
         {
             if(start_helper(map[i][j]))
             { 
-                player->player_pos->x = j;
-                player->player_pos->y = i;
+                player->player_pos->x = (double)j + 0.5;  // Center in grid cell
+                player->player_pos->y = (double)i + 0.5;  // Center in grid cell
                 player->orientation = map[i][j];
                 return;
             }
