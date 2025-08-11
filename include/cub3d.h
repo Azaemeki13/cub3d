@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 11:50:54 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 13:16:16 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,6 @@
 
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 768
-
-#define MAP_WIDTH 12
-#define MAP_HEIGHT 12
 
 #define ESCAPE_KEY 65307
 #define UP 65362
@@ -166,6 +163,7 @@ void calculate_map_size(t_game **game);
 int start_helper(char c);
 void set_vector(t_vector *vector, double x, double y);
 void init_orientation(t_game **game);
+void init_start(t_game **game);
 
 //initialisation_map.c
 
