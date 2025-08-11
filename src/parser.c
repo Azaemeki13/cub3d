@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:32:37 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/08 10:07:51 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 11:39:02 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,5 @@ int validate_init(t_game **game, char *path)
     int i;
     
     i = validate_map(path, game);
-    ft_printf("map is Okay %d\n", i);
     return(i);
 }

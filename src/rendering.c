@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/08 10:56:14 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/11 11:50:43 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	render_frame(void *param)
     x = 0;
     while (x < WIN_WIDTH)
     {
-        perp_dist = ray_casting(x, game->player);  // Use game->player instead of local variable
+        perp_dist = ray_casting(x, game->player, game);  // Use game->player instead of local variable
         range = calculate_draw_range(perp_dist);
         base_color = create_rgb_color(255, 100, 50);
         color = get_shade_color(base_color, perp_dist);

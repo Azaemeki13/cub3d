@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 11:16:22 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/08 11:31:17 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 12:00:52 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,4 +70,33 @@ void init_start(t_game **game)
         i++;
     }
     return ;
+}
+
+void calculate_map_size(t_game **game)
+{
+    char **map;
+    int i;
+    int j;
+    int max_length;
+
+    j = 0;
+    max_length = 0;
+    map = (*game)->map->map;
+    while(map[j])
+    {
+        if (ft_isblank(map[j]))
+            return;
+        i = 0;
+        while(map[j][i])
+        {
+            if (i > max_length)
+                max_length = i;
+            i++;
+        }
+        j++;
+    }
+    ft_printf("OK\n");
+    (*game)->map->map_height = j;
+    (*game)->map->map_width = max_length;
+    ft_printf("Width is %d, height is %d\n", max_length, j);
 }

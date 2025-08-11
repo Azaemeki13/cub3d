@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:49:34 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/08 10:11:52 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 11:38:44 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,5 +102,4 @@ void	line_checker(char *map_line, t_game **game)
 		i++;
 	}
 	is_end(map_line, game, &end, &begin);
-	ft_printf("map line %s",map_line);
 }

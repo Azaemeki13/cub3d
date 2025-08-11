@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/08 11:00:32 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/11 12:04:55 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ bool collision_detection(t_game *game, double new_x, double new_y)
     int map_x = (int)new_x;
     int map_y = (int)new_y;
 
-    if (map_x < 0 || map_x >= MAP_WIDTH || map_y < 0 || map_y >= MAP_HEIGHT) //out of bounds
+    if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height) //out of bounds
         return false;
-    if (game->map->content[map_y][map_x] == '1') //hit a wall
+    if (game->map->map[map_y][map_x] == '1') //hit a wall
         return false;
     return true;
 }

@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/08 10:14:07 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 11:50:54 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct s_player
     t_vector *player_pos;
     t_vector *camera_plane; //simulation of camera FOV
     t_vector *vector_dir;
+    char orientation;
 } t_player;
 
 typedef struct s_ray
@@ -78,6 +79,8 @@ typedef struct s_map
     bool pw_text;
     void *pw_img;
     int height;
+    int map_height;
+    int map_width;
     int width;
     t_rgb *ceiling;
     t_rgb *floor;
@@ -157,6 +160,13 @@ void verify_rgb_number(t_game **game, char **verification);
 char **verify_syntax_rgb(t_game **game, char *str);
 t_rgb *add_rgb(t_game **game, char **rgb);
 
+//initialisation_utils4.c
+
+void calculate_map_size(t_game **game);
+int start_helper(char c);
+void set_vector(t_vector *vector, double x, double y);
+void init_orientation(t_game **game);
+
 //initialisation_map.c
 
 int	map_char_check(char c);
@@ -172,7 +182,7 @@ int count_strings(char **str);
 
 // raycasting_engine.c
 
-double ray_casting(int x, t_player *player);
+double ray_casting(int x, t_player *player, t_game *game);
 t_drawrange calculate_draw_range(double perp_wall_dist);
 void draw_vertical_line(t_game *game_data, int x, int start, int end, int color);
 

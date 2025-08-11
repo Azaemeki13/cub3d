@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/08 10:55:19 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/11 11:50:38 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@
     return perp_wall_dist;
 }*/
 
-double ray_casting(int x, t_player *player)
+double ray_casting(int x, t_player *player, t_game *game)
 {
     double	camera_x;
     t_ray	ray;
@@ -158,7 +158,7 @@ double ray_casting(int x, t_player *player)
             map_y += step_y;
             side = 1;
         }
-        if (map_x < 0 || map_x >= MAP_WIDTH || map_y < 0 || map_y >= MAP_HEIGHT)
+        if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height)
         {
             hit = 1;
             break;

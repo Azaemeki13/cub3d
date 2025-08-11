@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/08 09:55:48 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/11 11:39:10 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ int main(int argc, char **argv)
         error_msg("Failed to initialise.\n");
         exit(1);
     }
-    ft_printf("Works \n");
     create_window(game_data);
     if (!game_data->win)
         return (1);

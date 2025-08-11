@@ -6,7 +6,7 @@
 #    By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/08 09:21:02 by cauffret         ###   ########.fr        #
+#    Updated: 2025/08/11 11:37:37 by cauffret         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,7 @@ SRCS =	src/main.c \
 		src/initialisation_utils.c \
 		src/initialisation_utils2.c \
 		src/initialisation_utils3.c \
+		src/initialisation_utils4.c \
 		src/initialisation.c \
 		src/memory.c \
 		src/miscs.c \
