@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 14:41:14 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/11 15:58:29 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,6 +205,10 @@ void draw_vertical_line(t_game *game_data, int x, int start, int end, int color)
 {
     int y;
     char *dst;
+
+    if (start < 0) start = 0;
+    if (end >= WIN_HEIGHT) end = WIN_HEIGHT - 1;
+    if (start > end) return;
     
     y = start;
     while (y <= end)
