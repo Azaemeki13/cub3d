@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 15:58:29 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/12 12:28:37 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,17 @@
 
         if(ray.ray_dir.x < 0) //left
         {
-            step_dir_x = -1; //if ray direction is negative, we step left
+            step_(hit == 0)
+    {
+        if (side_dist_x < side_dist_y)
+        {
+            side_dist_x += delta_x;
+            map_x += step_x;
+            side = 0;
+        }
+        else
+        {
+         dir_x = -1; //if ray direction is negative, we step left
             side_dist.x = (player.pos.x - ray.map.x) * delta.x;
             //side is the distance to hit the edge of the current tile to the left
         }
@@ -74,7 +84,17 @@
             side_dist_y += delta_y;
             map_y += step_y;
             side = 1;
+        }(hit == 0)
+    {
+        if (side_dist_x < side_dist_y)
+        {
+            side_dist_x += delta_x;
+            map_x += step_x;
+            side = 0;
         }
+        else
+        {
+         
         if (world_map[map_x][map_y] > 0)
             hit = 1;
     }
@@ -89,21 +109,23 @@
     return perp_wall_dist;
 }*/
 
-double ray_casting(int x, t_player *player, int *wall_direction, t_game *game)
+double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, double *wall_x)
 {
-    double	camera_x;
-    t_ray	ray;
-    int		map_x;
-    int		map_y;
-    double	delta_x;
-    double	delta_y;
-    int		step_x;
-    int		step_y;
-    double	side_dist_x;
-    double	side_dist_y;
-    int		hit;
-    int		side;
-    double	perp_wall_dist;
+        double	camera_x;
+        t_ray	ray;
+        int		map_x;
+        int		map_y;
+        double	delta_x;
+        double	delta_y;
+        int		step_x;
+        int		step_y;
+        double	side_dist_x;
+        double	side_dist_y;
+        int		hit;
+        int		side;
+        double hit_x;
+        double hit_y;
+        double	perp_wall_dist;
 
     camera_x = 2 * x / (double)WIN_WIDTH - 1;
     ray.ray_dir.x = player->vector_dir->x + player->camera_plane->x * camera_x;
@@ -171,7 +193,16 @@ double ray_casting(int x, t_player *player, int *wall_direction, t_game *game)
         perp_wall_dist = (map_x - player->player_pos->x + (1 - step_x) / 2) / ray.ray_dir.x;
     else
         perp_wall_dist = (map_y - player->player_pos->y + (1 - step_y) / 2) / ray.ray_dir.y;
-    
+    hit_x = game->player->player_pos->x + perp_wall_dist * ray.ray_dir.x;
+    hit_y = game->player->player_pos->y + perp_wall_dist * ray.ray_dir.y;
+    if (side == 0)
+        *wall_x = hit_y;
+    else
+        *wall_x = hit_x;
+    *wall_x = *wall_x - floor(*wall_x);
+    game->side_out = side;
+    game->ray_dir.x = ray.ray_dir.x;
+    game->ray_dir.y = ray.ray_dir.y;
     return perp_wall_dist;
 }
 

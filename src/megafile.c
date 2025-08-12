@@ -1,0 +1,1393 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   color.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/07 10:47:16 by chsauvag          #+#    #+#             */
+/*   Updated: 2025/08/11 14:42:41 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+int create_rgb_color(int r, int g, int b)
+{
+    return (r << 16 | g << 8 | b);
+}
+
+int get_shade_color(int base_color, double distance)
+{
+    int r = (base_color >> 16) & 0xFF;
+    int g = (base_color >> 8) & 0xFF;
+    int b = base_color & 0xFF;
+    
+    (void) distance;
+    //double shade_factor = 1.0 / (1.0 + distance * distance * 0.1);
+    
+    /*r = (int)(r * shade_factor);
+    g = (int)(g * shade_factor);
+    b = (int)(b * shade_factor);*/
+    
+    return create_rgb_color(r, g, b);
+}
+
+int get_wall_color(int wall_dir) ////////////to be replaced with texture later
+{
+    switch (wall_dir)
+    {
+        case NORTH:
+            return create_rgb_color(255, 0, 0);
+        case EAST:
+            return create_rgb_color(0, 255, 0);
+        case SOUTH:
+            return create_rgb_color(0, 0, 255);
+        case WEST:
+            return create_rgb_color(255, 255, 0);
+        default:
+            return create_rgb_color(255, 255, 255);
+    }
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error_management.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 12:52:22 by chsauvag          #+#    #+#             */
+/*   Updated: 2025/08/04 13:24:03 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+void error_msg(const char *msg)
+{
+        write(2, "Error\n", 6);
+        write (2, msg, ft_strlen(msg));
+        write(2, "\n", 1);
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initialisation.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/11 13:28:29 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+void init_struct(t_game **game, char *path)
+{
+    *game = malloc(sizeof(**game));
+    ft_memset(*game, 0, sizeof(*game));
+    (*game)->mlx = mlx_init();
+    (*game)->map = malloc(sizeof(t_map));
+    ft_memset((*game)->map, 0, sizeof(t_map));
+    init_map(game, path);
+    init_player(game);
+}
+
+int count_lines(char *path)
+{
+    int fd;
+    int result;
+
+    result = 0;
+    fd = open(path, O_RDONLY);
+    if (fd < 0)
+    {
+        close(fd);
+        return (0);
+    }
+    while (get_next_line(fd) != NULL)
+        result++;
+    close(fd);
+    return(result);
+}
+
+int map_details(char *line)
+{
+    int i;
+    
+    i = 0;
+    if (!line)
+        return(0);
+    while(line[i] && ft_isspace(line[i]))
+        i++;
+    if (line[i] && line[i] == '1')
+        return (1);
+    else
+        return(0);
+}
+
+void check_texture_files(t_game **game)
+{
+    t_map *map;
+    int i;
+
+    i = 0;
+    map = (*game)->map;
+    while(map->content[i])
+    {
+        while(!map_details(map->content[i]))
+        {
+            if (!ft_isblank(map->content[i]))
+                validate_textures(map->content[i], game);
+            i++;
+        }
+        while(ft_isblank(map->content[i]))
+            i++;
+        if (!map_details(map->content[i]))
+            error_msg("Line not blank and map incorrect.");
+        map_pointer(game, i);
+        while(map_details(map->content[i]) && map->content[i])
+            line_checker(map->content[i++], game);
+        break;
+    }
+}
+
+void init_map(t_game **game, char *path)
+{
+    t_map *map;
+    int fd;
+    int i;
+    int count;
+
+    i = 0;
+    map = (*game)->map;
+    count = count_lines(path);
+    if (count == 0)
+    {
+        error_msg("Cannot open file / File empty.");
+        free_game(game);
+        exit(1);
+    }
+    fd = open(path, O_RDONLY);
+    map->content = malloc(sizeof(char *) * (count + 1));
+    map->content[count] = NULL;
+    map->height = 200;
+    map->width = 200;
+    while(i != count)
+        map->content[i++] = get_next_line(fd);
+    check_texture_files(game);
+    calculate_map_size(game);
+    close(fd);
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initialisation_map.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 13:49:34 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/11 13:28:47 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+static void	is_begin(char *line, t_game **game, bool *begin)
+{
+	char	*p;
+
+	p = line;
+	if (!*begin)
+	{
+		while (ft_isspace(*p))
+			p++;
+		while (*p == '1' || ft_isspace(*p))
+			p++;
+		if (*p != '\n')
+		{
+			error_msg("map not valid.");
+			free_game(game);
+			exit(EXIT_FAILURE);
+		}
+		*begin = true;
+	}
+}
+
+static void	is_end(char *line, t_game **game, bool *end, bool *begin)
+{
+	char	*p;
+
+	p = line;
+	if (*begin && !*end)
+	{
+		while (ft_isspace(*p))
+			p++;
+		while (*p == '1' || ft_isspace(*p))
+			p++;
+		if (!ft_isblank(p))
+		{
+			error_msg("map not valid.");
+			free_game(game);
+			exit(EXIT_FAILURE);
+		}
+		*end = true;
+	}
+}
+
+int	map_char_check(char c)
+{
+	if (!(c == '1'
+		|| c == '0'
+		|| c == 'N'
+		|| c == 'S'
+		|| c == 'E'
+		|| c == 'W'
+		|| ft_isspace(c)))
+		return (0);
+	return (1);
+}
+
+void	line_checker(char *map_line, t_game **game)
+{
+	static bool	begin   = false;
+	static bool	end     = false;
+	static int	players = 0;
+	int			i;
+
+	is_begin(map_line, game, &begin);
+	i = 0;
+	while (map_line[i])
+	{
+		if (!map_char_check(map_line[i]) && map_line[i] != '\n')
+		{
+			error_msg("Unauthorized character in map.");
+			free_game(game);
+			exit(EXIT_FAILURE);
+		}
+		if (ft_strchr("NSEW", map_line[i]))
+		{
+			if (++players > 1)
+			{
+				error_msg("Multiple player start positions.");
+				free_game(game);
+				exit(EXIT_FAILURE);
+			}
+		}
+		if (map_line[i] == '0' && !begin)
+		{
+			error_msg("Map not closed (hole on left).");
+			free_game(game);
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	is_end(map_line, game, &end, &begin);
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initialisation_utils2.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/11 14:02:50 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+void extension_validator(char *str, t_game **game)
+{
+    char *extension;
+
+    extension = ft_strrchr(str, '.');
+    if (!extension)
+    {
+        error_msg("Wrong extension.");
+        free_game(game);
+        exit(1);
+    }
+    if ((ft_strncmp(extension, ".xpm", 4) != 0) && (!ft_isblank(str + 4)))
+    {
+        error_msg("Wrong extension || Line after expansion not blank.");
+        free_game(game);
+        exit(1);
+    }
+}
+
+void case_texture_helper(t_game **game, int option, char *str)
+{
+    char *nav = NULL; 
+    t_map *map;
+
+    map = (*game)->map;
+    if (option == 3)
+    {
+        nav = ft_strndup(str, ((size_t)ft_special_len(str, ' ')));
+        map->ps_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
+        texture_error_helper(map->ps_img, nav, game);
+        map->ps_text = true;
+    } 
+    if (option == 4)
+    {
+        nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
+        map->pw_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
+        texture_error_helper(map->pw_img, nav, game);
+        map->pw_text = true;
+    }
+    if (nav)
+        free(nav);
+}
+
+void texture_error_helper(void *image, char *nav, t_game **game)
+{
+    if (!image)
+    {
+        error_msg("xpm file not found.");
+        free(nav);
+        free_game(game);
+        exit(1); 
+    }
+}
+
+void init_player(t_game **game)
+{
+    t_player *player;
+    
+    (*game)->player = malloc(sizeof(t_player));
+    player = (*game)->player;
+    player->player_pos = malloc(sizeof(t_vector));
+    player->camera_plane = malloc(sizeof(t_vector));
+    player->vector_dir = malloc(sizeof(t_vector));
+
+    init_start(game); 
+    init_orientation(game);
+}
+
+void map_pointer(t_game **game, int i)
+{
+    t_map *map;
+    char **nav;
+    int d;
+
+    d = -1;
+    map = (*game)->map;
+    nav = map->content;
+    while (++d < i)
+        nav++;
+    map->map = nav;
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initialisation_utils3.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/07 14:02:11 by cauffret         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+void rgb_error(t_game **game, char **str)
+{
+    error_msg("rgb format incorrect.");
+    ft_free_string_array(str);
+    free_game(game);
+    exit(1);
+}
+
+void verify_rgb_number(t_game **game, char **verification)
+{
+    int i;
+    char *nav;
+    
+    i = 0;
+    while(i < 2)
+    {
+        nav = verification[i];
+        while(*verification[i])
+        {
+            if (!ft_isdigit(*verification[i]) && *verification[i] != ',')
+                rgb_error(game, verification);
+            verification[i]++;
+        }
+        verification[i] = nav;
+        i++;
+    }
+}
+
+char **verify_syntax_rgb(t_game **game, char *str)
+{
+    char **verification;
+    char *nav;
+
+    verification = ft_split(str, ',');
+    if (!verification)
+        rgb_error(game, verification);
+    if ((count_strings(verification) > 3))
+        rgb_error(game, verification);
+    nav = verification[2];
+    while(ft_isdigit(*verification[2]))
+        verification[2]++;
+    if (!ft_isblank(verification[2]))
+        rgb_error(game, verification);
+    verification[2] = nav;
+    return (verification);
+}
+
+t_rgb *add_rgb(t_game **game, char **rgb)
+{
+    t_rgb *result;
+
+    result = malloc(sizeof(t_rgb));
+    result->r = ft_atoi(rgb[0]);
+    result->g = ft_atoi(rgb[1]);
+    result->b = ft_atoi(rgb[2]);
+    if (result->r > 255 || result->g > 255 || result->b > 255)
+    {
+        free(result);
+        rgb_error(game, rgb);
+    }
+    return (result);
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initialisation_utils4.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/08 11:16:22 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/11 14:41:08 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+int start_helper(char c)
+{
+    if (c == 'N' || c == 'E' || c == 'S'
+    || c == 'W')
+        return(1);
+    return(0);
+}
+
+void set_vector(t_vector *vector, double x, double y)
+{
+    vector->x = x;
+    vector->y = y;
+}
+
+void init_orientation(t_game **game)
+{
+    char orientation;
+    t_vector *vector;
+    t_vector *plane;
+
+    vector = (*game)->player->vector_dir;
+    plane = (*game)->player->camera_plane;
+    orientation = (*game)->player->orientation;
+        
+    if (orientation == 'N')
+    {
+        set_vector(vector, 0.0, -1.0);
+        set_vector(plane, 0.66, 0.0);
+    }
+    if (orientation == 'S')
+    {
+        set_vector(vector, 0.0, 1.0);
+        set_vector(plane, -0.66, 0.0);
+    }
+    if (orientation == 'E')
+    {
+        set_vector(vector, 1.0, 0.0);
+        set_vector(plane, 0.0, 0.66);
+    }
+    if (orientation == 'W')
+    {
+        set_vector(vector, -1.0, 0.0);
+        set_vector(plane, 0.0, -0.66);
+    }
+}
+
+void init_start(t_game **game)
+{
+    char **map;
+    int i;
+    int j;
+    t_player *player;
+    
+    i = 0;
+    player = (*game)->player;
+    map = (*game)->map->map;
+    while(map[i])
+    {
+        j = 0;
+        while (map[i][j])
+        {
+            if(start_helper(map[i][j]))
+            { 
+                player->player_pos->x = (double)j + 0.5;  // Center in grid cell
+                player->player_pos->y = (double)i + 0.5;  // Center in grid cell
+                player->orientation = map[i][j];
+                return;
+            }
+            j++;
+        }
+        i++;
+    }
+    return ;
+}
+
+void calculate_map_size(t_game **game)
+{
+    char **map;
+    int i;
+    int j;
+    int max_length;
+
+    j = 0;
+    max_length = 0;
+    map = (*game)->map->map;
+    while(map[j])
+    {
+        if (ft_isblank(map[j]))
+            return;
+        i = 0;
+        while(map[j][i])
+        {
+            if (i > max_length)
+                max_length = i;
+            i++;
+        }
+        j++;
+    }
+    ft_printf("OK\n");
+    (*game)->map->map_height = j;
+    (*game)->map->map_width = max_length;
+    ft_printf("Width is %d, height is %d\n", max_length, j);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initialisation_utils.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/08 10:07:52 by cauffret         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+int texture_helper(char *str)
+{
+    if (!str)
+        return (0);
+    if ((ft_strncmp(str, "NO", 2) == 0) && ft_isspace(*(str+2)))
+        return (1);
+    else if ((ft_strncmp(str, "EA", 2) == 0) && ft_isspace(*(str+2)))
+        return (2);
+    else if ((ft_strncmp(str, "SO", 2) == 0) && ft_isspace(*(str+2)))
+        return (3);
+    else if ((ft_strncmp(str, "WE", 2) == 0) && ft_isspace(*(str+2)))
+        return (4);
+    else if ((ft_strncmp(str, "C", 1) == 0) && ft_isspace(*(str+1)))
+        return (5);
+    else if ((ft_strncmp(str, "F", 1) == 0) && ft_isspace(*(str+1)))
+        return (6);
+    else
+        return(0);
+}
+
+
+void case_texture(t_game **game, int option, char *str)
+{
+    char *nav = NULL;
+    t_map *map;
+    
+    map = (*game)->map;
+    extension_validator(str, game);
+    if (option == 1)
+    {
+        nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
+        map->pn_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
+        texture_error_helper(map->pn_img, nav, game);
+        map->pn_text = true;
+    }
+    if (option == 2)
+    {
+        nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
+        map->pe_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
+        texture_error_helper(map->pe_img, nav, game);
+        map->pe_text = true;
+    }
+    case_texture_helper(game, option, str);
+    if (nav)
+        free(nav);
+}
+
+void case_rgb(t_game **game, int option, char *str)
+{
+    char **rgb;
+    
+    rgb = verify_syntax_rgb(game, str);
+    if (option == 5)
+        (*game)->map->ceiling = add_rgb(game, rgb);
+
+    if (option == 6)
+        (*game)->map->floor = add_rgb(game, rgb);
+    ft_free_string_array(rgb);
+}
+
+void add_texture(t_game **game, int option, char *str)
+{
+    if (option < 5)
+        case_texture(game, option,str);
+    else
+        case_rgb(game,option,str);
+}
+
+void validate_textures(char *str, t_game **game)
+{
+    int option;
+    
+    while(ft_isspace(*str))
+        str++;
+    option = texture_helper(str);
+    if (option)
+    {
+        while(ft_isalpha(*str))
+            str++;
+        while(ft_isspace(*str))
+            str++;
+        add_texture(game, option, str);
+    }
+    else
+    {
+        error_msg("Non texture or RGB or map found.");
+        free_game(game);
+        exit(1);
+        }
+    }
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   key_hook_moves.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
+/*   Updated: 2025/08/11 14:06:22 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+bool collision_detection(t_game *game, double new_x, double new_y)
+{
+    int map_x = (int)new_x;
+    int map_y = (int)new_y;
+
+    if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height) //out of bounds
+        return false;
+    if (game->map->map[map_y][map_x] == '1') //hit a wall
+        return false;
+    return true;
+}
+
+int key_hook(int keycode, t_game *game)
+{
+    double old_dir_x;
+    double old_plane_x;
+    double rotation_speed = 0.1;
+    double move_speed = 0.5;
+    double new_x;
+    double new_y;
+
+    //still needs collision detection and map boundaries + speed adjustment
+    
+    if(keycode == UP)
+    {
+        new_x = game->player->player_pos->x + game->player->vector_dir->x * move_speed;
+        new_y = game->player->player_pos->y + game->player->vector_dir->y * move_speed;
+        
+        if (collision_detection(game, new_x, new_y))
+        {
+            game->player->player_pos->x = new_x;
+            game->player->player_pos->y = new_y;
+        }
+    }
+    if(keycode == DOWN)
+    {
+        new_x = game->player->player_pos->x - game->player->vector_dir->x * move_speed;
+        new_y = game->player->player_pos->y - game->player->vector_dir->y * move_speed;
+
+        if (collision_detection(game, new_x, new_y))
+        {
+            game->player->player_pos->x = new_x;
+            game->player->player_pos->y = new_y;
+        }
+    }
+    //[[cos(θ), -sin(θ)], [sin(θ), cos(θ)]]
+    if (keycode == ROTATE_LEFT)
+    {
+        old_dir_x = game->player->vector_dir->x;
+        game->player->vector_dir->x = game->player->vector_dir->x * cos(-rotation_speed) - game->player->vector_dir->y * sin(-rotation_speed);
+        game->player->vector_dir->y = old_dir_x * sin(-rotation_speed) + game->player->vector_dir->y * cos(-rotation_speed);
+    
+        old_plane_x = game->player->camera_plane->x;
+        game->player->camera_plane->x = game->player->camera_plane->x * cos(-rotation_speed) - game->player->camera_plane->y * sin(-rotation_speed);
+        game->player->camera_plane->y = old_plane_x * sin(-rotation_speed) + game->player->camera_plane->y * cos(-rotation_speed);
+    }
+    if (keycode == ROTATE_RIGHT)
+    {
+        old_dir_x = game->player->vector_dir->x;
+        game->player->vector_dir->x = game->player->vector_dir->x * cos(rotation_speed) - game->player->vector_dir->y * sin(rotation_speed);
+        game->player->vector_dir->y = old_dir_x * sin(rotation_speed) + game->player->vector_dir->y * cos(rotation_speed);
+    
+        old_plane_x = game->player->camera_plane->x;
+        game->player->camera_plane->x = game->player->camera_plane->x * cos(rotation_speed) - game->player->camera_plane->y * sin(rotation_speed);
+        game->player->camera_plane->y = old_plane_x * sin(rotation_speed) + game->player->camera_plane->y * cos(rotation_speed);
+    }
+    return 0;
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
+/*   Updated: 2025/08/11 13:30:56 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+int main(int argc, char **argv)
+{
+    t_game *game_data;
+    char *path;
+
+    if (argc != 2)
+    {
+        error_msg("Wrong amount of arguments.");
+        exit(1);
+    }
+    if (!*(++argv))
+    {
+        error_msg("No path.");
+        exit(1);
+    }
+    path = *argv;
+    if (!validate_init(&game_data, path))
+    {
+        error_msg("Failed to initialise.\n");
+        exit(1);
+    }
+    create_window(game_data);
+    if (!game_data->win)
+        return (1);
+    mlx_loop_hook(game_data->mlx, render_frame, game_data);
+    mlx_hook(game_data->win, 2, 1L<<0, key_hook, game_data);
+    mlx_loop(game_data->mlx);
+    return 0;
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   memory.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 09:32:43 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/05 13:48:52 by cauffret         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+void	ft_free_string_array(char **arr)
+{
+        int	i;
+        if (!arr)
+                return ;
+        i = 0;
+        while (arr[i])
+        {
+                free(arr[i]);
+                arr[i] = NULL;
+                i++;
+        }
+        free(arr);
+}
+
+void ft_free_rgb(t_rgb *rgb)
+{
+    if (!rgb)
+        return;
+    free(rgb);
+}
+
+void ft_free_map(t_map **map)
+{
+    if (!map || !*map)
+        return;
+    ft_free_string_array((*map)->content);
+    ft_free_rgb((*map)->ceiling);
+    ft_free_rgb((*map)->floor);
+    free(*map);
+    *map = NULL;
+}
+
+void free_game(t_game **game)
+{
+    if (!game || !*game)
+        return;
+    if ((*game)->map)
+        ft_free_map(&((*game)->map));
+    free(*game);
+    *game = NULL;
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   miscs.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 09:19:25 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/07 13:49:01 by cauffret         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+int ft_isspace(char c)
+{
+    if (!c)
+        return (0);
+    else if (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == 'r')
+        return (1);
+    return (0);
+}
+
+int ft_isblank(char *str)
+{
+    if (!str)
+        return (0);
+    int i;
+
+    i = 0;
+    while((ft_isspace(str[i])) || str[i] == '\n')
+        i++;
+    if ((size_t)i != (ft_strlen(str)))
+        return(0);
+    else
+        return(1);
+}
+
+int ft_special_len(char *str, int separator)
+{
+    int i;
+    
+    i = 0;
+    if (!str)
+        return (i);
+    while (str[i] && str[i] != separator)
+        i++;
+    return(i - 1);
+}
+
+char	*ft_strndup(const char *s, size_t n)
+{
+	size_t	i;
+	char	*dup;
+
+	i = 0;
+	while (s[i] && i < n)
+		i++;
+	dup = (char *)malloc(sizeof(char) * (i + 1));
+	if (!dup)
+		return (NULL);
+	i = 0;
+	while (s[i] && i < n)
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
+int count_strings(char **str)
+{
+    int i;
+
+    if (!str || !*str)
+        return (0);
+    i = 0;
+    while(str[i])
+        i++;
+    return(i);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 09:32:37 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/11 13:31:15 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+int validate_arg (char *str)
+{
+    char *extension;
+    if(!str)
+        return (0);
+    extension = ft_strrchr(str, '.');
+    if (!extension)
+        return (0);
+    else if ((ft_strncmp(extension, ".cub", 4) != 0) || (ft_strlen(extension) != 4))
+        error_msg("Extension format not valid !");
+    else
+        return (1); 
+    return(0);
+}
+
+int validate_map(char *path, t_game **game)
+{
+    if (!validate_arg(path))
+        return (0);
+    init_struct(game, path);
+    return(1);
+}
+
+int validate_init(t_game **game, char *path)
+{
+    int i;
+    
+    i = validate_map(path, game);
+    return(i);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   raycasting_engine.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
+/*   Updated: 2025/08/11 15:58:29 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+/*double ray_casting(int x, t_player player)
+{
+    double camera_x;
+    int wall_hit = 0;
+
+    while(x < WIN_WIDTH)
+    {
+        ///////////////////// RAY DIRECTION CALCULATIONS ///////////////////////
+        camera_x = 2 * x / (double)WIN_WIDTH - 1; // that's 2 * 0 / 1024 - 1 = -1.0 (far left) if camera_x = 0
+        
+        t_ray ray;
+        ray->ray_dir.x = player.dir.x + player.plane.x * camera_x; // ray direction in x ray_dir = center_direction + spread_left_right
+        ray->ray_dir.y = player.dir.y + player.plane.y * camera_x;
+        
+        ray.map.x = (int)player.pos.x; //takes the current floating point and converts
+        ray.map.y = (int)player.pos.y; //it to an integer to indicate the current tile the character is standing on
+
+        delta.x = fabs(1 / ray->ray_dir.x); //delta x is the distance to the next vertical line
+        delta.y = fabs(1 / ray->ray_dir.y); //delta y is the distance to the next horizontal line
+
+        /////////////////// STEP DIRECTIONS CALCULATIONS //////////////////////
+        t_vector side_dist;
+
+        if(ray.ray_dir.x < 0) //left
+        {
+            step_dir_x = -1; //if ray direction is negative, we step left
+            side_dist.x = (player.pos.x - ray.map.x) * delta.x;
+            //side is the distance to hit the edge of the current tile to the left
+        }
+        else if (ray.ray_dir.x > 0) //right
+        {
+            step_dir_x = 1;
+            side_dist.x = (ray.map.x + 1.0 - player.pos.x) * delta.x; 
+        }
+        
+        if(ray.ray_dir.y < 0) //up
+        {
+            step_dir_y = -1;
+            side_dist.y = (player.pos.y - ray.map.y) * delta.y;
+        }
+        else if (ray.ray_dir.y > 0) //down
+        {
+            step_dir_y = 1;
+            side_dist.y = (ray.map.y + 1.0 - player.pos.y) * delta.y;
+        }
+        
+        /////////////////// DDA LOOP //////////////////////
+    int hit = 0;
+    int side = 0;
+    while (hit == 0)
+    {
+        if (side_dist_x < side_dist_y)
+        {
+            side_dist_x += delta_x;
+            map_x += step_x;
+            side = 0;
+        }
+        else
+        {
+            side_dist_y += delta_y;
+            map_y += step_y;
+            side = 1;
+        }
+        if (world_map[map_x][map_y] > 0)
+            hit = 1;
+    }
+
+    double perp_wall_dist;
+    if (side == 0)
+        perp_wall_dist = (map_x - player.pos.x + (1 - step_x) / 2) / ray.ray_dir.x;
+    else
+        perp_wall_dist = (map_y - player.pos.y + (1 - step_y) / 2) / ray.ray_dir.y;
+
+    printf("Column %d hit wall at distance: %f\n", x, perp_wall_dist);
+    return perp_wall_dist;
+}*/
+
+double ray_casting(int x, t_player *player, int *wall_direction, t_game *game)
+{
+    double	camera_x;
+    t_ray	ray;
+    int		map_x;
+    int		map_y;
+    double	delta_x;
+    double	delta_y;
+    int		step_x;
+    int		step_y;
+    double	side_dist_x;
+    double	side_dist_y;
+    int		hit;
+    int		side;
+    double	perp_wall_dist;
+
+    camera_x = 2 * x / (double)WIN_WIDTH - 1;
+    ray.ray_dir.x = player->vector_dir->x + player->camera_plane->x * camera_x;
+    ray.ray_dir.y = player->vector_dir->y + player->camera_plane->y * camera_x;
+    
+    map_x = (int)player->player_pos->x;
+    map_y = (int)player->player_pos->y;
+
+    if (ray.ray_dir.x == 0)
+        delta_x = 1e30;
+    else
+        delta_x = fabs(1 / ray.ray_dir.x);
+    if (ray.ray_dir.y == 0)
+        delta_y = 1e30;
+    else
+        delta_y = fabs(1 / ray.ray_dir.y);
+
+    if (ray.ray_dir.x < 0) //left
+    {
+        step_x = -1;
+        side_dist_x = (player->player_pos->x - map_x) * delta_x;
+    }
+    else //right
+    {
+        step_x = 1;
+        side_dist_x = (map_x + 1.0 - player->player_pos->x) * delta_x;
+    }
+    if (ray.ray_dir.y < 0) //up
+    {
+        step_y = -1;
+        side_dist_y = (player->player_pos->y - map_y) * delta_y;
+    }
+    else //down
+    {
+        step_y = 1;
+        side_dist_y = (map_y + 1.0 - player->player_pos->y) * delta_y;
+    }
+    hit = 0;
+    while (hit == 0)
+    {
+        if (side_dist_x < side_dist_y)
+        {
+            side_dist_x += delta_x;
+            map_x += step_x;
+            side = 0;
+        }
+        else
+        {
+            side_dist_y += delta_y;
+            map_y += step_y;
+            side = 1;
+        }
+        if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height)        {
+            hit = 1;
+            break;
+        }
+        if (game->map->map[map_y][map_x] == '1')
+        {
+            hit = 1;
+        }
+    }
+    *wall_direction = get_wall_direction(side, step_x, step_y);
+    
+    if (side == 0)
+        perp_wall_dist = (map_x - player->player_pos->x + (1 - step_x) / 2) / ray.ray_dir.x;
+    else
+        perp_wall_dist = (map_y - player->player_pos->y + (1 - step_y) / 2) / ray.ray_dir.y;
+    
+    return perp_wall_dist;
+}
+
+// wall height : line_height = (int)(WIN_HEIGHT / perp_wall_dist);
+
+t_drawrange calculate_draw_range(double perp_wall_dist)
+{
+    t_drawrange range;
+
+    if (perp_wall_dist <= 0)
+    {
+        range.start = 0;
+        range.end = WIN_HEIGHT - 1;
+        range.height = WIN_HEIGHT;
+        return range;
+    }
+    // calculate the height of the wall line
+    range.height = (int)(WIN_HEIGHT / perp_wall_dist);
+
+    // calculate the start and end of the wall line
+    range.start = -range.height / 2 + WIN_HEIGHT / 2;
+    if (range.start < 0) //out of screen bounds
+        range.start = 0;
+    range.end = range.height / 2 + WIN_HEIGHT / 2;
+    if (range.end >= WIN_HEIGHT) //out of screen bounds
+        range.end = WIN_HEIGHT - 1;
+    return range;
+}
+
+void draw_vertical_line(t_game *game_data, int x, int start, int end, int color)
+{
+    int y;
+    char *dst;
+
+    if (start < 0) start = 0;
+    if (end >= WIN_HEIGHT) end = WIN_HEIGHT - 1;
+    if (start > end) return;
+    
+    y = start;
+    while (y <= end)
+    {
+        dst = game_data->addr + (y * game_data->line_length + x * (game_data->bits_per_pixel / 8)); // frame buffer address calculation for rendering
+        *(unsigned int*)dst = color; // set pixel color
+        y++;
+    }
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   rendering.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
+/*   Updated: 2025/08/11 16:14:37 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+int	render_frame(void *param)
+{
+    t_game		*game;
+    int			x;
+    double		perp_dist;
+    t_drawrange	range;
+    int			color;
+    int			wall_dir;
+    int ceiling_color;
+    int floor_color;
+
+    game = (t_game *)param;
+    
+    if (!game->img)
+    {
+        game->img = mlx_new_image(game->mlx, WIN_WIDTH, WIN_HEIGHT);
+        game->addr = mlx_get_data_addr(game->img,
+                &game->bits_per_pixel, &game->line_length, &game->endian);
+    }
+    ceiling_color = create_rgb_color(game->map->ceiling->r, game->map->ceiling->g, game->map->ceiling->b);
+    floor_color = create_rgb_color(game->map->floor->r, game->map->floor->g, game->map->floor->b);
+    //printf("Ceiling color: %d, Floor color: %d\n", ceiling_color, floor_color);
+    ft_memset(game->addr, 0, WIN_HEIGHT * game->line_length);
+    x = 0;
+    while (x < WIN_WIDTH)
+    {
+        perp_dist = ray_casting(x, game->player, &wall_dir, game);
+        range = calculate_draw_range(perp_dist);
+        color = get_wall_color(wall_dir);
+        color = get_shade_color(color, perp_dist);
+
+        draw_vertical_line(game, x, 0, range.start - 1, ceiling_color); // ceiling
+        draw_vertical_line(game, x, range.start, range.end, color); //wall
+        draw_vertical_line(game, x, range.end + 1, WIN_HEIGHT - 1, floor_color); // floor
+        x++;
+    }
+    mlx_put_image_to_window(game->mlx, game->win, game->img, 0, 0);
+    return (0);
+}
+
+int get_wall_direction(int side, int step_x, int step_y)
+{
+    if (side == 0) 
+    {
+        if (step_x > 0)
+            return EAST; //
+        else
+            return WEST;
+    }
+    else
+    {
+        if (step_y > 0)
+            return SOUTH;
+        else
+            return NORTH;
+    }
+}
+double ray_cast(int x, t_player *player, t_ray *ray)
+{
+    double camera_x;
+    double side_dist_x, side_dist_y;
+    double perp_wall_dist;
+    int hit = 0;
+    int side;
+    
+    // Calculate ray position and direction
+    camera_x = 2 * x / (double)WIN_WIDTH - 1; // x-coordinate in camera space
+    ray->ray_dir.x = player->vector_dir.x + player->camera_plane.x * camera_x;
+    ray->ray_dir.y = player->vector_dir.y + player->camera_plane.y * camera_x;
+    
+    // Which box of the map we're in
+    ray->map_x = (int)player->player_pos.x;
+    ray->map_y = (int)player->player_pos.y;
+    
+    // Length of ray from current position to x or y side
+    ray->delta.x = fabs(1 / ray->ray_dir.x);
+    ray->delta.y = fabs(1 / ray->ray_dir.y);
+    
+    // Calculate step and initial sideDist
+    if (ray->ray_dir.x < 0)
+    {
+        ray->step_dir_x = -1;
+        side_dist_x = (player->player_pos.x - ray->map_x) * ray->delta.x;
+    }
+    else
+    {
+        ray->step_dir_x = 1;
+        side_dist_x = (ray->map_x + 1.0 - player->player_pos.x) * ray->delta.x;
+    }
+    if (ray->ray_dir.y < 0)
+    {
+        ray->step_dir_y = -1;
+        side_dist_y = (player->player_pos.y - ray->map_y) * ray->delta.y;
+    }
+    else
+    {
+        ray->step_dir_y = 1;
+        side_dist_y = (ray->map_y + 1.0 - player->player_pos.y) * ray->delta.y;
+    }
+    
+    // Perform DDA
+    while (hit == 0)
+    {
+        // Jump to next map square, either in x-direction, or in y-direction
+        if (side_dist_x < side_dist_y)
+        {
+            side_dist_x += ray->delta.x;
+            ray->map_x += ray->step_dir_x;
+            side = 0;
+        }
+        else
+        {
+            side_dist_y += ray->delta.y;
+            ray->map_y += ray->step_dir_y;
+            side = 1;
+        }
+        // Check if ray has hit a wall
+        // Note: You'll need to implement your map checking here
+        // For now, assuming a simple condition - you should replace this with your actual map data
+        if (ray->map_x < 0 || ray->map_x >= 24 || ray->map_y < 0 || ray->map_y >= 24)
+            hit = 1; // Hit boundary (replace with your map checking logic)
+    }
+    
+    // Calculate distance projected on camera direction
+    if (side == 0)
+        perp_wall_dist = (ray->map_x - player->player_pos.x + (1 - ray->step_dir_x) / 2) / ray->ray_dir.x;
+    else
+        perp_wall_dist = (ray->map_y - player->player_pos.y + (1 - ray->step_dir_y) / 2) / ray->ray_dir.y;
+    
+    ray->wall_hit = side;
+    return (perp_wall_dist);
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   window_management.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 12:40:22 by chsauvag          #+#    #+#             */
+/*   Updated: 2025/08/07 12:13:42 by chsauvag         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+void create_window(t_game *game)
+{
+    game->win = mlx_new_window(game->mlx, WIN_WIDTH, WIN_HEIGHT, "Cub3D");
+    if(game->win == NULL)
+    {
+        error_msg("Failed to create a new window");
+        mlx_destroy_display(game->mlx);
+        free(game->mlx);
+        return;
+    }
+    mlx_key_hook(game->win, close_window_hook, game);
+    mlx_hook(game->win, 17, 0, close_window_x, game);
+    // Remove mlx_loop from here since it's called in main
+}
+
+int close_window_hook(int keycode, t_game *game) // ESCAPE key
+{
+    if (keycode == ESCAPE_KEY)
+    {
+        mlx_destroy_window(game->mlx, game->win);
+        mlx_destroy_display(game->mlx);
+        free(game->mlx);
+        exit(0);
+    }
+    return 0;
+}
+
+int close_window_x(t_game *game) //(x) button
+{
+    mlx_destroy_window(game->mlx, game->win);
+    mlx_destroy_display(game->mlx);
+    free(game->mlx);
+    exit(0);
+    return (0);
+}

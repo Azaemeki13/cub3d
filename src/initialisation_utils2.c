@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/11 14:02:50 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/12 09:36:14 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,24 @@ void case_texture_helper(t_game **game, int option, char *str)
 {
     char *nav = NULL; 
     t_map *map;
+    t_text *text;
 
     map = (*game)->map;
     if (option == 3)
     {
-        nav = ft_strndup(str, ((size_t)ft_special_len(str, ' ')));
-        map->ps_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
-        texture_error_helper(map->ps_img, nav, game);
-        map->ps_text = true;
+        text = map->so;
+        nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
+        text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width, &text->height);
+        texture_error_helper(text->text_img, nav, game);
+        text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl, &text->end);
     } 
     if (option == 4)
     {
+        text = map->we;
         nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
-        map->pw_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
-        texture_error_helper(map->pw_img, nav, game);
-        map->pw_text = true;
+        text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width, &text->height);
+        texture_error_helper(text->text_img, nav, game);
+        text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl, &text->end);
     }
     if (nav)
         free(nav);

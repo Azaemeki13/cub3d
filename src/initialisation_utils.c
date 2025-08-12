@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/08 10:07:52 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/12 09:38:21 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,27 +32,29 @@ int texture_helper(char *str)
         return(0);
 }
 
-
 void case_texture(t_game **game, int option, char *str)
 {
     char *nav = NULL;
     t_map *map;
+    t_text *text;
     
     map = (*game)->map;
     extension_validator(str, game);
     if (option == 1)
     {
+        text = map->no;
         nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
-        map->pn_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
-        texture_error_helper(map->pn_img, nav, game);
-        map->pn_text = true;
+        text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width, &text->height);
+        texture_error_helper(text->text_img, nav, game);
+        text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl, &text->end);
     }
     if (option == 2)
     {
+        text = map->ea;
         nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
-        map->pe_img = mlx_xpm_file_to_image((*game)->mlx, nav, &map->width, &map->height);
-        texture_error_helper(map->pe_img, nav, game);
-        map->pe_text = true;
+        text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width, &text->height);
+        texture_error_helper(text->text_img, nav, game);
+        text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl, &text->end);
     }
     case_texture_helper(game, option, str);
     if (nav)

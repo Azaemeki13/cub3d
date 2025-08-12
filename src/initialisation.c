@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/11 13:28:29 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/12 12:50:56 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void init_struct(t_game **game, char *path)
     (*game)->mlx = mlx_init();
     (*game)->map = malloc(sizeof(t_map));
     ft_memset((*game)->map, 0, sizeof(t_map));
+    malloc_texture(game);
     init_map(game, path);
     init_player(game);
 }

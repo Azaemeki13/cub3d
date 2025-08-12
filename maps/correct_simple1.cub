@@ -1,7 +1,7 @@
 NO ./textures/blue_stone_00.xpm
-SO ./textures/blue_stone_00.xpm
-WE ./textures/blue_stone_00.xpm
-EA ./textures/blue_stone_00.xpm
+SO ./textures/brick_wall_00.xpm
+WE ./textures/jungle_wall_00.xpm
+EA ./textures/stone_wall_00.xpm
 
 C 121,121,121
 F 53,53,53

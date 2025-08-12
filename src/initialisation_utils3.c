@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/07 14:02:11 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/12 09:21:09 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,16 @@ t_rgb *add_rgb(t_game **game, char **rgb)
         rgb_error(game, rgb);
     }
     return (result);
+}
+
+void  malloc_texture(t_game **game)
+{
+    (*game)->map->no = malloc(sizeof(t_text));
+    (*game)->map->ea = malloc(sizeof(t_text));
+    (*game)->map->so = malloc(sizeof(t_text));
+    (*game)->map->we = malloc(sizeof(t_text));
+    ft_memset((*game)->map->no, 0 , sizeof(t_text));
+    ft_memset((*game)->map->ea, 0 , sizeof(t_text));
+    ft_memset((*game)->map->so, 0 , sizeof(t_text));
+    ft_memset((*game)->map->we, 0 , sizeof(t_text));
 }

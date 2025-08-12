@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 13:43:54 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/12 12:57:44 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@
 #define EAST 1
 #define SOUTH 2
 #define WEST 3
+
+typedef struct s_drawrange t_drawrange;
 
 typedef struct s_vector
 {
@@ -67,18 +69,26 @@ typedef struct s_rgb
     int b;
 }   t_rgb;
 
+typedef struct s_texture
+{
+    void *text_img;
+    char *addr;
+    int   bpp;
+    int   sl;
+    int   end;
+    int   width;
+    int   height;
+    int   bytes_pp;
+} t_text;
+
 typedef struct s_map
 {
     char **content;
     char **map;
-    bool pn_text;
-    void *pn_img;
-    bool pe_text;
-    void *pe_img;
-    bool ps_text;
-    void *ps_img;
-    bool pw_text;
-    void *pw_img;
+    t_text *no;
+    t_text *ea;
+    t_text *so;
+    t_text *we;
     int height;
     int map_height;
     int map_width;
@@ -86,12 +96,24 @@ typedef struct s_map
     t_rgb *ceiling;
     t_rgb *floor;
 } t_map;
+
+typedef struct s_drawrange
+{
+    int start;
+    int end;
+    int height;
+} t_drawrange;
+
 typedef struct s_game 
 {
     void    *mlx;
     void    *win;
     void    *img;
     char    *addr;
+    t_vector ray_dir;
+    t_drawrange range;
+    double wall_x;
+    int     side_out;
     int     bits_per_pixel;
     int     line_length;
     int     endian;
@@ -99,12 +121,7 @@ typedef struct s_game
     t_map   *map;
 } t_game;
 
-typedef struct s_drawrange
-{
-    int start;
-    int end;
-    int height;
-}t_drawrange;
+
 
 //window_management.c
 
@@ -159,6 +176,15 @@ void rgb_error(t_game **game, char **str);
 void verify_rgb_number(t_game **game, char **verification);
 char **verify_syntax_rgb(t_game **game, char *str);
 t_rgb *add_rgb(t_game **game, char **rgb);
+void  malloc_texture(t_game **game);
+
+//initialisation_utils4.c
+
+int start_helper(char c);
+void set_vector(t_vector *vector, double x, double y);
+void init_orientation(t_game **game);
+void init_start(t_game **game);
+void calculate_map_size(t_game **game);
 
 //initialisation_map.c
 
@@ -175,9 +201,15 @@ int count_strings(char **str);
 
 // raycasting_engine.c
 
-double ray_casting(int x, t_player *player, int *wall_direction, t_game *game);
+double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, double *wall_x);
 t_drawrange calculate_draw_range(double perp_wall_dist);
 void draw_vertical_line(t_game *game_data, int x, int start, int end, int color);
+
+// raycasting_engine_utils.c
+
+t_text *get_wall_text(int wall_dir, t_game **game);
+void set_bytespp(t_game **game);
+void draw_textures(t_game **game, int x, int start, int end, t_text *text );
 
 // rendering.c
 
@@ -191,11 +223,5 @@ int get_shade_color(int base_color, double distance);
 int create_rgb_color(int r, int g, int b);
 int key_hook(int keycode, t_game *game);
 int get_wall_color(int wall_dir);
-
-void init_orientation(t_game **game);
-void init_start(t_game **game);
-void set_vector(t_vector *vector, double x, double y);
-int start_helper(char c);
-void calculate_map_size(t_game **game);
 
 #endif
