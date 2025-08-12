@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:12:04 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/12 13:19:09 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int key_hook(int keycode, t_game *game)
 
     //still needs collision detection and map boundaries + speed adjustment
     
-    if(keycode == UP)
+    if(keycode == W)
     {
         new_x = game->player->player_pos->x + game->player->vector_dir->x * move_speed;
         new_y = game->player->player_pos->y + game->player->vector_dir->y * move_speed;
@@ -46,10 +46,33 @@ int key_hook(int keycode, t_game *game)
             game->player->player_pos->y = new_y;
         }
     }
-    if(keycode == DOWN)
+    if(keycode == S)
     {
         new_x = game->player->player_pos->x - game->player->vector_dir->x * move_speed;
         new_y = game->player->player_pos->y - game->player->vector_dir->y * move_speed;
+
+        if (collision_detection(game, new_x, new_y))
+        {
+            game->player->player_pos->x = new_x;
+            game->player->player_pos->y = new_y;
+        }
+    }
+
+    if(keycode == D)
+    {
+        new_x = game->player->player_pos->x - game->player->vector_dir->y * move_speed;
+        new_y = game->player->player_pos->y + game->player->vector_dir->x * move_speed;
+
+        if (collision_detection(game, new_x, new_y))
+        {
+            game->player->player_pos->x = new_x;
+            game->player->player_pos->y = new_y;
+        }
+    }
+    if(keycode == A)
+    {
+        new_x = game->player->player_pos->x + game->player->vector_dir->y * move_speed;
+        new_y = game->player->player_pos->y - game->player->vector_dir->x * move_speed;
 
         if (collision_detection(game, new_x, new_y))
         {

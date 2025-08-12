@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:10:09 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/12 13:28:34 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ int	render_frame(void *param)
         // color = get_shade_color(color, perp_dist);
         x++;
     }
+    draw_minimap(game);
     mlx_put_image_to_window(game->mlx, game->win, game->img, 0, 0);
     return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 12:57:44 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/12 13:33:29 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,18 @@
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 768
 
+#define MINIMAP_TILE_SIZE 8
+#define MINIMAP_OFFSET_X 3
+#define MINIMAP_OFFSET_Y 3
+#define MINIMAP_RADIUS 8
+
 #define ESCAPE_KEY 65307
-#define UP 65362
-#define DOWN 65364
+
+#define W 119
+#define S 115
+#define A 97
+#define D 100
+
 #define ROTATE_LEFT 65361
 #define ROTATE_RIGHT 65363
 
@@ -34,8 +43,6 @@
 #define EAST 1
 #define SOUTH 2
 #define WEST 3
-
-typedef struct s_drawrange t_drawrange;
 
 typedef struct s_vector
 {
@@ -102,7 +109,7 @@ typedef struct s_drawrange
     int start;
     int end;
     int height;
-} t_drawrange;
+}t_drawrange;
 
 typedef struct s_game 
 {
@@ -120,8 +127,6 @@ typedef struct s_game
     t_player *player;
     t_map   *map;
 } t_game;
-
-
 
 //window_management.c
 
@@ -223,5 +228,9 @@ int get_shade_color(int base_color, double distance);
 int create_rgb_color(int r, int g, int b);
 int key_hook(int keycode, t_game *game);
 int get_wall_color(int wall_dir);
+
+//minimap.c
+
+void draw_minimap(t_game *game);
 
 #endif

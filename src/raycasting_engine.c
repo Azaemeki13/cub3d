@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 12:28:37 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/12 13:26:35 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,7 @@
 
         if(ray.ray_dir.x < 0) //left
         {
-            step_(hit == 0)
-    {
-        if (side_dist_x < side_dist_y)
-        {
-            side_dist_x += delta_x;
-            map_x += step_x;
-            side = 0;
-        }
-        else
-        {
-         dir_x = -1; //if ray direction is negative, we step left
+            step_dir_x = -1; //if ray direction is negative, we step left
             side_dist.x = (player.pos.x - ray.map.x) * delta.x;
             //side is the distance to hit the edge of the current tile to the left
         }
@@ -84,17 +74,7 @@
             side_dist_y += delta_y;
             map_y += step_y;
             side = 1;
-        }(hit == 0)
-    {
-        if (side_dist_x < side_dist_y)
-        {
-            side_dist_x += delta_x;
-            map_x += step_x;
-            side = 0;
         }
-        else
-        {
-         
         if (world_map[map_x][map_y] > 0)
             hit = 1;
     }
