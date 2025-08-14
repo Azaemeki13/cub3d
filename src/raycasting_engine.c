@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:26:35 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:26:25 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,7 @@ double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, d
 
 // wall height : line_height = (int)(WIN_HEIGHT / perp_wall_dist);
 
-t_drawrange calculate_draw_range(double perp_wall_dist)
+t_drawrange calculate_draw_range(double perp_wall_dist, t_game *game)
 {
     t_drawrange range;
 
@@ -203,12 +203,9 @@ t_drawrange calculate_draw_range(double perp_wall_dist)
     range.height = (int)(WIN_HEIGHT / perp_wall_dist);
 
     // calculate the start and end of the wall line
-    range.start = -range.height / 2 + WIN_HEIGHT / 2;
-    if (range.start < 0) //out of screen bounds
-        range.start = 0;
-    range.end = range.height / 2 + WIN_HEIGHT / 2;
-    if (range.end >= WIN_HEIGHT) //out of screen bounds
-        range.end = WIN_HEIGHT - 1;
+    range.start = (WIN_HEIGHT - range.height) / 2 + game->player->pitch;
+    range.end = (WIN_HEIGHT + range.height) / 2 + game->player->pitch;
+
     return range;
 }
 

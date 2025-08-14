@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:33:29 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:20:04 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ typedef struct s_player
     t_vector *player_pos;
     t_vector *camera_plane; //simulation of camera FOV
     t_vector *vector_dir;
+    int pitch; // vertical look offset :3
     char orientation; //N, E, S, W
 } t_player;
 
@@ -120,6 +121,8 @@ typedef struct s_game
     t_vector ray_dir;
     t_drawrange range;
     double wall_x;
+    int last_mouse_x;
+    double mouse_sens;
     int     side_out;
     int     bits_per_pixel;
     int     line_length;
@@ -207,7 +210,7 @@ int count_strings(char **str);
 // raycasting_engine.c
 
 double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, double *wall_x);
-t_drawrange calculate_draw_range(double perp_wall_dist);
+t_drawrange calculate_draw_range(double perp_wall_dist, t_game *game);
 void draw_vertical_line(t_game *game_data, int x, int start, int end, int color);
 
 // raycasting_engine_utils.c
@@ -232,5 +235,9 @@ int get_wall_color(int wall_dir);
 //minimap.c
 
 void draw_minimap(t_game *game);
+
+// mouse_hook.c
+
+int on_mouse_move(int x, int y,void *param);
 
 #endif

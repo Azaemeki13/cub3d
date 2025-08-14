@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:28:34 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:19:43 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	render_frame(void *param)
     {
         // calculations
         perp_dist = ray_casting(x, game->player, &wall_dir, game, &game->wall_x);
-        game->range = calculate_draw_range(perp_dist);
+        game->range = calculate_draw_range(perp_dist, game);
         // draw f and c 
         start = game->range.start;
         end = game->range.end; 

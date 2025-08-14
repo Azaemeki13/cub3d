@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 13:30:56 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:02:28 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,10 @@ int main(int argc, char **argv)
     create_window(game_data);
     if (!game_data->win)
         return (1);
+    mlx_mouse_hide(game_data->mlx, game_data->win);
     mlx_loop_hook(game_data->mlx, render_frame, game_data);
     mlx_hook(game_data->win, 2, 1L<<0, key_hook, game_data);
+    mlx_hook(game_data->win, 6, 1L<<6, on_mouse_move, game_data);
     mlx_loop(game_data->mlx);
     return 0;
 }

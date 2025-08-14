@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:19:09 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/14 08:50:39 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ bool collision_detection(t_game *game, double new_x, double new_y)
 
 int key_hook(int keycode, t_game *game)
 {
-    double old_dir_x;
-    double old_plane_x;
-    double rotation_speed = 0.1;
+    // double old_dir_x;
+    // double old_plane_x;
+    // double rotation_speed = 0.1;
     double move_speed = 0.5;
     double new_x;
     double new_y;
@@ -81,6 +81,7 @@ int key_hook(int keycode, t_game *game)
         }
     }
     //[[cos(θ), -sin(θ)], [sin(θ), cos(θ)]]
+    /*
     if (keycode == ROTATE_LEFT)
     {
         old_dir_x = game->player->vector_dir->x;
@@ -101,5 +102,6 @@ int key_hook(int keycode, t_game *game)
         game->player->camera_plane->x = game->player->camera_plane->x * cos(rotation_speed) - game->player->camera_plane->y * sin(rotation_speed);
         game->player->camera_plane->y = old_plane_x * sin(rotation_speed) + game->player->camera_plane->y * cos(rotation_speed);
     }
+    */
     return 0;
 }

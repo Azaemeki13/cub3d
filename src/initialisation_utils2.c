@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:25:36 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:12:51 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void init_player(t_game **game)
     player->player_pos = malloc(sizeof(t_vector));
     player->camera_plane = malloc(sizeof(t_vector));
     player->vector_dir = malloc(sizeof(t_vector));
-
+    player->pitch = 0;
     init_start(game); 
     init_orientation(game);
 }

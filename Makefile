@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+         #
+#    By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/12 13:30:45 by chsauvag         ###   ########.fr        #
+#    Updated: 2025/08/14 08:48:44 by cauffret         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,8 @@ SRCS =	src/main.c \
        src/color.c \
        src/minimap.c \
        src/raycasting_engine_utils.c \
-       src/key_hook_moves.c
+       src/key_hook_moves.c \
+       src/mouse_hook.c
 
 INCLUDE = -I include -I minilibx-linux
 MLX_LIB = -L ./minilibx-linux -lmlx -lXext -lX11

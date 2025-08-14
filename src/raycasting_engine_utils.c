@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 09:51:29 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:12:03 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/14 10:34:05 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,61 +44,66 @@ void set_bytespp(t_game **game)
     map->we->bytes_pp = map->we->bpp / 8;
 }
 
-void draw_textures(t_game **game, int x, int start, int end, t_text *text )
+static int	clampi(int v, int lo, int hi)
 {
-    int height;
-    int h;
-    double step;
-    double tex_pos;
-    int y;
-    int tex_y;
-    int tex_x;
-    char *dest;
-    char *src;
-    unsigned int texel;
-    unsigned int bytes_pp;
-    
+	if (v < lo)
+		return (lo);
+	if (v > hi)
+		return (hi);
+	return (v);
+}
 
-    bytes_pp = ((*game)->bits_per_pixel / 8);
-    // mapping x axis of the texture. 
-    tex_x = floor((*game)->wall_x * text->width);
-    if ((*game)->side_out == 0 && (*game)->ray_dir.x > 0)
-        tex_x = text->width - tex_x - 1;
-    else if ((*game)->side_out == 1 && (*game)->ray_dir.y < 0)
-        tex_x = text->width - tex_x - 1;
-    if (tex_x < 0)
-        tex_x = 0;
-    else if (tex_x >= text->width)
-        tex_x = text->width - 1;
-    if (start > end)
-        return;
-    y = start;
-    // step 1 how fast do I walk the texture, scan range
-    height = end - start + 1;
-    h = text->height;
-    if (height <= 0)
-        return;
-    step = ( double)h / (double)height;
-    // step 2 where to start in the texture pos (center it)
-    tex_pos = (start - WIN_HEIGHT / 2.0 + height / 2.0)  *step;
-    //step 3 loop and draw texels (texture pixel ?)
-    while (y <= end)
-    {
-        tex_y = (int)tex_pos;
-        if (is_pow2(h))
-            tex_y &= (h - 1);
-        else
-        {
-            if (tex_y < 0)
-                tex_y = 0;
-            else if (tex_y >= h)
-                tex_y = h - 1;
-        }
-        src = text->addr + tex_y * text->sl + tex_x * text->bytes_pp;
-        dest = (*game)->addr + y * (*game)->line_length + x * bytes_pp;
-        texel = *(unsigned int *)src;
-        *(unsigned int *)dest = texel;
-        tex_pos += step;
-        y++;
-    }
+static int	compute_tex_x(t_game *g, t_text *tex)
+{
+	int	tx;
+
+	tx = (int)(g->wall_x * (double)tex->width);
+	if (g->side_out == 0 && g->ray_dir.x > 0)
+		tx = tex->width - tx - 1;
+	else if (g->side_out == 1 && g->ray_dir.y < 0)
+		tx = tex->width - tx - 1;
+	return (clampi(tx, 0, tex->width - 1));
+}
+
+/* draw the textured wall slice for screen column x */
+void	draw_textures(t_game **game, int x, int start, int end, t_text *tex)
+{
+	int		lineh;
+	int		tex_x;
+	int		y;
+	int		tex_y;
+	double	step;
+	double	draw_start_u;
+	double	tex_pos;
+	int		scr_bpp;
+
+	/* reject fully off-screen / degenerate */
+	if (end < 0 || start >= WIN_HEIGHT)
+		return ;
+	lineh = (*game)->range.height;
+	if (lineh <= 0)
+		return ;
+	/* clamp to screen */
+	if (start < 0)
+		start = 0;
+	if (end >= WIN_HEIGHT)
+		end = WIN_HEIGHT - 1;
+	/* horizontal mapping: wall_x -> tex_x (+ mirror fixes) */
+	tex_x = compute_tex_x(*game, tex);
+	/* vertical mapping: step in texture per screen pixel */
+	step = (double)tex->height / (double)lineh;
+	/* un-clamped top including pitch; then skip the clipped part */
+	draw_start_u = -lineh / 2.0 + WIN_HEIGHT / 2.0 + (*game)->player->pitch;
+	tex_pos = (start - draw_start_u) * step;
+	/* precompute bytes/px for screen; textures already have bytes_pp */
+	scr_bpp = (*game)->bits_per_pixel / 8;
+	y = start;
+	while (y <= end)
+	{
+		tex_y = (int)tex_pos;
+		tex_y = clampi(tex_y, 0, tex->height - 1); /* clamp, don't wrap */
+		*(unsigned int *)((*game)->addr + (long)y * (*game)->line_length + x * scr_bpp) = *(unsigned int *)(tex->addr + (long)tex_y * tex->sl + tex_x * tex->bytes_pp);
+		tex_pos += step;
+		y++;
+	}
 }

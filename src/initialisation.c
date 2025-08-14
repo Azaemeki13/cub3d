@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:24:47 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/14 08:58:05 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,5 +108,7 @@ void init_map(t_game **game, char *path)
         map->content[i++] = get_next_line(fd);
     check_texture_files(game);
     calculate_map_size(game);
+    (*game)->mouse_sens = 0.005;
+    (*game)->last_mouse_x = WIN_WIDTH / 2;
     close(fd);
 }
