@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 12:07:10 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/14 16:53:28 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,10 @@ int on_key_press(int keycode, t_game *game)
         game->buttons.q = 1;
     if (keycode == D)
         game->buttons.d = 1;
+    if (keycode == ROTATE_LEFT)
+        game->buttons.rotate_left = 1;
+    if (keycode == ROTATE_RIGHT)
+        game->buttons.rotate_right = 1;
     if (keycode == ESCAPE_KEY)
         return close_window_x(game);
     return(0);
@@ -70,6 +74,10 @@ int on_key_release(int keycode, t_game *game)
         game->buttons.q = 0;
     if (keycode == D)
         game->buttons.d = 0;
+    if (keycode == ROTATE_LEFT)
+        game->buttons.rotate_left = 0;
+    if (keycode == ROTATE_RIGHT)
+        game->buttons.rotate_right = 0;
     if (keycode == P)
         pause_screen(game);
     return(0);

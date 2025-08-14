@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 11:59:53 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/14 16:52:22 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ typedef struct s_keymap
     int w;
     int s;
     int d;
+    int rotate_left;
+    int rotate_right;
 } t_keymap;
 
 typedef struct s_vector
