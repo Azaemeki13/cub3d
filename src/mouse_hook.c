@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 14:36:27 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/14 10:39:51 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/14 12:00:20 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ int on_mouse_move(int x, int y,void *param)
     int center_x;
     int center_y;
 
+    if (game->game_pause)
+    {
+        game->last_mouse_x = x;
+        return(0); 
+    }
     center_x = WIN_WIDTH / 2;
     center_y = WIN_HEIGHT / 2;
     dx = x - center_x;

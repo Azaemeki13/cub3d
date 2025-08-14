@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 08:50:39 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/14 12:07:10 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,57 @@ bool collision_detection(t_game *game, double new_x, double new_y)
     return true;
 }
 
+void pause_screen(t_game *game)
+{
+    int cx;
+    int cy;
+
+    cx = WIN_WIDTH / 2;
+    cy = WIN_HEIGHT / 2;
+    game->game_pause = !game->game_pause;
+    if (game->game_pause)
+        mlx_mouse_show(game->mlx, game->win);
+    else
+    {
+        mlx_mouse_hide(game->mlx, game->win);
+        mlx_mouse_move(game->mlx, game->win, cx, cy);
+        game->last_mouse_x = cx;
+    }
+}
+
+
+int on_key_press(int keycode, t_game *game)
+{
+    if (game->game_pause)
+        return(0);
+    if (keycode == W)
+        game->buttons.w = 1;
+    if (keycode == S)
+        game->buttons.s = 1;
+    if (keycode == A)
+        game->buttons.q = 1;
+    if (keycode == D)
+        game->buttons.d = 1;
+    if (keycode == ESCAPE_KEY)
+        return close_window_x(game);
+    return(0);
+}
+
+int on_key_release(int keycode, t_game *game)
+{
+    if (keycode == W)
+        game->buttons.w = 0;
+    if (keycode == S)
+        game->buttons.s = 0;
+    if (keycode == A)
+        game->buttons.q = 0;
+    if (keycode == D)
+        game->buttons.d = 0;
+    if (keycode == P)
+        pause_screen(game);
+    return(0);
+}
+
 int key_hook(int keycode, t_game *game)
 {
     // double old_dir_x;
@@ -32,7 +83,6 @@ int key_hook(int keycode, t_game *game)
     double move_speed = 0.5;
     double new_x;
     double new_y;
-
     //still needs collision detection and map boundaries + speed adjustment
     
     if(keycode == W)
@@ -67,6 +117,7 @@ int key_hook(int keycode, t_game *game)
         {
             game->player->player_pos->x = new_x;
             game->player->player_pos->y = new_y;
+
         }
     }
     if(keycode == A)
@@ -80,28 +131,5 @@ int key_hook(int keycode, t_game *game)
             game->player->player_pos->y = new_y;
         }
     }
-    //[[cos(θ), -sin(θ)], [sin(θ), cos(θ)]]
-    /*
-    if (keycode == ROTATE_LEFT)
-    {
-        old_dir_x = game->player->vector_dir->x;
-        game->player->vector_dir->x = game->player->vector_dir->x * cos(-rotation_speed) - game->player->vector_dir->y * sin(-rotation_speed);
-        game->player->vector_dir->y = old_dir_x * sin(-rotation_speed) + game->player->vector_dir->y * cos(-rotation_speed);
-    
-        old_plane_x = game->player->camera_plane->x;
-        game->player->camera_plane->x = game->player->camera_plane->x * cos(-rotation_speed) - game->player->camera_plane->y * sin(-rotation_speed);
-        game->player->camera_plane->y = old_plane_x * sin(-rotation_speed) + game->player->camera_plane->y * cos(-rotation_speed);
-    }
-    if (keycode == ROTATE_RIGHT)
-    {
-        old_dir_x = game->player->vector_dir->x;
-        game->player->vector_dir->x = game->player->vector_dir->x * cos(rotation_speed) - game->player->vector_dir->y * sin(rotation_speed);
-        game->player->vector_dir->y = old_dir_x * sin(rotation_speed) + game->player->vector_dir->y * cos(rotation_speed);
-    
-        old_plane_x = game->player->camera_plane->x;
-        game->player->camera_plane->x = game->player->camera_plane->x * cos(rotation_speed) - game->player->camera_plane->y * sin(rotation_speed);
-        game->player->camera_plane->y = old_plane_x * sin(rotation_speed) + game->player->camera_plane->y * cos(rotation_speed);
-    }
-    */
     return 0;
 }

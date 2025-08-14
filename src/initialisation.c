@@ -6,11 +6,12 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/14 08:58:05 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/14 12:00:33 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
+
 
 void init_struct(t_game **game, char *path)
 {
@@ -22,6 +23,10 @@ void init_struct(t_game **game, char *path)
     malloc_texture(game);
     init_map(game, path);
     init_player(game);
+    (*game)->buttons.w = 0;
+    (*game)->buttons.s = 0;
+    (*game)->buttons.q = 0;
+    (*game)->buttons.d = 0;
 }
 
 int count_lines(char *path)

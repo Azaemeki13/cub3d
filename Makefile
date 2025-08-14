@@ -6,7 +6,7 @@
 #    By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/14 08:48:44 by cauffret         ###   ########.fr        #
+#    Updated: 2025/08/14 11:23:16 by cauffret         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ SRCS =	src/main.c \
        src/minimap.c \
        src/raycasting_engine_utils.c \
        src/key_hook_moves.c \
+       src/moves.c \
        src/mouse_hook.c
 
 INCLUDE = -I include -I minilibx-linux

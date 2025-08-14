@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 09:19:43 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/14 11:46:58 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	render_frame(void *param)
     int end;
 
     game = (t_game *)param;
-    
+    game_update(game);
     if (!game->img)
     {
         game->img = mlx_new_image(game->mlx, WIN_WIDTH, WIN_HEIGHT);
@@ -86,4 +86,20 @@ int get_wall_direction(int side, int step_x, int step_y)
         else
             return NORTH;
     }
+}
+
+int game_update(t_game *game)
+{
+    t_keymap keys;
+    
+    keys = game->buttons;
+    if (keys.w)
+        move_forward(game);
+    if (keys.s)
+        move_backwards(game);
+    if (keys.q)
+        move_left(game);
+    if (keys.d)
+        move_right(game);
+    return(0);
 }

@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 09:20:04 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/14 11:59:53 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 #define S 115
 #define A 97
 #define D 100
+#define P 112
 
 #define ROTATE_LEFT 65361
 #define ROTATE_RIGHT 65363
@@ -43,6 +44,14 @@
 #define EAST 1
 #define SOUTH 2
 #define WEST 3
+
+typedef struct s_keymap
+{
+    int q;
+    int w;
+    int s;
+    int d;
+} t_keymap;
 
 typedef struct s_vector
 {
@@ -127,8 +136,10 @@ typedef struct s_game
     int     bits_per_pixel;
     int     line_length;
     int     endian;
+    t_keymap buttons;
     t_player *player;
     t_map   *map;
+    int game_pause;
 } t_game;
 
 //window_management.c
@@ -223,6 +234,7 @@ void draw_textures(t_game **game, int x, int start, int end, t_text *text );
 
 int	render_frame(void *param);
 int get_wall_direction(int side, int step_x, int step_y);
+int game_update(t_game *game);
 
 
 //dumb_shit_to_get_rid_of_later.c
@@ -239,5 +251,19 @@ void draw_minimap(t_game *game);
 // mouse_hook.c
 
 int on_mouse_move(int x, int y,void *param);
+
+// moves.c
+
+void move_forward(t_game *game);
+void move_backwards(t_game *game);
+void move_left(t_game *game);
+void move_right(t_game *game);
+
+// key_hook_moves.c
+
+int on_key_press(int keycode, t_game *game);
+int on_key_release(int keycode, t_game *game);
+bool collision_detection(t_game *game, double new_x, double new_y);
+void pause_screen(t_game *game);
 
 #endif
