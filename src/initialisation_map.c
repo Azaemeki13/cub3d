@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_map.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:49:34 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/11 13:28:47 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:54:29 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ int	map_char_check(char c)
 		|| c == 'S'
 		|| c == 'E'
 		|| c == 'W'
+		|| c == 'D'
 		|| ft_isspace(c)))
 		return (0);
 	return (1);

@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 09:51:29 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/14 10:34:05 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 11:04:06 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,20 @@ t_text *get_wall_text(int wall_dir, t_game **game)
     t_map *map;
 
     map = (*game)->map;
-    if (wall_dir == NORTH)
-        return(map->no);
-    else if (wall_dir == EAST)
-        return(map->ea);
-    else if (wall_dir == SOUTH)
-        return(map->so);
-    else if (wall_dir == WEST)
-        return(map->we);
-    return (NULL);
+	if ((*game)->hit_tile == '1')
+	{
+		if (wall_dir == NORTH)
+        	return(map->no);
+    	else if (wall_dir == EAST)
+        	return(map->ea);
+    	else if (wall_dir == SOUTH)
+        	return(map->so);
+    	else if (wall_dir == WEST)
+        	return(map->we);
+	}
+	else if ((*game)->hit_tile == 'D' && map->door)
+		return(map->door);
+    return (map->no);
 }
 
 void set_bytespp(t_game **game)
@@ -42,6 +47,7 @@ void set_bytespp(t_game **game)
     map->ea->bytes_pp = map->ea->bpp / 8;
     map->so->bytes_pp = map->so->bpp / 8;
     map->we->bytes_pp = map->we->bpp / 8;
+	map->door->bytes_pp = map->door->bpp / 8;
 }
 
 static int	clampi(int v, int lo, int hi)

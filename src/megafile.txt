@@ -73,14 +73,15 @@ void error_msg(const char *msg)
 /*                                                        :::      ::::::::   */
 /*   initialisation.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:24:47 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:32:53 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
+
 
 void init_struct(t_game **game, char *path)
 {
@@ -92,6 +93,10 @@ void init_struct(t_game **game, char *path)
     malloc_texture(game);
     init_map(game, path);
     init_player(game);
+    (*game)->buttons.w = 0;
+    (*game)->buttons.s = 0;
+    (*game)->buttons.q = 0;
+    (*game)->buttons.d = 0;
 }
 
 int count_lines(char *path)
@@ -178,16 +183,19 @@ void init_map(t_game **game, char *path)
         map->content[i++] = get_next_line(fd);
     check_texture_files(game);
     calculate_map_size(game);
+    (*game)->mouse_sens = 0.001;
+    (*game)->last_mouse_x = WIN_WIDTH / 2;
     close(fd);
-}/* ************************************************************************** */
+}
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   initialisation_map.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:49:34 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/11 13:28:47 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:54:29 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,6 +251,7 @@ int	map_char_check(char c)
 		|| c == 'S'
 		|| c == 'E'
 		|| c == 'W'
+		|| c == 'D'
 		|| ft_isspace(c)))
 		return (0);
 	return (1);
@@ -288,10 +297,10 @@ void	line_checker(char *map_line, t_game **game)
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:25:36 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:51:35 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,6 +348,26 @@ void case_texture_helper(t_game **game, int option, char *str)
         texture_error_helper(text->text_img, nav, game);
         text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl, &text->end);
     }
+    case_texture_door(game,option,str);
+    if (nav)
+        free(nav);
+}
+
+void case_texture_door(t_game **game, int option, char *str)
+{
+    char *nav = NULL; 
+    t_map *map;
+    t_text *text;
+
+    map = (*game)->map;
+    if (option == 7)
+    {
+        text = map->door;
+        nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
+        text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width, &text->height);
+        texture_error_helper(text->text_img, nav, game);
+        text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl, &text->end);
+    } 
     if (nav)
         free(nav);
 }
@@ -363,7 +392,7 @@ void init_player(t_game **game)
     player->player_pos = malloc(sizeof(t_vector));
     player->camera_plane = malloc(sizeof(t_vector));
     player->vector_dir = malloc(sizeof(t_vector));
-
+    player->pitch = 0;
     init_start(game); 
     init_orientation(game);
 }
@@ -385,10 +414,10 @@ void map_pointer(t_game **game, int i)
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils3.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:25:53 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:34:38 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -460,6 +489,7 @@ t_rgb *add_rgb(t_game **game, char **rgb)
 void  malloc_texture(t_game **game)
 {
     (*game)->map->no = malloc(sizeof(t_text));
+    (*game)->map->door = malloc(sizeof(t_text));
     (*game)->map->ea = malloc(sizeof(t_text));
     (*game)->map->so = malloc(sizeof(t_text));
     (*game)->map->we = malloc(sizeof(t_text));
@@ -467,15 +497,17 @@ void  malloc_texture(t_game **game)
     ft_memset((*game)->map->ea, 0 , sizeof(t_text));
     ft_memset((*game)->map->so, 0 , sizeof(t_text));
     ft_memset((*game)->map->we, 0 , sizeof(t_text));
-}/* ************************************************************************** */
+    ft_memset((*game)->map->door, 0 , sizeof(t_text));
+}
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils4.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 11:16:22 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/11 14:41:08 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:54:53 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -579,7 +611,6 @@ void calculate_map_size(t_game **game)
         }
         j++;
     }
-    ft_printf("OK\n");
     (*game)->map->map_height = j;
     (*game)->map->map_width = max_length;
     ft_printf("Width is %d, height is %d\n", max_length, j);
@@ -589,10 +620,10 @@ void calculate_map_size(t_game **game)
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:25:14 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:51:19 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -614,6 +645,8 @@ int texture_helper(char *str)
         return (5);
     else if ((ft_strncmp(str, "F", 1) == 0) && ft_isspace(*(str+1)))
         return (6);
+    else if ((ft_strncmp(str, "D", 1) == 0) && ft_isspace(*(str+1)))
+        return (7);    
     else
         return(0);
 }
@@ -662,7 +695,7 @@ void case_rgb(t_game **game, int option, char *str)
 
 void add_texture(t_game **game, int option, char *str)
 {
-    if (option < 5)
+    if (option < 5 || option == 7)
         case_texture(game, option,str);
     else
         case_rgb(game,option,str);
@@ -695,10 +728,10 @@ void validate_textures(char *str, t_game **game)
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:19:09 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 14:22:01 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -713,18 +746,81 @@ bool collision_detection(t_game *game, double new_x, double new_y)
         return false;
     if (game->map->map[map_y][map_x] == '1') //hit a wall
         return false;
+    else if (game->map->map[map_y][map_x] == 'D')
+        return false;
     return true;
+}
+
+void pause_screen(t_game *game)
+{
+    int cx;
+    int cy;
+
+    cx = WIN_WIDTH / 2;
+    cy = WIN_HEIGHT / 2;
+    game->game_pause = !game->game_pause;
+    if (game->game_pause)
+        mlx_mouse_show(game->mlx, game->win);
+    else
+    {
+        mlx_mouse_hide(game->mlx, game->win);
+        mlx_mouse_move(game->mlx, game->win, cx, cy);
+        game->last_mouse_x = cx;
+    }
+}
+
+
+int on_key_press(int keycode, t_game *game)
+{
+    if (game->game_pause)
+        return(0);
+    if (keycode == W)
+        game->buttons.w = 1;
+    if (keycode == S)
+        game->buttons.s = 1;
+    if (keycode == A)
+        game->buttons.q = 1;
+    if (keycode == D)
+        game->buttons.d = 1;
+    if (keycode == ROTATE_LEFT)
+        game->buttons.rotate_left = 1;
+    if (keycode == ROTATE_RIGHT)
+        game->buttons.rotate_right = 1;
+    if (keycode == ESCAPE_KEY)
+        return close_window_x(game);
+    return(0);
+}
+
+int on_key_release(int keycode, t_game *game)
+{
+    if (keycode == W)
+        game->buttons.w = 0;
+    if (keycode == S)
+        game->buttons.s = 0;
+    if (keycode == A)
+        game->buttons.q = 0;
+    if (keycode == D)
+        game->buttons.d = 0;
+    if (keycode == ROTATE_LEFT)
+        game->buttons.rotate_left = 0;
+    if (keycode == ROTATE_RIGHT)
+        game->buttons.rotate_right = 0;
+    if (keycode == P)
+        pause_screen(game);
+    if (keycode == SPACE)
+        door_animation(game);
+    
+    return(0);
 }
 
 int key_hook(int keycode, t_game *game)
 {
-    double old_dir_x;
-    double old_plane_x;
-    double rotation_speed = 0.1;
+    // double old_dir_x;
+    // double old_plane_x;
+    // double rotation_speed = 0.1;
     double move_speed = 0.5;
     double new_x;
     double new_y;
-
     //still needs collision detection and map boundaries + speed adjustment
     
     if(keycode == W)
@@ -759,6 +855,7 @@ int key_hook(int keycode, t_game *game)
         {
             game->player->player_pos->x = new_x;
             game->player->player_pos->y = new_y;
+
         }
     }
     if(keycode == A)
@@ -772,37 +869,16 @@ int key_hook(int keycode, t_game *game)
             game->player->player_pos->y = new_y;
         }
     }
-    //[[cos(θ), -sin(θ)], [sin(θ), cos(θ)]]
-    if (keycode == ROTATE_LEFT)
-    {
-        old_dir_x = game->player->vector_dir->x;
-        game->player->vector_dir->x = game->player->vector_dir->x * cos(-rotation_speed) - game->player->vector_dir->y * sin(-rotation_speed);
-        game->player->vector_dir->y = old_dir_x * sin(-rotation_speed) + game->player->vector_dir->y * cos(-rotation_speed);
-    
-        old_plane_x = game->player->camera_plane->x;
-        game->player->camera_plane->x = game->player->camera_plane->x * cos(-rotation_speed) - game->player->camera_plane->y * sin(-rotation_speed);
-        game->player->camera_plane->y = old_plane_x * sin(-rotation_speed) + game->player->camera_plane->y * cos(-rotation_speed);
-    }
-    if (keycode == ROTATE_RIGHT)
-    {
-        old_dir_x = game->player->vector_dir->x;
-        game->player->vector_dir->x = game->player->vector_dir->x * cos(rotation_speed) - game->player->vector_dir->y * sin(rotation_speed);
-        game->player->vector_dir->y = old_dir_x * sin(rotation_speed) + game->player->vector_dir->y * cos(rotation_speed);
-    
-        old_plane_x = game->player->camera_plane->x;
-        game->player->camera_plane->x = game->player->camera_plane->x * cos(rotation_speed) - game->player->camera_plane->y * sin(rotation_speed);
-        game->player->camera_plane->y = old_plane_x * sin(rotation_speed) + game->player->camera_plane->y * cos(rotation_speed);
-    }
     return 0;
 }/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 13:30:56 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:56:10 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -832,8 +908,11 @@ int main(int argc, char **argv)
     create_window(game_data);
     if (!game_data->win)
         return (1);
+    mlx_mouse_hide(game_data->mlx, game_data->win);
+    mlx_hook(game_data->win, 2, 1L<<0, on_key_press, game_data);
+    mlx_hook(game_data->win, 3, 1L<<1, on_key_release,  game_data);
+    mlx_hook(game_data->win, 6, 1L<<6, on_mouse_move, game_data);
     mlx_loop_hook(game_data->mlx, render_frame, game_data);
-    mlx_hook(game_data->win, 2, 1L<<0, key_hook, game_data);
     mlx_loop(game_data->mlx);
     return 0;
 }
@@ -894,6 +973,121 @@ void free_game(t_game **game)
     *game = NULL;
 }
 /* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mini_dda.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/19 12:33:19 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/19 14:30:15 by cauffret         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+ int interact_cast(t_game *g)
+{
+    t_ray ray;
+    double px;
+    double py;
+    int map_x;
+    int map_y;
+    int step_x;
+    int step_y;
+    double delta_x;
+    double delta_y;
+    double side_dist_x;
+    double side_dist_y;
+    int hit;
+    int side;
+    int tile;
+    double t;
+    
+    px = g->player->player_pos->x;
+    py = g->player->player_pos->y;
+    map_x = (int)g->player->player_pos->x;
+    map_y = (int)g->player->player_pos->y;
+    ray.ray_dir.x = g->player->vector_dir->x;
+    ray.ray_dir.y = g->player->vector_dir->y;
+    if (ray.ray_dir.x == 0)
+        delta_x = 1e30;
+    else
+        delta_x = fabs(1.0 / ray.ray_dir.x);
+    if (ray.ray_dir.y == 0)
+        delta_y = 1e30;
+    else
+        delta_y = fabs(1.0 / ray.ray_dir.y);
+    if (ray.ray_dir.x < 0)
+    {
+        step_x = -1;
+        side_dist_x = (px - map_x) * delta_x;
+    }
+    else
+    {
+        step_x = 1;
+        side_dist_x = (map_x + 1.0 - px) * delta_x;
+    }
+    if (ray.ray_dir.y < 0)
+    {
+        step_y = -1;
+        side_dist_y = (py - map_y) * delta_y;
+    }
+    else
+    {
+        step_y = 1;
+        side_dist_y = (map_y + 1.0 - py) * delta_y;
+    }
+    hit = 0;
+    while (hit == 0)
+    {
+        if (side_dist_x < side_dist_y)
+        {
+            side_dist_x += delta_x;
+            map_x += step_x;
+            side = 0;
+        }
+        else
+        {
+            side_dist_y += delta_y;
+            map_y += step_y;
+            side = 1;
+        }
+        if (map_x < 0 || map_x >= g->map->map_width || map_y < 0 || map_y >= g->map->map_height)
+            return (0);
+        if (g->map->map[map_y][map_x] == 'D' || g->map->map[map_y][map_x] == '1')
+            hit = 1;
+    }
+    if (side == 0)
+        t = (map_x - px + (1.0 - step_x) / 2.0) / ray.ray_dir.x;
+    else
+        t = (map_y - py + (1.0 - step_y) / 2.0) / ray.ray_dir.y;
+    if (t > USE_RANGE || t < 0)
+        return 0;
+    tile = g->map->map[map_y][map_x];
+    if (tile == 'D')
+    {
+        set_vector(&g->map->door_pos, (double)map_x, (double)map_y);
+        return (1);
+    }
+    else
+        return (0);
+}
+
+void door_animation(t_game *game)
+{
+    int posx;
+    int posy;
+
+    if(interact_cast(game))
+    {
+        posx = (int)game->map->door_pos.x;
+        posy = (int)game->map->door_pos.y;
+        game->map->map[posy][posx] = '0';
+    }
+    else
+        return;
+}/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minimap.c                                          :+:      :+:    :+:   */
@@ -1059,6 +1253,136 @@ int count_strings(char **str)
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
+/*   mouse_hook.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/12 14:36:27 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/14 12:00:20 by cauffret         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+int on_mouse_move(int x, int y,void *param)
+{
+    t_game *game = (t_game *)param;
+    int dx;
+    int dy;
+    double angle;
+    double  old_dir_x;
+    double  old_plane_x;
+    int center_x;
+    int center_y;
+
+    if (game->game_pause)
+    {
+        game->last_mouse_x = x;
+        return(0); 
+    }
+    center_x = WIN_WIDTH / 2;
+    center_y = WIN_HEIGHT / 2;
+    dx = x - center_x;
+    dy = y - center_y;
+    if (abs(dx) < 2 && abs(dy) < 2)
+        return (0);
+    if (abs(dx) >= 2)
+    {
+        angle = dx * game->mouse_sens;
+        old_dir_x = game->player->vector_dir->x;
+        game->player->vector_dir->x = game->player->vector_dir->x * cos(angle) - game->player->vector_dir->y * sin(angle);
+        game->player->vector_dir->y = old_dir_x * sin(angle) + game->player->vector_dir->y * cos(angle);
+        old_plane_x = game->player->camera_plane->x;
+        game->player->camera_plane->x = game->player->camera_plane->x * cos(angle) - game->player->camera_plane->y * sin(angle);
+        game->player->camera_plane->y = old_plane_x * sin(angle) + game->player->camera_plane->y * cos(angle);
+    }
+    if (abs(dy) >= 2)
+    {
+        game->player->pitch += -dy * game->mouse_sens * 300;
+        if (game->player->pitch > WIN_HEIGHT / 3)
+            game->player->pitch = WIN_HEIGHT / 3;
+        if (game->player->pitch < - WIN_HEIGHT / 3)
+            game->player->pitch = - WIN_HEIGHT / 3;
+    }
+    mlx_mouse_move(game->mlx, game->win, center_x, center_y);
+    return (0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   moves.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/14 11:22:53 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/14 11:25:14 by cauffret         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+void move_forward(t_game *game)
+{
+    double move_speed = 0.5;
+    double new_x;
+    double new_y;
+
+    new_x = game->player->player_pos->x + game->player->vector_dir->x * move_speed;
+    new_y = game->player->player_pos->y + game->player->vector_dir->y * move_speed;
+    if (collision_detection(game, new_x, new_y))
+    {
+        game->player->player_pos->x = new_x;
+        game->player->player_pos->y = new_y;
+    }
+}
+
+void move_backwards(t_game *game)
+{
+    double move_speed = 0.5;
+    double new_x;
+    double new_y;
+
+    new_x = game->player->player_pos->x - game->player->vector_dir->x * move_speed;
+    new_y = game->player->player_pos->y - game->player->vector_dir->y * move_speed;
+    if (collision_detection(game, new_x, new_y))
+    {
+        game->player->player_pos->x = new_x;
+        game->player->player_pos->y = new_y;
+    }
+}
+
+void move_left(t_game *game)
+{
+    double move_speed = 0.5;
+    double new_x;
+    double new_y;
+
+    new_x = game->player->player_pos->x + game->player->vector_dir->y * move_speed;
+    new_y = game->player->player_pos->y - game->player->vector_dir->x * move_speed;
+    if (collision_detection(game, new_x, new_y))
+    {
+        game->player->player_pos->x = new_x;
+        game->player->player_pos->y = new_y;
+    }
+} 
+
+void move_right(t_game *game)
+{
+    double move_speed = 0.5;
+    double new_x;
+    double new_y;
+
+    new_x = game->player->player_pos->x - game->player->vector_dir->y * move_speed;
+    new_y = game->player->player_pos->y + game->player->vector_dir->x * move_speed;
+    if (collision_detection(game, new_x, new_y))
+    {
+        game->player->player_pos->x = new_x;
+        game->player->player_pos->y = new_y;
+    }
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
@@ -1105,10 +1429,10 @@ int validate_init(t_game **game, char *path)
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:26:35 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 13:58:13 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1264,8 +1588,9 @@ double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, d
             hit = 1;
             break;
         }
-        if (game->map->map[map_y][map_x] == '1')
+        if (game->map->map[map_y][map_x] == '1' || game->map->map[map_y][map_x] == 'D')
         {
+            game->hit_tile = game->map->map[map_y][map_x];
             hit = 1;
         }
     }
@@ -1290,7 +1615,7 @@ double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, d
 
 // wall height : line_height = (int)(WIN_HEIGHT / perp_wall_dist);
 
-t_drawrange calculate_draw_range(double perp_wall_dist)
+t_drawrange calculate_draw_range(double perp_wall_dist, t_game *game)
 {
     t_drawrange range;
 
@@ -1305,12 +1630,9 @@ t_drawrange calculate_draw_range(double perp_wall_dist)
     range.height = (int)(WIN_HEIGHT / perp_wall_dist);
 
     // calculate the start and end of the wall line
-    range.start = -range.height / 2 + WIN_HEIGHT / 2;
-    if (range.start < 0) //out of screen bounds
-        range.start = 0;
-    range.end = range.height / 2 + WIN_HEIGHT / 2;
-    if (range.end >= WIN_HEIGHT) //out of screen bounds
-        range.end = WIN_HEIGHT - 1;
+    range.start = (WIN_HEIGHT - range.height) / 2 + game->player->pitch;
+    range.end = (WIN_HEIGHT + range.height) / 2 + game->player->pitch;
+
     return range;
 }
 
@@ -1338,7 +1660,7 @@ void draw_vertical_line(t_game *game_data, int x, int start, int end, int color)
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 09:51:29 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:12:03 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 11:04:06 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1354,15 +1676,20 @@ t_text *get_wall_text(int wall_dir, t_game **game)
     t_map *map;
 
     map = (*game)->map;
-    if (wall_dir == NORTH)
-        return(map->no);
-    else if (wall_dir == EAST)
-        return(map->ea);
-    else if (wall_dir == SOUTH)
-        return(map->so);
-    else if (wall_dir == WEST)
-        return(map->we);
-    return (NULL);
+	if ((*game)->hit_tile == '1')
+	{
+		if (wall_dir == NORTH)
+        	return(map->no);
+    	else if (wall_dir == EAST)
+        	return(map->ea);
+    	else if (wall_dir == SOUTH)
+        	return(map->so);
+    	else if (wall_dir == WEST)
+        	return(map->we);
+	}
+	else if ((*game)->hit_tile == 'D' && map->door)
+		return(map->door);
+    return (map->no);
 }
 
 void set_bytespp(t_game **game)
@@ -1374,74 +1701,81 @@ void set_bytespp(t_game **game)
     map->ea->bytes_pp = map->ea->bpp / 8;
     map->so->bytes_pp = map->so->bpp / 8;
     map->we->bytes_pp = map->we->bpp / 8;
+	map->door->bytes_pp = map->door->bpp / 8;
 }
 
-void draw_textures(t_game **game, int x, int start, int end, t_text *text )
+static int	clampi(int v, int lo, int hi)
 {
-    int height;
-    int h;
-    double step;
-    double tex_pos;
-    int y;
-    int tex_y;
-    int tex_x;
-    char *dest;
-    char *src;
-    unsigned int texel;
-    unsigned int bytes_pp;
-    
+	if (v < lo)
+		return (lo);
+	if (v > hi)
+		return (hi);
+	return (v);
+}
 
-    bytes_pp = ((*game)->bits_per_pixel / 8);
-    // mapping x axis of the texture. 
-    tex_x = floor((*game)->wall_x * text->width);
-    if ((*game)->side_out == 0 && (*game)->ray_dir.x > 0)
-        tex_x = text->width - tex_x - 1;
-    else if ((*game)->side_out == 1 && (*game)->ray_dir.y < 0)
-        tex_x = text->width - tex_x - 1;
-    if (tex_x < 0)
-        tex_x = 0;
-    else if (tex_x >= text->width)
-        tex_x = text->width - 1;
-    if (start > end)
-        return;
-    y = start;
-    // step 1 how fast do I walk the texture, scan range
-    height = end - start + 1;
-    h = text->height;
-    if (height <= 0)
-        return;
-    step = ( double)h / (double)height;
-    // step 2 where to start in the texture pos (center it)
-    tex_pos = (start - WIN_HEIGHT / 2.0 + height / 2.0)  *step;
-    //step 3 loop and draw texels (texture pixel ?)
-    while (y <= end)
-    {
-        tex_y = (int)tex_pos;
-        if (is_pow2(h))
-            tex_y &= (h - 1);
-        else
-        {
-            if (tex_y < 0)
-                tex_y = 0;
-            else if (tex_y >= h)
-                tex_y = h - 1;
-        }
-        src = text->addr + tex_y * text->sl + tex_x * text->bytes_pp;
-        dest = (*game)->addr + y * (*game)->line_length + x * bytes_pp;
-        texel = *(unsigned int *)src;
-        *(unsigned int *)dest = texel;
-        tex_pos += step;
-        y++;
-    }
-}/* ************************************************************************** */
+static int	compute_tex_x(t_game *g, t_text *tex)
+{
+	int	tx;
+
+	tx = (int)(g->wall_x * (double)tex->width);
+	if (g->side_out == 0 && g->ray_dir.x > 0)
+		tx = tex->width - tx - 1;
+	else if (g->side_out == 1 && g->ray_dir.y < 0)
+		tx = tex->width - tx - 1;
+	return (clampi(tx, 0, tex->width - 1));
+}
+
+/* draw the textured wall slice for screen column x */
+void	draw_textures(t_game **game, int x, int start, int end, t_text *tex)
+{
+	int		lineh;
+	int		tex_x;
+	int		y;
+	int		tex_y;
+	double	step;
+	double	draw_start_u;
+	double	tex_pos;
+	int		scr_bpp;
+
+	/* reject fully off-screen / degenerate */
+	if (end < 0 || start >= WIN_HEIGHT)
+		return ;
+	lineh = (*game)->range.height;
+	if (lineh <= 0)
+		return ;
+	/* clamp to screen */
+	if (start < 0)
+		start = 0;
+	if (end >= WIN_HEIGHT)
+		end = WIN_HEIGHT - 1;
+	/* horizontal mapping: wall_x -> tex_x (+ mirror fixes) */
+	tex_x = compute_tex_x(*game, tex);
+	/* vertical mapping: step in texture per screen pixel */
+	step = (double)tex->height / (double)lineh;
+	/* un-clamped top including pitch; then skip the clipped part */
+	draw_start_u = -lineh / 2.0 + WIN_HEIGHT / 2.0 + (*game)->player->pitch;
+	tex_pos = (start - draw_start_u) * step;
+	/* precompute bytes/px for screen; textures already have bytes_pp */
+	scr_bpp = (*game)->bits_per_pixel / 8;
+	y = start;
+	while (y <= end)
+	{
+		tex_y = (int)tex_pos;
+		tex_y = clampi(tex_y, 0, tex->height - 1); /* clamp, don't wrap */
+		*(unsigned int *)((*game)->addr + (long)y * (*game)->line_length + x * scr_bpp) = *(unsigned int *)(tex->addr + (long)tex_y * tex->sl + tex_x * tex->bytes_pp);
+		tex_pos += step;
+		y++;
+	}
+}
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 13:28:34 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 12:29:10 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1461,7 +1795,7 @@ int	render_frame(void *param)
     int end;
 
     game = (t_game *)param;
-    
+    game_update(game);
     if (!game->img)
     {
         game->img = mlx_new_image(game->mlx, WIN_WIDTH, WIN_HEIGHT);
@@ -1478,7 +1812,7 @@ int	render_frame(void *param)
     {
         // calculations
         perp_dist = ray_casting(x, game->player, &wall_dir, game, &game->wall_x);
-        game->range = calculate_draw_range(perp_dist);
+        game->range = calculate_draw_range(perp_dist, game);
         // draw f and c 
         start = game->range.start;
         end = game->range.end; 
@@ -1501,6 +1835,7 @@ int	render_frame(void *param)
         x++;
     }
     draw_minimap(game);
+    draw_reticle(&game, 5, 10);
     mlx_put_image_to_window(game->mlx, game->win, game->img, 0, 0);
     return (0);
 }
@@ -1520,6 +1855,112 @@ int get_wall_direction(int side, int step_x, int step_y)
             return SOUTH;
         else
             return NORTH;
+    }
+}
+
+int game_update(t_game *game)
+{
+    t_keymap keys;
+    double old_dir_x;
+    double old_plane_x;
+    double rotation_speed = 0.1;
+    
+    keys = game->buttons;
+    if (keys.w)
+        move_forward(game);
+    if (keys.s)
+        move_backwards(game);
+    if (keys.q)
+        move_left(game);
+    if (keys.d)
+        move_right(game);
+    if (keys.rotate_left)
+    {
+        old_dir_x = game->player->vector_dir->x;
+        game->player->vector_dir->x = game->player->vector_dir->x * cos(-rotation_speed) - game->player->vector_dir->y * sin(-rotation_speed);
+        game->player->vector_dir->y = old_dir_x * sin(-rotation_speed) + game->player->vector_dir->y * cos(-rotation_speed);
+    
+        old_plane_x = game->player->camera_plane->x;
+        game->player->camera_plane->x = game->player->camera_plane->x * cos(-rotation_speed) - game->player->camera_plane->y * sin(-rotation_speed);
+        game->player->camera_plane->y = old_plane_x * sin(-rotation_speed) + game->player->camera_plane->y * cos(-rotation_speed);
+    }
+    if (keys.rotate_right)
+    {
+        old_dir_x = game->player->vector_dir->x;
+        game->player->vector_dir->x = game->player->vector_dir->x * cos(rotation_speed) - game->player->vector_dir->y * sin(rotation_speed);
+        game->player->vector_dir->y = old_dir_x * sin(rotation_speed) + game->player->vector_dir->y * cos(rotation_speed);
+    
+        old_plane_x = game->player->camera_plane->x;
+        game->player->camera_plane->x = game->player->camera_plane->x * cos(rotation_speed) - game->player->camera_plane->y * sin(rotation_speed);
+        game->player->camera_plane->y = old_plane_x * sin(rotation_speed) + game->player->camera_plane->y * cos(rotation_speed);
+    }
+    return(0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   reticle.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/19 11:18:51 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/19 12:38:43 by cauffret         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3d.h"
+
+void draw_reticle(t_game **game, int thick, int size)
+
+{
+    int cx;
+    int cy;
+    int x;
+    int y;
+    int gap;
+    int x_start;
+    int x_end;
+    int y_start;
+    int y_end;
+    
+    gap = 3;
+    cx = WIN_WIDTH / 2;
+    cy = WIN_HEIGHT / 2;
+    x_start = cx - (thick / 2);
+    x_end = cx + (thick - 1) / 2;
+    y_start = cy - (thick / 2);
+    y_end = cy + (thick - 1) / 2;
+    y = cy - size;
+    if (size <= gap)
+        return;
+    // top half of arm
+    while (y <= (cy - gap - 1))
+    {
+        x = x_start;
+        while  (x <= x_end)
+            draw_minimap_pixel((*game), x++, y ,create_rgb_color(255, 0, 0));
+        y++;
+    }
+    // middle now
+    y = y_start;
+    while ( y <= y_end)
+    {
+        x = cx - size;
+        while (x <= cx - gap - 1)
+            draw_minimap_pixel((*game), x++, y ,create_rgb_color(255, 0, 0));
+        x = cx + gap + 1;
+        while (x  <= (cx + size))
+            draw_minimap_pixel((*game), x++, y ,create_rgb_color(255, 0, 0));
+        y++;
+    }
+    // bottom now
+    y = cy + gap + 1;
+    while (y <= (cy + size))
+    {
+        x = x_start;
+        while  (x <= x_end)
+            draw_minimap_pixel((*game), x++, y ,create_rgb_color(255, 0, 0));
+        y++;
     }
 }double ray_cast(int x, t_player *player, t_ray *ray)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:25:14 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:51:19 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ int texture_helper(char *str)
         return (5);
     else if ((ft_strncmp(str, "F", 1) == 0) && ft_isspace(*(str+1)))
         return (6);
+    else if ((ft_strncmp(str, "D", 1) == 0) && ft_isspace(*(str+1)))
+        return (7);    
     else
         return(0);
 }
@@ -76,7 +78,7 @@ void case_rgb(t_game **game, int option, char *str)
 
 void add_texture(t_game **game, int option, char *str)
 {
-    if (option < 5)
+    if (option < 5 || option == 7)
         case_texture(game, option,str);
     else
         case_rgb(game,option,str);

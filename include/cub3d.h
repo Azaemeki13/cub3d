@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 16:52:22 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 15:25:24 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 768
+#define USE_RANGE 2.0
 
 #define MINIMAP_TILE_SIZE 8
 #define MINIMAP_OFFSET_X 3
@@ -36,6 +37,7 @@
 #define A 97
 #define D 100
 #define P 112
+#define SPACE 32
 
 #define ROTATE_LEFT 65361
 #define ROTATE_RIGHT 65363
@@ -44,6 +46,12 @@
 #define EAST 1
 #define SOUTH 2
 #define WEST 3
+
+typedef struct s_door
+{
+    double fraction;
+    
+}   t_door;
 
 typedef struct s_keymap
 {
@@ -108,6 +116,8 @@ typedef struct s_map
     t_text *ea;
     t_text *so;
     t_text *we;
+    t_text *door;
+    t_vector door_pos;
     int height;
     int map_height;
     int map_width;
@@ -142,6 +152,7 @@ typedef struct s_game
     t_player *player;
     t_map   *map;
     int game_pause;
+    int hit_tile;
 } t_game;
 
 //window_management.c
@@ -188,6 +199,7 @@ void validate_textures(char *str, t_game **game);
 void extension_validator(char *str, t_game **game);
 void case_texture_helper(t_game **game, int option, char *str);
 void texture_error_helper(void *image, char *nav, t_game **game);
+void case_texture_door(t_game **game, int option, char *str);
 void init_player(t_game **game);
 void map_pointer(t_game **game, int i);
 
@@ -249,6 +261,17 @@ int get_wall_color(int wall_dir);
 //minimap.c
 
 void draw_minimap(t_game *game);
+void draw_minimap_pixel(t_game *game, int x, int y, int color);
+
+// reticle.c
+
+void draw_reticle(t_game **game, int thick, int size);
+
+// mini_dda.c
+
+ int interact_cast(t_game *g);
+ void door_animation(t_game *game);
+ 
 
 // mouse_hook.c
 

@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/14 09:12:51 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:51:35 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,26 @@ void case_texture_helper(t_game **game, int option, char *str)
         texture_error_helper(text->text_img, nav, game);
         text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl, &text->end);
     }
+    case_texture_door(game,option,str);
+    if (nav)
+        free(nav);
+}
+
+void case_texture_door(t_game **game, int option, char *str)
+{
+    char *nav = NULL; 
+    t_map *map;
+    t_text *text;
+
+    map = (*game)->map;
+    if (option == 7)
+    {
+        text = map->door;
+        nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
+        text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width, &text->height);
+        texture_error_helper(text->text_img, nav, game);
+        text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl, &text->end);
+    } 
     if (nav)
         free(nav);
 }

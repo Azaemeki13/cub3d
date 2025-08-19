@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/14 12:00:33 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 14:45:08 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ void init_map(t_game **game, char *path)
         map->content[i++] = get_next_line(fd);
     check_texture_files(game);
     calculate_map_size(game);
-    (*game)->mouse_sens = 0.005;
+    (*game)->mouse_sens = 0.0008;
     (*game)->last_mouse_x = WIN_WIDTH / 2;
     close(fd);
 }

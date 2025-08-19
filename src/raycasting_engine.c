@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 09:26:25 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 15:25:24 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,8 +162,9 @@ double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, d
             hit = 1;
             break;
         }
-        if (game->map->map[map_y][map_x] == '1')
+        if (game->map->map[map_y][map_x] == '1' || game->map->map[map_y][map_x] == 'D')
         {
+            game->hit_tile = game->map->map[map_y][map_x];
             hit = 1;
         }
     }

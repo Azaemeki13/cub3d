@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 16:51:03 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 15:02:23 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ int	render_frame(void *param)
         x++;
     }
     draw_minimap(game);
+    draw_reticle(&game, 5, 10);
     mlx_put_image_to_window(game->mlx, game->win, game->img, 0, 0);
     return (0);
 }
@@ -94,7 +95,12 @@ int game_update(t_game *game)
     double old_dir_x;
     double old_plane_x;
     double rotation_speed = 0.1;
+    float speed;
+    int dir;
+    double open_frac;
     
+    speed = 1.8;
+    dir 
     keys = game->buttons;
     if (keys.w)
         move_forward(game);

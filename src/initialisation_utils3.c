@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils3.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/12 13:25:53 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:34:38 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ t_rgb *add_rgb(t_game **game, char **rgb)
 void  malloc_texture(t_game **game)
 {
     (*game)->map->no = malloc(sizeof(t_text));
+    (*game)->map->door = malloc(sizeof(t_text));
     (*game)->map->ea = malloc(sizeof(t_text));
     (*game)->map->so = malloc(sizeof(t_text));
     (*game)->map->we = malloc(sizeof(t_text));
@@ -85,4 +86,5 @@ void  malloc_texture(t_game **game)
     ft_memset((*game)->map->ea, 0 , sizeof(t_text));
     ft_memset((*game)->map->so, 0 , sizeof(t_text));
     ft_memset((*game)->map->we, 0 , sizeof(t_text));
+    ft_memset((*game)->map->door, 0 , sizeof(t_text));
 }

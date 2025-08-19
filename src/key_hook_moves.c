@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/14 16:53:28 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 14:51:18 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ bool collision_detection(t_game *game, double new_x, double new_y)
     if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height) //out of bounds
         return false;
     if (game->map->map[map_y][map_x] == '1') //hit a wall
+        return false;
+    else if (game->map->map[map_y][map_x] == 'D')
         return false;
     return true;
 }
@@ -80,6 +82,9 @@ int on_key_release(int keycode, t_game *game)
         game->buttons.rotate_right = 0;
     if (keycode == P)
         pause_screen(game);
+    if (keycode == SPACE)
+        door_animation(game);
+    
     return(0);
 }
 
