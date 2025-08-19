@@ -84,6 +84,8 @@ int on_key_release(int keycode, t_game *game)
         pause_screen(game);
     if (keycode == SPACE)
         door_animation(game);
+    if (keycode == M)
+        game->show_minimap = !game->show_minimap;
     
     return(0);
 }

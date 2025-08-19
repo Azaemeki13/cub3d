@@ -26,8 +26,8 @@
 #define USE_RANGE 2.0
 
 #define MINIMAP_TILE_SIZE 8
-#define MINIMAP_OFFSET_X 3
-#define MINIMAP_OFFSET_Y 3
+#define MINIMAP_OFFSET_X 10
+#define MINIMAP_OFFSET_Y 10
 #define MINIMAP_RADIUS 8
 
 #define ESCAPE_KEY 65307
@@ -38,6 +38,7 @@
 #define D 100
 #define P 112
 #define SPACE 32
+#define M 109
 
 #define ROTATE_LEFT 65361
 #define ROTATE_RIGHT 65363
@@ -153,6 +154,7 @@ typedef struct s_game
     t_map   *map;
     int game_pause;
     int hit_tile;
+    int show_minimap;
 } t_game;
 
 //window_management.c

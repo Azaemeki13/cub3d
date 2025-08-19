@@ -27,6 +27,7 @@ void init_struct(t_game **game, char *path)
     (*game)->buttons.s = 0;
     (*game)->buttons.q = 0;
     (*game)->buttons.d = 0;
+    (*game)->show_minimap = 1;
 }
 
 int count_lines(char *path)

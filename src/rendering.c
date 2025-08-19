@@ -36,25 +36,21 @@ int	render_frame(void *param)
     set_bytespp(&game);
     ceiling_color = create_rgb_color(game->map->ceiling->r, game->map->ceiling->g, game->map->ceiling->b);
     floor_color = create_rgb_color(game->map->floor->r, game->map->floor->g, game->map->floor->b);
-    //printf("Ceiling color: %d, Floor color: %d\n", ceiling_color, floor_color);
     ft_memset(game->addr, 0, WIN_HEIGHT * game->line_length);
     x = 0;
     while (x < WIN_WIDTH)
     {
-        // calculations
         perp_dist = ray_casting(x, game->player, &wall_dir, game, &game->wall_x);
         game->range = calculate_draw_range(perp_dist, game);
-        // draw f and c 
         start = game->range.start;
         end = game->range.end; 
         if (start < 0)
             start = 0;
         if (end >= WIN_HEIGHT)
             end = WIN_HEIGHT - 1;
-       // ceiling
         if (start > 0)
             draw_vertical_line(game, x, 0, start - 1, ceiling_color);
-        tex = get_wall_text(wall_dir, &game);   // use &game only if your fn takes t_game**
+        tex = get_wall_text(wall_dir, &game);
         if (start <= end)
             draw_textures(&game, x, start, end, tex);
         if (end < WIN_HEIGHT - 1)
@@ -65,7 +61,8 @@ int	render_frame(void *param)
         // color = get_shade_color(color, perp_dist);
         x++;
     }
-    draw_minimap(game);
+    if (game->show_minimap)
+        draw_minimap(game);
     draw_reticle(&game, 5, 10);
     mlx_put_image_to_window(game->mlx, game->win, game->img, 0, 0);
     return (0);
@@ -76,7 +73,7 @@ int get_wall_direction(int side, int step_x, int step_y)
     if (side == 0) 
     {
         if (step_x > 0)
-            return EAST; //
+            return EAST;
         else
             return WEST;
     }
@@ -95,12 +92,7 @@ int game_update(t_game *game)
     double old_dir_x;
     double old_plane_x;
     double rotation_speed = 0.1;
-    float speed;
-    int dir;
-    double open_frac;
     
-    speed = 1.8;
-    dir 
     keys = game->buttons;
     if (keys.w)
         move_forward(game);

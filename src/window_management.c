@@ -24,10 +24,9 @@ void create_window(t_game *game)
     }
     mlx_key_hook(game->win, close_window_hook, game);
     mlx_hook(game->win, 17, 0, close_window_x, game);
-    // Remove mlx_loop from here since it's called in main
 }
 
-int close_window_hook(int keycode, t_game *game) // ESCAPE key
+int close_window_hook(int keycode, t_game *game)
 {
     if (keycode == ESCAPE_KEY)
     {
@@ -39,7 +38,7 @@ int close_window_hook(int keycode, t_game *game) // ESCAPE key
     return 0;
 }
 
-int close_window_x(t_game *game) //(x) button
+int close_window_x(t_game *game)
 {
     mlx_destroy_window(game->mlx, game->win);
     mlx_destroy_display(game->mlx);
