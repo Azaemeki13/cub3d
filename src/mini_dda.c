@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:33:19 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 14:55:49 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:43:26 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,20 +100,15 @@
         return (0);
 }
 
-void door_animation(t_game *game)
+void door_use(t_game *game)
 {
-    int posx;
-    int posy;
+    int x;
+    int y;
 
     if(interact_cast(game))
     {
-        posx = (int)game->map->door_pos.x;
-        posy = (int)game->map->door_pos.y;
-        if (game->map->map[posy][posx] == 'd')
-            game->map->map[posy][posx] = 'D';
-        else if (game->map->map[posy][posx] == 'D')
-            game->map->map[posy][posx] = 'd';
+        x = (int)game->map->door_pos.x;
+        y = (int)game->map->door_pos.y;
+        door_toggle_at(game, x, y);
     }
-    else
-        return;
 }

@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 15:25:24 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:51:42 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,9 @@
 
 typedef struct s_door
 {
-    double fraction;
-    
+    double frac;
+    unsigned char target;
+    unsigned char active;    
 }   t_door;
 
 typedef struct s_keymap
@@ -149,9 +150,11 @@ typedef struct s_game
     int     bits_per_pixel;
     int     line_length;
     int     endian;
+    double door_speed;
     t_keymap buttons;
     t_player *player;
     t_map   *map;
+    t_door  *doors;
     int game_pause;
     int hit_tile;
     int show_minimap;
@@ -272,9 +275,15 @@ void draw_reticle(t_game **game, int thick, int size);
 // mini_dda.c
 
  int interact_cast(t_game *g);
- void door_animation(t_game *game);
- 
+void door_use(t_game *game);
 
+ // doors.c
+
+ void doors_init(t_game *game);
+t_door *door_at(t_game *game, int x, int y);
+ void doors_update(t_game *game, double dt);
+ void door_toggle_at(t_game *game, int x, int y);
+ 
 // mouse_hook.c
 
 int on_mouse_move(int x, int y,void *param);

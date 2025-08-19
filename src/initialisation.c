@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 14:45:08 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:50:28 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void init_struct(t_game **game, char *path)
     malloc_texture(game);
     init_map(game, path);
     init_player(game);
+    doors_init(*game);
     (*game)->buttons.w = 0;
     (*game)->buttons.s = 0;
     (*game)->buttons.q = 0;

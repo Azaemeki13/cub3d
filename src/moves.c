@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   moves.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 11:22:53 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 15:59:40 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:44:57 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void move_forward(t_game *game)
 {
-    double move_speed = 0.1;
+    double move_speed = 0.05;
     double new_x;
     double new_y;
 
@@ -29,7 +29,7 @@ void move_forward(t_game *game)
 
 void move_backwards(t_game *game)
 {
-    double move_speed = 0.1;
+    double move_speed = 0.05;
     double new_x;
     double new_y;
 
@@ -44,7 +44,7 @@ void move_backwards(t_game *game)
 
 void move_left(t_game *game)
 {
-    double move_speed = 0.1;
+    double move_speed = 0.05;
     double new_x;
     double new_y;
 
@@ -59,7 +59,7 @@ void move_left(t_game *game)
 
 void move_right(t_game *game)
 {
-    double move_speed = 0.1;
+    double move_speed = 0.05;
     double new_x;
     double new_y;
 

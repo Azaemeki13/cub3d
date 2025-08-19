@@ -6,14 +6,13 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 11:18:51 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 12:38:43 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:14:04 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
 void draw_reticle(t_game **game, int thick, int size)
-
 {
     int cx;
     int cy;

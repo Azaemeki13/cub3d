@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 15:02:23 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 17:28:52 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ int game_update(t_game *game)
     double rotation_speed = 0.1;
     
     keys = game->buttons;
+    doors_update(game, 0.0);
     if (keys.w)
         move_forward(game);
     if (keys.s)
