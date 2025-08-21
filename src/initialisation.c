@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 16:50:28 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 14:26:25 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,23 +28,39 @@ void init_struct(t_game **game, char *path)
     (*game)->buttons.s = 0;
     (*game)->buttons.q = 0;
     (*game)->buttons.d = 0;
+    (*game)->buttons.rotate_left = 0;
+    (*game)->buttons.rotate_right = 0;
+    (*game)->game_pause = 0;
     (*game)->show_minimap = 1;
+    (*game)->mouse_sens = 0.0008;
+    (*game)->last_mouse_x = WIN_WIDTH / 2;
+    (*game)->hit_tile = 0;
+    (*game)->side_out = 0;
+    (*game)->wall_x = 0.0;
+    (*game)->ray_dir.x = 0.0;
+    (*game)->ray_dir.y = 0.0;
+    (*game)->img = NULL;
+    (*game)->addr = NULL;
+    (*game)->bits_per_pixel = 0;
+    (*game)->line_length = 0;
+    (*game)->endian = 0;
 }
 
 int count_lines(char *path)
 {
     int fd;
     int result;
+    char *line;
 
     result = 0;
     fd = open(path, O_RDONLY);
     if (fd < 0)
-    {
-        close(fd);
         return (0);
-    }
-    while (get_next_line(fd) != NULL)
+    while ((line = get_next_line(fd)) != NULL)
+    {
+        free(line);
         result++;
+    }
     close(fd);
     return(result);
 }
@@ -62,6 +78,54 @@ int map_details(char *line)
         return (1);
     else
         return(0);
+}
+
+void validate_all_textures_present(t_game **game)
+{
+    t_map *map = (*game)->map;
+    
+    if (!map->no || !map->no->text_img)
+    {
+        error_msg("Missing NO texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->so || !map->so->text_img)
+    {
+        error_msg("Missing SO texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->ea || !map->ea->text_img)
+    {
+        error_msg("Missing EA texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->we || !map->we->text_img)
+    {
+        error_msg("Missing WE texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->door || !map->door->text_img)
+    {
+        error_msg("Missing DOOR texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->ceiling)
+    {
+        error_msg("Missing ceiling color (C).");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->floor)
+    {
+        error_msg("Missing floor color (F).");
+        free_game(game);
+        exit(1);
+    }
 }
 
 void check_texture_files(t_game **game)
@@ -88,6 +152,7 @@ void check_texture_files(t_game **game)
             line_checker(map->content[i++], game);
         break;
     }
+    validate_all_textures_present(game);
 }
 
 void init_map(t_game **game, char *path)
@@ -115,6 +180,8 @@ void init_map(t_game **game, char *path)
         map->content[i++] = get_next_line(fd);
     check_texture_files(game);
     calculate_map_size(game);
+    validate_doors(game);
+    validate_player_count(game); // Add this line
     (*game)->mouse_sens = 0.0008;
     (*game)->last_mouse_x = WIN_WIDTH / 2;
     close(fd);

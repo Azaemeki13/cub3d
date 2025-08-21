@@ -3,14 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 10:56:10 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:19:34 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+void welcome_message(void)
+{
+    ft_putstr_fd("WELCOME TO CUB3D!\n", 1);
+    ft_putstr_fd("Press 'ESC' to exit.\n", 1);
+    ft_putstr_fd("Use 'W', 'A', 'S', 'D' to move.\n", 1);
+    ft_putstr_fd("Use mouse or 'LEFT/RIGHT' to look around.\n", 1);
+    ft_putstr_fd("Press 'M' to toggle ON/OFF the minimap.\n", 1);
+    ft_putstr_fd("Press 'SPACE' to open and close doors.\n", 1);
+    ft_putstr_fd("Press 'P' to pause.\n", 1);
+}
 
 int main(int argc, char **argv)
 {
@@ -36,6 +47,7 @@ int main(int argc, char **argv)
     create_window(game_data);
     if (!game_data->win)
         return (1);
+    welcome_message();
     mlx_mouse_hide(game_data->mlx, game_data->win);
     mlx_hook(game_data->win, 2, 1L<<0, on_key_press, game_data);
     mlx_hook(game_data->win, 3, 1L<<1, on_key_release,  game_data);

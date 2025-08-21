@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   doors.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:14:23 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 17:28:52 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 14:12:35 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,4 +116,39 @@ void door_toggle_at(t_game *game, int x, int y)
     }
     else
         door->target = 1;
+}
+
+static bool is_door_valid(char **map, int x, int y, int map_width, int map_height)
+{
+    if (x <= 0 || x >= map_width - 1 || y <= 0 || y >= map_height - 1)
+        return false;
+    bool horizontal_walls = (map[y][x - 1] == '1' && map[y][x + 1] == '1');
+    bool vertical_walls = (map[y - 1][x] == '1' && map[y + 1][x] == '1');
+    return (horizontal_walls && !vertical_walls) || (!horizontal_walls && vertical_walls);
+}
+
+void validate_doors(t_game **game)
+{
+    char **map = (*game)->map->map;
+    int x, y;
+    
+    y = 0;
+    while (y < (*game)->map->map_height)
+    {
+        x = 0;
+        while (x < (*game)->map->map_width)
+        {
+            if (map[y][x] == 'D' || map[y][x] == 'd')
+            {
+                if (!is_door_valid(map, x, y, (*game)->map->map_width, (*game)->map->map_height))
+                {
+                    error_msg("Door not properly placed between walls.");
+                    free_game(game);
+                    exit(EXIT_FAILURE);
+                }
+            }
+            x++;
+        }
+        y++;
+    }
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 10:51:35 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 12:54:30 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,11 @@ void init_player(t_game **game)
     player->player_pos = malloc(sizeof(t_vector));
     player->camera_plane = malloc(sizeof(t_vector));
     player->vector_dir = malloc(sizeof(t_vector));
+    ft_memset(player->player_pos, 0, sizeof(t_vector));
+    ft_memset(player->camera_plane, 0, sizeof(t_vector));
+    ft_memset(player->vector_dir, 0, sizeof(t_vector));
     player->pitch = 0;
+    player->orientation = 'N'; //not sure bout that one
     init_start(game); 
     init_orientation(game);
 }

@@ -2,12 +2,16 @@ NO ./textures/blue_stone_00.xpm
 SO ./textures/brick_wall_00.xpm
 WE ./textures/jungle_wall_00.xpm
 EA ./textures/stone_wall_00.xpm
+D  ./textures/metal_door.xpm
 
-C 0,128,128
+C 0,128,255
 F 10,10,10
 
-1 1111111 11
-1 1000001111
-111010101111
-1N0000000111
+111111111111
+1         11
+1       0001
+1000000 0011
+10S000000001
+111111111111
+11         1
 111111111111

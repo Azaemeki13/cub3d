@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 17:28:52 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:01:02 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ int	render_frame(void *param)
         if (end < WIN_HEIGHT - 1)
             draw_vertical_line(game, x, end + 1, WIN_HEIGHT - 1, floor_color);
         // calculate tex_x
-        
         //color = get_wall_color(wall_dir);
         // color = get_shade_color(color, perp_dist);
         x++;

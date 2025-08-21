@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 16:51:42 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:01:10 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,6 +228,10 @@ void calculate_map_size(t_game **game);
 
 int	map_char_check(char c);
 void	line_checker(char *map_line, t_game **game);
+void validate_doors(t_game **game);
+void is_begin(char *line, t_game **game, bool *begin);
+void is_end(char *line, t_game **game, bool *end, bool *begin);
+void validate_player_count(t_game **game);
 
 // miscs.c 
 
@@ -258,7 +262,6 @@ int game_update(t_game *game);
 
 //dumb_shit_to_get_rid_of_later.c
 
-int get_shade_color(int base_color, double distance);
 int create_rgb_color(int r, int g, int b);
 int key_hook(int keycode, t_game *game);
 int get_wall_color(int wall_dir);

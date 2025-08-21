@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 10:27:58 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 15:54:49 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:51:14 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,10 +121,15 @@ void draw_minimap(t_game *game)
                 draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(0, 0, 0), center_x, center_y, minimap_radius);
             else if (game->map->map[map_y][map_x] == 'D' || game->map->map[map_y][map_x] == 'd')
                 draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(25, 210, 250), center_x, center_y, minimap_radius);
+            else if (game->map->map[map_y][map_x] == ' ')
+                draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(128, 128, 128), center_x, center_y, minimap_radius);
             else if (game->map->map[map_y][map_x] == '0' || game->map->map[map_y][map_x] == 'N' || 
                      game->map->map[map_y][map_x] == 'S' || game->map->map[map_y][map_x] == 'E' || 
                      game->map->map[map_y][map_x] == 'W')
                 draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(200, 200, 200), center_x, center_y, minimap_radius);
+            else
+                draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(128, 128, 128), center_x, center_y, minimap_radius);
+            
             map_x++;
         }
         map_y++;

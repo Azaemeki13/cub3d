@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils4.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 11:16:22 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 14:41:09 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:47:54 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,10 @@ void calculate_map_size(t_game **game)
     int i;
     int j;
     int max_length;
+    int y;
+    int len;
+    int x;
+    char *new_line;
 
     j = 0;
     max_length = 0;
@@ -102,15 +106,32 @@ void calculate_map_size(t_game **game)
         if (ft_isblank(map[j]))
             break;
         i = 0;
-        while(map[j][i])
-        {
-            if (i > max_length)
-                max_length = i;
+        while(map[j][i] && map[j][i] != '\n')
             i++;
-        }
+        if (i > max_length)
+            max_length = i;
         j++;
     }
     (*game)->map->map_height = j;
     (*game)->map->map_width = max_length;
-    ft_printf("Width is %d, height is %d\n", max_length, j);
+    y = 0;
+    while (y < j)
+    {
+        len = ft_strlen(map[y]);
+        if (len < max_length)
+        {
+            new_line = ft_calloc(max_length + 1, sizeof(char));
+            ft_strlcpy(new_line, map[y], len + 1);
+            x = len;
+            while (x < max_length)
+            {
+                new_line[x] = ' ';
+                x++;
+            }
+            new_line[max_length] = '\0';
+            free(map[y]);
+            map[y] = new_line;
+        }
+        y++;
+    }
 }

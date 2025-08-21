@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils3.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 10:34:38 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:22:13 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void rgb_error(t_game **game, char **str)
 {
-    error_msg("rgb format incorrect.");
+    error_msg("RGB format incorrect.");
     ft_free_string_array(str);
     free_game(game);
     exit(1);
@@ -26,16 +26,18 @@ void verify_rgb_number(t_game **game, char **verification)
     char *nav;
     
     i = 0;
-    while(i < 2)
+    while(i < 3)
     {
         nav = verification[i];
-        while(*verification[i])
+        while (*nav)
         {
-            if (!ft_isdigit(*verification[i]) && *verification[i] != ',')
+            if (!ft_isdigit(*nav))
+            {
                 rgb_error(game, verification);
-            verification[i]++;
+                return;
+            }
+            nav++;
         }
-        verification[i] = nav;
         i++;
     }
 }
@@ -44,30 +46,58 @@ char **verify_syntax_rgb(t_game **game, char *str)
 {
     char **verification;
     char *nav;
+    int i;
 
     verification = ft_split(str, ',');
     if (!verification)
         rgb_error(game, verification);
-    if ((count_strings(verification) > 3))
+    if (count_strings(verification) != 3)
         rgb_error(game, verification);
-    nav = verification[2];
-    while(ft_isdigit(*verification[2]))
-        verification[2]++;
-    if (!ft_isblank(verification[2]))
-        rgb_error(game, verification);
-    verification[2] = nav;
+    
+    i = 0;
+    while (i < 3)
+    {
+        nav = verification[i];
+        if (!nav || !*nav)
+            rgb_error(game, verification);
+        while (*nav && ft_isspace(*nav))
+            nav++;
+        if (!*nav)
+            rgb_error(game, verification);
+        while (*nav)
+        {
+            if (!ft_isdigit(*nav) && !ft_isspace(*nav) && *nav != '\n')
+                rgb_error(game, verification);
+            nav++;
+        }
+        i++;
+    }
     return (verification);
 }
 
 t_rgb *add_rgb(t_game **game, char **rgb)
 {
     t_rgb *result;
+    char *trimmed;
+    int i;
 
     result = malloc(sizeof(t_rgb));
+    if (!result)
+        rgb_error(game, rgb);
+    i = 0;
+    while (i < 3)
+    {
+        trimmed = rgb[i];
+        while (*trimmed && ft_isspace(*trimmed))
+            trimmed++;
+        rgb[i] = trimmed;
+        i++;
+    }
     result->r = ft_atoi(rgb[0]);
     result->g = ft_atoi(rgb[1]);
     result->b = ft_atoi(rgb[2]);
-    if (result->r > 255 || result->g > 255 || result->b > 255)
+    if (result->r > 255 || result->g > 255 || result->b > 255 ||
+        result->r < 0 || result->g < 0 || result->b < 0)
     {
         free(result);
         rgb_error(game, rgb);

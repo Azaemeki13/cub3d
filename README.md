@@ -2,12 +2,15 @@
 
 ## TODO : 
 
-## On it : 
-- Parser (Charles)
-- Hooks & window (Chloé)
-- Raycasting (Chloe)
-
+## On it :
 
 ## Done  :
 
+-better rgb parser
+-character parser
+-door between 2 walls parser
+-fixed basic leaks (still needs error leaks)
+-conditional jumps
+-cooler maps
+-now handles hollow maps correctly
 
