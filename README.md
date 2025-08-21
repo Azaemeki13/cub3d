@@ -13,4 +13,5 @@
 -conditional jumps
 -cooler maps
 -now handles hollow maps correctly
+-fixed streaked wall
 
