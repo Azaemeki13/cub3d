@@ -3,14 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils4_helper.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ituriel <ituriel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 13:04:17 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 13:08:09 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:45:03 by ituriel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "cub3d.h"
 
 #include "cub3d.h"
 

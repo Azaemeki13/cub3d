@@ -76,10 +76,9 @@ void	draw_circle_border(t_game *g, t_circle *c, int thickness)
 		while (x <= c->cx + c->r + thickness)
 		{
 			d2 = (x - c->cx) * (x - c->cx) + (y - c->cy) * (y - c->cy);
-			if (d2 <= (c->r + thickness) * (c->r + thickness)
-				&& d2 > c->r * c->r)
-				mm_putpx_clip(g,
-					&(t_px){x, y, create_rgb_color(255, 255, 255)},
+			if (d2 <= (c->r + thickness) * (c->r + thickness) && d2 > c->r
+				* c->r)
+				mm_putpx_clip(g, &(t_px){x, y, create_rgb_color(255, 255, 255)},
 					&(t_circle){c->cx, c->cy, c->r + thickness});
 			x++;
 		}

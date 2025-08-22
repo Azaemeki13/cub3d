@@ -42,10 +42,9 @@ static void	draw_span_loop(t_game *g, t_texspan *s)
 	{
 		tex_y = (int)tex_pos;
 		tex_y = clampi(tex_y, 0, s->tex->height - 1);
-		*(unsigned int *)(g->addr + (long)y * g->line_length
-			+ s->x * (g->bits_per_pixel / 8)) =
-		*(unsigned int *)(s->tex->addr + (long)tex_y * s->tex->sl
-			+ s->tex_x * s->tex->bytes_pp);
+		*(unsigned int *)(g->addr + (long)y * g->line_length + s->x
+				* (g->bits_per_pixel / 8)) = *(unsigned int *)(s->tex->addr
+				+ (long)tex_y * s->tex->sl + s->tex_x * s->tex->bytes_pp);
 		tex_pos += s->step;
 		y++;
 	}
@@ -70,4 +69,3 @@ void	draw_textures(t_game **game, int x, int start, int end, t_text *tex)
 	s.tex = tex;
 	draw_tex_column(*game, &s);
 }
-

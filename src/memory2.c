@@ -12,26 +12,26 @@
 
 #include "cub3d.h"
 
-void ft_free_texture(t_text *texture, void *mlx)
+void	ft_free_texture(t_text *texture, void *mlx)
 {
-    if (!texture)
-        return ;
-    if (texture->text_img && mlx)
-        mlx_destroy_image(mlx, texture->text_img);
-    free(texture);
+	if (!texture)
+		return ;
+	if (texture->text_img && mlx)
+		mlx_destroy_image(mlx, texture->text_img);
+	free(texture);
 }
 
-void ft_free_player(t_player *player)
+void	ft_free_player(t_player *player)
 {
-    if (!player)
-        return ;
-    if (player->player_pos)
-        free(player->player_pos);
-    if (player->camera_plane)
-        free(player->camera_plane);
-    if (player->vector_dir)
-        free(player->vector_dir);
-    free(player);
+	if (!player)
+		return ;
+	if (player->player_pos)
+		free(player->player_pos);
+	if (player->camera_plane)
+		free(player->camera_plane);
+	if (player->vector_dir)
+		free(player->vector_dir);
+	free(player);
 }
 
 void	ft_free_map_extended(t_map **map, void *mlx)

@@ -83,15 +83,15 @@ int	interact_cast(t_game *g)
 	return (0);
 }
 
-void door_use(t_game *game)
+void	door_use(t_game *game)
 {
-    int x;
-    int y;
+	int	x;
+	int	y;
 
-    if(interact_cast(game))
-    {
-        x = (int)game->map->door_pos.x;
-        y = (int)game->map->door_pos.y;
-        door_toggle_at(game, x, y);
-    }
+	if (interact_cast(game))
+	{
+		x = (int)game->map->door_pos.x;
+		y = (int)game->map->door_pos.y;
+		door_toggle_at(game, x, y);
+	}
 }

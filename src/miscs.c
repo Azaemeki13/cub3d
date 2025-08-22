@@ -12,40 +12,40 @@
 
 #include "../include/cub3d.h"
 
-int ft_isspace(char c)
+int	ft_isspace(char c)
 {
-    if (!c)
-        return (0);
-    else if (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == 'r')
-        return (1);
-    return (0);
+	if (!c)
+		return (0);
+	else if (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == 'r')
+		return (1);
+	return (0);
 }
 
-int ft_isblank(char *str)
+int	ft_isblank(char *str)
 {
-    if (!str)
-        return (0);
-    int i;
+	int	i;
 
-    i = 0;
-    while((ft_isspace(str[i])) || str[i] == '\n')
-        i++;
-    if ((size_t)i != (ft_strlen(str)))
-        return(0);
-    else
-        return(1);
+	if (!str)
+		return (0);
+	i = 0;
+	while ((ft_isspace(str[i])) || str[i] == '\n')
+		i++;
+	if ((size_t)i != (ft_strlen(str)))
+		return (0);
+	else
+		return (1);
 }
 
-int ft_special_len(char *str, int separator)
+int	ft_special_len(char *str, int separator)
 {
-    int i;
-    
-    i = 0;
-    if (!str)
-        return (i);
-    while (str[i] && str[i] != separator)
-        i++;
-    return(i - 1);
+	int	i;
+
+	i = 0;
+	if (!str)
+		return (i);
+	while (str[i] && str[i] != separator)
+		i++;
+	return (i - 1);
 }
 
 char	*ft_strndup(const char *s, size_t n)
@@ -69,14 +69,14 @@ char	*ft_strndup(const char *s, size_t n)
 	return (dup);
 }
 
-int count_strings(char **str)
+int	count_strings(char **str)
 {
-    int i;
+	int	i;
 
-    if (!str || !*str)
-        return (0);
-    i = 0;
-    while(str[i])
-        i++;
-    return(i);
+	if (!str || !*str)
+		return (0);
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }

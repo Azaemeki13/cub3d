@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minimap3.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ituriel <ituriel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 16:21:26 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 16:21:56 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:45:39 by ituriel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,6 @@
 
 int	mm_in_bounds(t_game *g, int mx, int my)
 {
-	return (mx >= 0 && my >= 0
-		&& mx < g->map->map_width && my < g->map->map_height);
+	return (mx >= 0 && my >= 0 && mx < g->map->map_width
+		&& my < g->map->map_height);
 }

@@ -12,14 +12,14 @@
 
 #include "cub3d.h"
 
-char **verify_syntax_rgb_helper(t_game **game, char *str)
+char	**verify_syntax_rgb_helper(t_game **game, char *str)
 {
-    char **verification;
-    
-    verification = ft_split(str, ',');
-    if (!verification)
-        rgb_error(game, verification);
-    if (count_strings(verification) != 3)
-        rgb_error(game, verification);
-    return (verification);
+	char	**verification;
+
+	verification = ft_split(str, ',');
+	if (!verification)
+		rgb_error(game, verification);
+	if (count_strings(verification) != 3)
+		rgb_error(game, verification);
+	return (verification);
 }

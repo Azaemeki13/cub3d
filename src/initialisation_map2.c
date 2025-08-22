@@ -12,18 +12,18 @@
 
 #include "cub3d.h"
 
-void validate_player_helper (t_game **game, int player_count)
+void	validate_player_helper(t_game **game, int player_count)
 {
-    if (player_count == 0)
-    {
-        error_msg("No player start position found in map.");
-        free_game_complete(game);
-        exit(EXIT_FAILURE);
-    }
-    else if (player_count > 1)
-    {
-        error_msg("Multiple player start positions found in map.");
-        free_game_complete(game);
-        exit(EXIT_FAILURE);
-    }
+	if (player_count == 0)
+	{
+		error_msg("No player start position found in map.");
+		free_game_complete(game);
+		exit(EXIT_FAILURE);
+	}
+	else if (player_count > 1)
+	{
+		error_msg("Multiple player start positions found in map.");
+		free_game_complete(game);
+		exit(EXIT_FAILURE);
+	}
 }

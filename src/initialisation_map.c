@@ -56,57 +56,53 @@ void	is_end(char *line, t_game **game, bool *end, bool *begin)
 
 int	map_char_check(char c)
 {
-	if (!(c == '1'
-		|| c == '0'
-		|| c == 'N'
-		|| c == 'S'
-		|| c == 'E'
-		|| c == 'W'
-		|| c == 'D'
-		|| ft_isspace(c)))
+	if (!(c == '1' || c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W'
+			|| c == 'D' || ft_isspace(c)))
 		return (0);
 	return (1);
 }
 
 void	line_checker(char *map_line, t_game **game)
 {
-    static bool	begin   = false;
-    static bool	end     = false;
-    int			i;
+	static bool	begin = false;
+	static bool	end = false;
+	int			i;
 
-    is_begin(map_line, game, &begin);
-    i = 0;
-    while (map_line[i])
-    {
-        if (!map_char_check(map_line[i]) && map_line[i] != '\n')
-        {
-            error_msg("Unauthorized character in map.");
-            free_game_complete(game);
-            exit(EXIT_FAILURE);
-        }
-        i++;
-    }
-    is_end(map_line, game, &end, &begin);
+	is_begin(map_line, game, &begin);
+	i = 0;
+	while (map_line[i])
+	{
+		if (!map_char_check(map_line[i]) && map_line[i] != '\n')
+		{
+			error_msg("Unauthorized character in map.");
+			free_game_complete(game);
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	is_end(map_line, game, &end, &begin);
 }
 
-void validate_player_count(t_game **game)
+void	validate_player_count(t_game **game)
 {
-    char **map = (*game)->map->map;
-    int player_count = 0;
-    int x;
-    int y;
-    
-    y = 0;
-    while (y < (*game)->map->map_height)
-    {
-        x = 0;
-        while (x < (*game)->map->map_width && map[y][x])
-        {
-            if (ft_strchr("NSEW", map[y][x]))
-                player_count++;
-            x++;
-        }
-        y++;
-    }
-    validate_player_helper(game, player_count);
+	char	**map;
+	int		player_count;
+	int		x;
+	int		y;
+
+	map = (*game)->map->map;
+	player_count = 0;
+	y = 0;
+	while (y < (*game)->map->map_height)
+	{
+		x = 0;
+		while (x < (*game)->map->map_width && map[y][x])
+		{
+			if (ft_strchr("NSEW", map[y][x]))
+				player_count++;
+			x++;
+		}
+		y++;
+	}
+	validate_player_helper(game, player_count);
 }

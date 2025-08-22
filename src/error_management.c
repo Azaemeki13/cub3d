@@ -12,9 +12,9 @@
 
 #include "cub3d.h"
 
-void error_msg(const char *msg)
+void	error_msg(const char *msg)
 {
-        write(2, "Error\n", 6);
-        write (2, msg, ft_strlen(msg));
-        write(2, "\n", 1);
+	write(2, "Error\n", 6);
+	write(2, msg, ft_strlen(msg));
+	write(2, "\n", 1);
 }

@@ -25,15 +25,13 @@ static void	yaw_rotate(t_player *p, double angle)
 	double	old_px;
 
 	old_x = p->vector_dir->x;
-	p->vector_dir->x = p->vector_dir->x * cos(angle)
-		- p->vector_dir->y * sin(angle);
-	p->vector_dir->y = old_x * sin(angle)
-		+ p->vector_dir->y * cos(angle);
+	p->vector_dir->x = p->vector_dir->x * cos(angle) - p->vector_dir->y
+		* sin(angle);
+	p->vector_dir->y = old_x * sin(angle) + p->vector_dir->y * cos(angle);
 	old_px = p->camera_plane->x;
-	p->camera_plane->x = p->camera_plane->x * cos(angle)
-		- p->camera_plane->y * sin(angle);
-	p->camera_plane->y = old_px * sin(angle)
-		+ p->camera_plane->y * cos(angle);
+	p->camera_plane->x = p->camera_plane->x * cos(angle) - p->camera_plane->y
+		* sin(angle);
+	p->camera_plane->y = old_px * sin(angle) + p->camera_plane->y * cos(angle);
 }
 
 static void	pitch_move(t_game *g, int dy)
