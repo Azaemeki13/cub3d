@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 10:47:16 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/11 14:42:41 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:10:44 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,41 +15,160 @@
 int create_rgb_color(int r, int g, int b)
 {
     return (r << 16 | g << 8 | b);
-}
-
-int get_shade_color(int base_color, double distance)
-{
-    int r = (base_color >> 16) & 0xFF;
-    int g = (base_color >> 8) & 0xFF;
-    int b = base_color & 0xFF;
-    
-    (void) distance;
-    //double shade_factor = 1.0 / (1.0 + distance * distance * 0.1);
-    
-    /*r = (int)(r * shade_factor);
-    g = (int)(g * shade_factor);
-    b = (int)(b * shade_factor);*/
-    
-    return create_rgb_color(r, g, b);
-}
-
-int get_wall_color(int wall_dir) ////////////to be replaced with texture later
-{
-    switch (wall_dir)
-    {
-        case NORTH:
-            return create_rgb_color(255, 0, 0);
-        case EAST:
-            return create_rgb_color(0, 255, 0);
-        case SOUTH:
-            return create_rgb_color(0, 0, 255);
-        case WEST:
-            return create_rgb_color(255, 255, 0);
-        default:
-            return create_rgb_color(255, 255, 255);
-    }
-}
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   doors.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/19 16:14:23 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/21 14:12:35 by chsauvag         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
+
+#include "cub3d.h"
+
+static void	init_cell(t_game *g, int i, int x, int y)
+{
+	t_door	*d;
+	char	c;
+
+	d = &g->doors[i];
+	d->frac = 0.0;
+	d->target = 0;
+	d->active = 0;
+	c = g->map->map[y][x];
+	if (c == 'D')
+		d->active = 1;
+	else if (c == 'd')
+	{
+		d->active = 1;
+		d->frac = 1.0;
+		d->target = 1;
+		g->map->map[y][x] = 'D';
+	}
+}
+
+void doors_init(t_game *game)
+{
+    int i;
+    int x;
+    int y;
+    
+    i = 0;
+    game->doors = malloc(sizeof(t_door) * (game->map->map_height) * (game->map->map_width));
+    y = 0;
+    while (y < game->map->map_height)
+    {
+        x = 0;
+        while (x < game->map->map_width)
+            init_cell(game, i++, x++, y);
+        y++;
+    }
+    game->door_speed = 1.8;
+}
+
+t_door *door_at(t_game *game, int x, int y)
+{
+    int w;
+    int h;
+    
+    w = game->map->map_width;
+    h = game->map->map_height;
+    if (x < 0 || y < 0 || x >= w || y >=h)
+        return (NULL);
+    return(&game->doors[y * w + x]);
+}
+
+ void doors_update(t_game *game, double dt)
+ {
+    int i;
+    int n;
+    double step;
+    t_door *door;
+
+    n = game->map->map_width * game->map->map_height;
+    if (dt > 0.0)
+        step = game->door_speed * dt;
+    else
+        step = 0.03;
+    i = 0;
+    while(i < n)
+    {
+        door = &game->doors[i++];
+        if (!door->active)
+            continue;
+        if (door->target && door->frac < 1.0)
+        {
+            door->frac += step;
+            if (door->frac > 1.0)
+                door->frac = 1.0;
+        }
+        else if (!door->target && door->frac > 0.0)
+        {
+            door->frac  -= step;
+            if (door->frac < 0.0)
+                door->frac = 0.0;
+        }
+    }
+ }
+ 
+void door_toggle_at(t_game *game, int x, int y)
+{
+    t_door *door;
+    int px;
+    int py;
+
+    door = door_at( game, x, y);
+    if (!door)
+        return;
+    px = (int)game->player->player_pos->x;
+    py = (int)game->player->player_pos->y;
+    if (door->target && door->frac > 0.5)
+    {
+        if (!(px == x && py == y))
+            door->target = 0;
+
+    }
+    else
+        door->target = 1;
+}
+
+static bool is_door_valid(char **map, int x, int y, int map_width, int map_height)
+{
+    if (x <= 0 || x >= map_width - 1 || y <= 0 || y >= map_height - 1)
+        return false;
+    bool horizontal_walls = (map[y][x - 1] == '1' && map[y][x + 1] == '1');
+    bool vertical_walls = (map[y - 1][x] == '1' && map[y + 1][x] == '1');
+    return (horizontal_walls && !vertical_walls) || (!horizontal_walls && vertical_walls);
+}
+
+void validate_doors(t_game **game)
+{
+    char **map = (*game)->map->map;
+    int x, y;
+    
+    y = 0;
+    while (y < (*game)->map->map_height)
+    {
+        x = 0;
+        while (x < (*game)->map->map_width)
+        {
+            if (map[y][x] == 'D' || map[y][x] == 'd')
+            {
+                if (!is_door_valid(map, x, y, (*game)->map->map_width, (*game)->map->map_height))
+                {
+                    error_msg("Door not properly placed between walls.");
+                    free_game(game);
+                    exit(EXIT_FAILURE);
+                }
+            }
+            x++;
+        }
+        y++;
+    }
+}/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   error_management.c                                 :+:      :+:    :+:   */
@@ -73,10 +192,10 @@ void error_msg(const char *msg)
 /*                                                        :::      ::::::::   */
 /*   initialisation.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 10:32:53 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 14:26:25 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,26 +212,44 @@ void init_struct(t_game **game, char *path)
     malloc_texture(game);
     init_map(game, path);
     init_player(game);
+    doors_init(*game);
     (*game)->buttons.w = 0;
     (*game)->buttons.s = 0;
     (*game)->buttons.q = 0;
     (*game)->buttons.d = 0;
+    (*game)->buttons.rotate_left = 0;
+    (*game)->buttons.rotate_right = 0;
+    (*game)->game_pause = 0;
+    (*game)->show_minimap = 1;
+    (*game)->mouse_sens = 0.0008;
+    (*game)->last_mouse_x = WIN_WIDTH / 2;
+    (*game)->hit_tile = 0;
+    (*game)->side_out = 0;
+    (*game)->wall_x = 0.0;
+    (*game)->ray_dir.x = 0.0;
+    (*game)->ray_dir.y = 0.0;
+    (*game)->img = NULL;
+    (*game)->addr = NULL;
+    (*game)->bits_per_pixel = 0;
+    (*game)->line_length = 0;
+    (*game)->endian = 0;
 }
 
 int count_lines(char *path)
 {
     int fd;
     int result;
+    char *line;
 
     result = 0;
     fd = open(path, O_RDONLY);
     if (fd < 0)
-    {
-        close(fd);
         return (0);
-    }
-    while (get_next_line(fd) != NULL)
+    while ((line = get_next_line(fd)) != NULL)
+    {
+        free(line);
         result++;
+    }
     close(fd);
     return(result);
 }
@@ -130,6 +267,54 @@ int map_details(char *line)
         return (1);
     else
         return(0);
+}
+
+void validate_all_textures_present(t_game **game)
+{
+    t_map *map = (*game)->map;
+    
+    if (!map->no || !map->no->text_img)
+    {
+        error_msg("Missing NO texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->so || !map->so->text_img)
+    {
+        error_msg("Missing SO texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->ea || !map->ea->text_img)
+    {
+        error_msg("Missing EA texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->we || !map->we->text_img)
+    {
+        error_msg("Missing WE texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->door || !map->door->text_img)
+    {
+        error_msg("Missing DOOR texture path.");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->ceiling)
+    {
+        error_msg("Missing ceiling color (C).");
+        free_game(game);
+        exit(1);
+    }
+    if (!map->floor)
+    {
+        error_msg("Missing floor color (F).");
+        free_game(game);
+        exit(1);
+    }
 }
 
 void check_texture_files(t_game **game)
@@ -156,6 +341,7 @@ void check_texture_files(t_game **game)
             line_checker(map->content[i++], game);
         break;
     }
+    validate_all_textures_present(game);
 }
 
 void init_map(t_game **game, char *path)
@@ -183,7 +369,9 @@ void init_map(t_game **game, char *path)
         map->content[i++] = get_next_line(fd);
     check_texture_files(game);
     calculate_map_size(game);
-    (*game)->mouse_sens = 0.001;
+    validate_doors(game);
+    validate_player_count(game); // Add this line
+    (*game)->mouse_sens = 0.0008;
     (*game)->last_mouse_x = WIN_WIDTH / 2;
     close(fd);
 }
@@ -192,16 +380,16 @@ void init_map(t_game **game, char *path)
 /*                                                        :::      ::::::::   */
 /*   initialisation_map.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:49:34 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 10:54:29 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:18:55 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
 
-static void	is_begin(char *line, t_game **game, bool *begin)
+void	is_begin(char *line, t_game **game, bool *begin)
 {
 	char	*p;
 
@@ -222,7 +410,7 @@ static void	is_begin(char *line, t_game **game, bool *begin)
 	}
 }
 
-static void	is_end(char *line, t_game **game, bool *end, bool *begin)
+void	is_end(char *line, t_game **game, bool *end, bool *begin)
 {
 	char	*p;
 
@@ -259,48 +447,65 @@ int	map_char_check(char c)
 
 void	line_checker(char *map_line, t_game **game)
 {
-	static bool	begin   = false;
-	static bool	end     = false;
-	static int	players = 0;
-	int			i;
+    static bool	begin   = false;
+    static bool	end     = false;
+    int			i;
 
-	is_begin(map_line, game, &begin);
-	i = 0;
-	while (map_line[i])
-	{
-		if (!map_char_check(map_line[i]) && map_line[i] != '\n')
-		{
-			error_msg("Unauthorized character in map.");
-			free_game(game);
-			exit(EXIT_FAILURE);
-		}
-		if (ft_strchr("NSEW", map_line[i]))
-		{
-			if (++players > 1)
-			{
-				error_msg("Multiple player start positions.");
-				free_game(game);
-				exit(EXIT_FAILURE);
-			}
-		}
-		if (map_line[i] == '0' && !begin)
-		{
-			error_msg("Map not closed (hole on left).");
-			free_game(game);
-			exit(EXIT_FAILURE);
-		}
-		i++;
-	}
-	is_end(map_line, game, &end, &begin);
+    is_begin(map_line, game, &begin);
+    i = 0;
+    while (map_line[i])
+    {
+        if (!map_char_check(map_line[i]) && map_line[i] != '\n')
+        {
+            error_msg("Unauthorized character in map.");
+            free_game(game);
+            exit(EXIT_FAILURE);
+        }
+        i++;
+    }
+    is_end(map_line, game, &end, &begin);
+}
+
+void validate_player_count(t_game **game)
+{
+    char **map = (*game)->map->map;
+    int player_count = 0;
+    int x, y;
+    
+    y = 0;
+    while (y < (*game)->map->map_height)
+    {
+        x = 0;
+        while (x < (*game)->map->map_width && map[y][x])
+        {
+            if (ft_strchr("NSEW", map[y][x]))
+                player_count++;
+            x++;
+        }
+        y++;
+    }
+    
+    if (player_count == 0)
+    {
+        error_msg("No player start position found in map.");
+        free_game(game);
+        exit(EXIT_FAILURE);
+    }
+    else if (player_count > 1)
+    {
+        error_msg("Multiple player start positions found in map.");
+        free_game(game);
+        exit(EXIT_FAILURE);
+    }
 }/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 10:51:35 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 12:54:30 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -392,7 +597,11 @@ void init_player(t_game **game)
     player->player_pos = malloc(sizeof(t_vector));
     player->camera_plane = malloc(sizeof(t_vector));
     player->vector_dir = malloc(sizeof(t_vector));
+    ft_memset(player->player_pos, 0, sizeof(t_vector));
+    ft_memset(player->camera_plane, 0, sizeof(t_vector));
+    ft_memset(player->vector_dir, 0, sizeof(t_vector));
     player->pitch = 0;
+    player->orientation = 'N'; //not sure bout that one
     init_start(game); 
     init_orientation(game);
 }
@@ -414,10 +623,10 @@ void map_pointer(t_game **game, int i)
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils3.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 10:34:38 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:22:13 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -425,7 +634,7 @@ void map_pointer(t_game **game, int i)
 
 void rgb_error(t_game **game, char **str)
 {
-    error_msg("rgb format incorrect.");
+    error_msg("RGB format incorrect.");
     ft_free_string_array(str);
     free_game(game);
     exit(1);
@@ -437,16 +646,18 @@ void verify_rgb_number(t_game **game, char **verification)
     char *nav;
     
     i = 0;
-    while(i < 2)
+    while(i < 3)
     {
         nav = verification[i];
-        while(*verification[i])
+        while (*nav)
         {
-            if (!ft_isdigit(*verification[i]) && *verification[i] != ',')
+            if (!ft_isdigit(*nav))
+            {
                 rgb_error(game, verification);
-            verification[i]++;
+                return;
+            }
+            nav++;
         }
-        verification[i] = nav;
         i++;
     }
 }
@@ -455,30 +666,58 @@ char **verify_syntax_rgb(t_game **game, char *str)
 {
     char **verification;
     char *nav;
+    int i;
 
     verification = ft_split(str, ',');
     if (!verification)
         rgb_error(game, verification);
-    if ((count_strings(verification) > 3))
+    if (count_strings(verification) != 3)
         rgb_error(game, verification);
-    nav = verification[2];
-    while(ft_isdigit(*verification[2]))
-        verification[2]++;
-    if (!ft_isblank(verification[2]))
-        rgb_error(game, verification);
-    verification[2] = nav;
+    
+    i = 0;
+    while (i < 3)
+    {
+        nav = verification[i];
+        if (!nav || !*nav)
+            rgb_error(game, verification);
+        while (*nav && ft_isspace(*nav))
+            nav++;
+        if (!*nav)
+            rgb_error(game, verification);
+        while (*nav)
+        {
+            if (!ft_isdigit(*nav) && !ft_isspace(*nav) && *nav != '\n')
+                rgb_error(game, verification);
+            nav++;
+        }
+        i++;
+    }
     return (verification);
 }
 
 t_rgb *add_rgb(t_game **game, char **rgb)
 {
     t_rgb *result;
+    char *trimmed;
+    int i;
 
     result = malloc(sizeof(t_rgb));
+    if (!result)
+        rgb_error(game, rgb);
+    i = 0;
+    while (i < 3)
+    {
+        trimmed = rgb[i];
+        while (*trimmed && ft_isspace(*trimmed))
+            trimmed++;
+        rgb[i] = trimmed;
+        i++;
+    }
     result->r = ft_atoi(rgb[0]);
     result->g = ft_atoi(rgb[1]);
     result->b = ft_atoi(rgb[2]);
-    if (result->r > 255 || result->g > 255 || result->b > 255)
+    if (result->r > 255 || result->g > 255 || result->b > 255 ||
+        result->r < 0 || result->g < 0 || result->b < 0)
     {
         free(result);
         rgb_error(game, rgb);
@@ -504,10 +743,10 @@ void  malloc_texture(t_game **game)
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils4.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 11:16:22 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 10:54:53 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:47:54 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -594,6 +833,10 @@ void calculate_map_size(t_game **game)
     int i;
     int j;
     int max_length;
+    int y;
+    int len;
+    int x;
+    char *new_line;
 
     j = 0;
     max_length = 0;
@@ -601,21 +844,37 @@ void calculate_map_size(t_game **game)
     while(map[j])
     {
         if (ft_isblank(map[j]))
-            return;
+            break;
         i = 0;
-        while(map[j][i])
-        {
-            if (i > max_length)
-                max_length = i;
+        while(map[j][i] && map[j][i] != '\n')
             i++;
-        }
+        if (i > max_length)
+            max_length = i;
         j++;
     }
     (*game)->map->map_height = j;
     (*game)->map->map_width = max_length;
-    ft_printf("Width is %d, height is %d\n", max_length, j);
-}
-/* ************************************************************************** */
+    y = 0;
+    while (y < j)
+    {
+        len = ft_strlen(map[y]);
+        if (len < max_length)
+        {
+            new_line = ft_calloc(max_length + 1, sizeof(char));
+            ft_strlcpy(new_line, map[y], len + 1);
+            x = len;
+            while (x < max_length)
+            {
+                new_line[x] = ' ';
+                x++;
+            }
+            new_line[max_length] = '\0';
+            free(map[y]);
+            map[y] = new_line;
+        }
+        y++;
+    }
+}/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils.c                             :+:      :+:    :+:   */
@@ -731,7 +990,7 @@ void validate_textures(char *str, t_game **game)
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 14:22:01 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:50:07 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -741,13 +1000,20 @@ bool collision_detection(t_game *game, double new_x, double new_y)
 {
     int map_x = (int)new_x;
     int map_y = (int)new_y;
+    t_door *door;
+    char tile;
 
+    tile = game->map->map[map_y][map_x];
     if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height) //out of bounds
         return false;
-    if (game->map->map[map_y][map_x] == '1') //hit a wall
+    if (tile == '1') //hit a wall
         return false;
-    else if (game->map->map[map_y][map_x] == 'D')
-        return false;
+    else if (tile == 'D')
+    {
+        door = door_at(game, map_x, map_y);
+        if (!door || door->frac < 0.5)
+            return false;
+    }
     return true;
 }
 
@@ -808,7 +1074,9 @@ int on_key_release(int keycode, t_game *game)
     if (keycode == P)
         pause_screen(game);
     if (keycode == SPACE)
-        door_animation(game);
+        door_use(game);
+    if (keycode == M)
+        game->show_minimap = !game->show_minimap;
     
     return(0);
 }
@@ -870,19 +1138,31 @@ int key_hook(int keycode, t_game *game)
         }
     }
     return 0;
-}/* ************************************************************************** */
+}
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 10:56:10 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:19:34 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+void welcome_message(void)
+{
+    ft_putstr_fd("WELCOME TO CUB3D!\n", 1);
+    ft_putstr_fd("Press 'ESC' to exit.\n", 1);
+    ft_putstr_fd("Use 'W', 'A', 'S', 'D' to move.\n", 1);
+    ft_putstr_fd("Use mouse or 'LEFT/RIGHT' to look around.\n", 1);
+    ft_putstr_fd("Press 'M' to toggle ON/OFF the minimap.\n", 1);
+    ft_putstr_fd("Press 'SPACE' to open and close doors.\n", 1);
+    ft_putstr_fd("Press 'P' to pause.\n", 1);
+}
 
 int main(int argc, char **argv)
 {
@@ -908,6 +1188,7 @@ int main(int argc, char **argv)
     create_window(game_data);
     if (!game_data->win)
         return (1);
+    welcome_message();
     mlx_mouse_hide(game_data->mlx, game_data->win);
     mlx_hook(game_data->win, 2, 1L<<0, on_key_press, game_data);
     mlx_hook(game_data->win, 3, 1L<<1, on_key_release,  game_data);
@@ -921,10 +1202,10 @@ int main(int argc, char **argv)
 /*                                                        :::      ::::::::   */
 /*   memory.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:32:43 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/05 13:48:52 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 17:04:58 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -980,7 +1261,7 @@ void free_game(t_game **game)
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:33:19 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 14:30:15 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:43:26 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1055,7 +1336,7 @@ void free_game(t_game **game)
         }
         if (map_x < 0 || map_x >= g->map->map_width || map_y < 0 || map_y >= g->map->map_height)
             return (0);
-        if (g->map->map[map_y][map_x] == 'D' || g->map->map[map_y][map_x] == '1')
+        if (g->map->map[map_y][map_x] == 'D' || g->map->map[map_y][map_x] == '1'|| g->map->map[map_y][map_x] == 'd')
             hit = 1;
     }
     if (side == 0)
@@ -1065,7 +1346,7 @@ void free_game(t_game **game)
     if (t > USE_RANGE || t < 0)
         return 0;
     tile = g->map->map[map_y][map_x];
-    if (tile == 'D')
+    if (tile == 'D' || tile == 'd')
     {
         set_vector(&g->map->door_pos, (double)map_x, (double)map_y);
         return (1);
@@ -1074,19 +1355,17 @@ void free_game(t_game **game)
         return (0);
 }
 
-void door_animation(t_game *game)
+void door_use(t_game *game)
 {
-    int posx;
-    int posy;
+    int x;
+    int y;
 
     if(interact_cast(game))
     {
-        posx = (int)game->map->door_pos.x;
-        posy = (int)game->map->door_pos.y;
-        game->map->map[posy][posx] = '0';
+        x = (int)game->map->door_pos.x;
+        y = (int)game->map->door_pos.y;
+        door_toggle_at(game, x, y);
     }
-    else
-        return;
 }/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -1095,11 +1374,18 @@ void door_animation(t_game *game)
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 10:27:58 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/12 11:16:41 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:51:14 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
+
+int is_inside_circle(int x, int y, int center_x, int center_y, int radius)
+{
+    int dx = x - center_x;
+    int dy = y - center_y;
+    return (dx * dx + dy * dy) <= (radius * radius);
+}
 
 void draw_minimap_pixel(t_game *game, int x, int y, int color)
 {
@@ -1111,7 +1397,19 @@ void draw_minimap_pixel(t_game *game, int x, int y, int color)
     *(unsigned int*)dst = color;
 }
 
-void draw_minimap_square(t_game *game, int start_x, int start_y, int size, int color)
+void draw_minimap_pixel_circle(t_game *game, int x, int y, int color, int center_x, int center_y, int radius)
+{
+    char *dst;
+
+    if (x < 0 || x >= WIN_WIDTH || y < 0 || y >= WIN_HEIGHT)
+        return;
+    if (!is_inside_circle(x, y, center_x, center_y, radius))
+        return;
+    dst = game->addr + (y * game->line_length + x * (game->bits_per_pixel / 8));
+    *(unsigned int*)dst = color;
+}
+
+void draw_minimap_square_circle(t_game *game, int start_x, int start_y, int size, int color, int center_x, int center_y, int radius)
 {
     int x;
     int y;
@@ -1122,7 +1420,29 @@ void draw_minimap_square(t_game *game, int start_x, int start_y, int size, int c
         x = start_x;
         while (x < start_x + size)
         {
-            draw_minimap_pixel(game, x, y, color);
+            draw_minimap_pixel_circle(game, x, y, color, center_x, center_y, radius);
+            x++;
+        }
+        y++;
+    }
+}
+
+void draw_circle_border(t_game *game, int center_x, int center_y, int radius, int thickness)
+{
+    int y = center_y - radius - thickness;
+    int x;
+    int distance;
+    int outer_radius = radius + thickness;
+    int inner_radius = radius;
+
+    while (y <= center_y + radius + thickness)
+    {
+        x = center_x - radius - thickness;
+        while (x <= center_x + radius + thickness)
+        {
+            distance = (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y);
+            if (distance <= outer_radius * outer_radius && distance > inner_radius * inner_radius)
+                draw_minimap_pixel_circle(game, x, y, create_rgb_color(255, 255, 255), center_x, center_y, radius + thickness);
             x++;
         }
         y++;
@@ -1139,36 +1459,54 @@ void draw_minimap(t_game *game)
     double player_y;
     int player_screen_x;
     int player_screen_y;
+    int minimap_size = 20;
+    int minimap_radius = (minimap_size * MINIMAP_TILE_SIZE) / 2;
+    int center_x = MINIMAP_OFFSET_X + minimap_radius;
+    int center_y = MINIMAP_OFFSET_Y + minimap_radius;
+    int start_map_x, start_map_y;
+    int end_map_x, end_map_y;
 
-    map_y = 0;
-    while (map_y < game->map->map_height)
+    player_x = game->player->player_pos->x;
+    player_y = game->player->player_pos->y;
+    
+    start_map_x = (int)player_x - minimap_size / 2;
+    start_map_y = (int)player_y - minimap_size / 2;
+    end_map_x = start_map_x + minimap_size;
+    end_map_y = start_map_y + minimap_size;
+    draw_circle_border(game, center_x, center_y, minimap_radius, 2);
+    map_y = start_map_y;
+    while (map_y < end_map_y)
     {
-        map_x = 0;
-        while (map_x < game->map->map_width)
+        map_x = start_map_x;
+        while (map_x < end_map_x)
         {
-            screen_x = MINIMAP_OFFSET_X + map_x * MINIMAP_TILE_SIZE;
-            screen_y = MINIMAP_OFFSET_Y + map_y * MINIMAP_TILE_SIZE;
-            
-            if (game->map->map[map_y][map_x] == '1')
-                draw_minimap_square(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(0, 0, 0));
+            screen_x = MINIMAP_OFFSET_X + (map_x - start_map_x) * MINIMAP_TILE_SIZE;
+            screen_y = MINIMAP_OFFSET_Y + (map_y - start_map_y) * MINIMAP_TILE_SIZE;      
+            if (map_x < 0 || map_x >= game->map->map_width || 
+                map_y < 0 || map_y >= game->map->map_height)
+                draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(64, 64, 64), center_x, center_y, minimap_radius);
+            else if (game->map->map[map_y][map_x] == '1')
+                draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(0, 0, 0), center_x, center_y, minimap_radius);
+            else if (game->map->map[map_y][map_x] == 'D' || game->map->map[map_y][map_x] == 'd')
+                draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(25, 210, 250), center_x, center_y, minimap_radius);
+            else if (game->map->map[map_y][map_x] == ' ')
+                draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(128, 128, 128), center_x, center_y, minimap_radius);
             else if (game->map->map[map_y][map_x] == '0' || game->map->map[map_y][map_x] == 'N' || 
                      game->map->map[map_y][map_x] == 'S' || game->map->map[map_y][map_x] == 'E' || 
                      game->map->map[map_y][map_x] == 'W')
-                draw_minimap_square(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(0, 0, 255));
+                draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(200, 200, 200), center_x, center_y, minimap_radius);
+            else
+                draw_minimap_square_circle(game, screen_x, screen_y, MINIMAP_TILE_SIZE, create_rgb_color(128, 128, 128), center_x, center_y, minimap_radius);
             
             map_x++;
         }
         map_y++;
     }
-    player_x = game->player->player_pos->x;
-    player_y = game->player->player_pos->y;
-    
-    player_screen_x = MINIMAP_OFFSET_X + (player_x * MINIMAP_TILE_SIZE);
-    player_screen_y = MINIMAP_OFFSET_Y + (player_y * MINIMAP_TILE_SIZE);
-
-    int dot_size = MINIMAP_TILE_SIZE;
-    draw_minimap_square(game, player_screen_x, player_screen_y, dot_size, create_rgb_color(255, 0, 0));
-}/* ************************************************************************** */
+    player_screen_x = center_x - MINIMAP_TILE_SIZE / 2;
+    player_screen_y = center_y - MINIMAP_TILE_SIZE / 2;
+    draw_minimap_square_circle(game, player_screen_x, player_screen_y, MINIMAP_TILE_SIZE, create_rgb_color(255, 0, 0), center_x, center_y, minimap_radius);
+}
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   miscs.c                                            :+:      :+:    :+:   */
@@ -1315,7 +1653,7 @@ int on_mouse_move(int x, int y,void *param)
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 11:22:53 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/14 11:25:14 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:44:57 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1323,7 +1661,7 @@ int on_mouse_move(int x, int y,void *param)
 
 void move_forward(t_game *game)
 {
-    double move_speed = 0.5;
+    double move_speed = 0.05;
     double new_x;
     double new_y;
 
@@ -1338,7 +1676,7 @@ void move_forward(t_game *game)
 
 void move_backwards(t_game *game)
 {
-    double move_speed = 0.5;
+    double move_speed = 0.05;
     double new_x;
     double new_y;
 
@@ -1353,7 +1691,7 @@ void move_backwards(t_game *game)
 
 void move_left(t_game *game)
 {
-    double move_speed = 0.5;
+    double move_speed = 0.05;
     double new_x;
     double new_y;
 
@@ -1368,7 +1706,7 @@ void move_left(t_game *game)
 
 void move_right(t_game *game)
 {
-    double move_speed = 0.5;
+    double move_speed = 0.05;
     double new_x;
     double new_y;
 
@@ -1432,7 +1770,7 @@ int validate_init(t_game **game, char *path)
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 13:58:13 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 17:47:27 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1515,102 +1853,237 @@ int validate_init(t_game **game, char *path)
     return perp_wall_dist;
 }*/
 
-double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, double *wall_x)
+double	ray_casting(int x, t_player *player, int *wall_direction,
+			t_game *game, double *wall_x)
 {
-        double	camera_x;
-        t_ray	ray;
-        int		map_x;
-        int		map_y;
-        double	delta_x;
-        double	delta_y;
-        int		step_x;
-        int		step_y;
-        double	side_dist_x;
-        double	side_dist_y;
-        int		hit;
-        int		side;
-        double hit_x;
-        double hit_y;
-        double	perp_wall_dist;
+	double		camera_x;
+	t_ray		ray;
+	int			map_x;
+	int			map_y;
+	double		delta_x;
+	double		delta_y;
+	int			step_x;
+	int			step_y;
+	double		side_dist_x;
+	double		side_dist_y;
+	int			hit;
+	int			side;
+	double		hit_x;
+	double		hit_y;
+	double		perp_wall_dist;
+	t_door		*door;
+	char		tile;
+	double		f;
+	double		tdoor;
+	double		xentry;
+	double		yentry;
+	double		px;
+	double		py;
+	int			sign;
+	double		door_y0;
+	double		door_x0;
+	double		y_hit;
+	double		x_hit;
 
-    camera_x = 2 * x / (double)WIN_WIDTH - 1;
-    ray.ray_dir.x = player->vector_dir->x + player->camera_plane->x * camera_x;
-    ray.ray_dir.y = player->vector_dir->y + player->camera_plane->y * camera_x;
-    
-    map_x = (int)player->player_pos->x;
-    map_y = (int)player->player_pos->y;
-
-    if (ray.ray_dir.x == 0)
-        delta_x = 1e30;
-    else
-        delta_x = fabs(1 / ray.ray_dir.x);
-    if (ray.ray_dir.y == 0)
-        delta_y = 1e30;
-    else
-        delta_y = fabs(1 / ray.ray_dir.y);
-
-    if (ray.ray_dir.x < 0) //left
-    {
-        step_x = -1;
-        side_dist_x = (player->player_pos->x - map_x) * delta_x;
-    }
-    else //right
-    {
-        step_x = 1;
-        side_dist_x = (map_x + 1.0 - player->player_pos->x) * delta_x;
-    }
-    if (ray.ray_dir.y < 0) //up
-    {
-        step_y = -1;
-        side_dist_y = (player->player_pos->y - map_y) * delta_y;
-    }
-    else //down
-    {
-        step_y = 1;
-        side_dist_y = (map_y + 1.0 - player->player_pos->y) * delta_y;
-    }
-    hit = 0;
-    while (hit == 0)
-    {
-        if (side_dist_x < side_dist_y)
-        {
-            side_dist_x += delta_x;
-            map_x += step_x;
-            side = 0;
-        }
-        else
-        {
-            side_dist_y += delta_y;
-            map_y += step_y;
-            side = 1;
-        }
-        if (map_x < 0 || map_x >= game->map->map_width || map_y < 0 || map_y >= game->map->map_height)        {
-            hit = 1;
-            break;
-        }
-        if (game->map->map[map_y][map_x] == '1' || game->map->map[map_y][map_x] == 'D')
-        {
-            game->hit_tile = game->map->map[map_y][map_x];
-            hit = 1;
-        }
-    }
-    *wall_direction = get_wall_direction(side, step_x, step_y);
-    
-    if (side == 0)
-        perp_wall_dist = (map_x - player->player_pos->x + (1 - step_x) / 2) / ray.ray_dir.x;
-    else
-        perp_wall_dist = (map_y - player->player_pos->y + (1 - step_y) / 2) / ray.ray_dir.y;
-    hit_x = game->player->player_pos->x + perp_wall_dist * ray.ray_dir.x;
-    hit_y = game->player->player_pos->y + perp_wall_dist * ray.ray_dir.y;
-    if (side == 0)
-        *wall_x = hit_y;
-    else
-        *wall_x = hit_x;
-    *wall_x = *wall_x - floor(*wall_x);
-    game->side_out = side;
-    game->ray_dir.x = ray.ray_dir.x;
-    game->ray_dir.y = ray.ray_dir.y;
-    return perp_wall_dist;
+	camera_x = 2.0 * (double)x / (double)WIN_WIDTH - 1.0;
+	ray.ray_dir.x = player->vector_dir->x + player->camera_plane->x * camera_x;
+	ray.ray_dir.y = player->vector_dir->y + player->camera_plane->y * camera_x;
+	map_x = (int)player->player_pos->x;
+	map_y = (int)player->player_pos->y;
+	px = player->player_pos->x;
+	py = player->player_pos->y;
+	if (ray.ray_dir.x == 0.0)
+		delta_x = 1e30;
+	else
+		delta_x = fabs(1.0 / ray.ray_dir.x);
+	if (ray.ray_dir.y == 0.0)
+		delta_y = 1e30;
+	else
+		delta_y = fabs(1.0 / ray.ray_dir.y);
+	if (ray.ray_dir.x < 0.0)
+	{
+		step_x = -1;
+		side_dist_x = (px - (double)map_x) * delta_x;
+	}
+	else
+	{
+		step_x = 1;
+		side_dist_x = ((double)map_x + 1.0 - px) * delta_x;
+	}
+	if (ray.ray_dir.y < 0.0)
+	{
+		step_y = -1;
+		side_dist_y = (py - (double)map_y) * delta_y;
+	}
+	else
+	{
+		step_y = 1;
+		side_dist_y = ((double)map_y + 1.0 - py) * delta_y;
+	}
+	hit = 0;
+	while (hit == 0)
+	{
+		if (side_dist_x < side_dist_y)
+		{
+			side_dist_x += delta_x;
+			map_x += step_x;
+			side = 0;
+		}
+		else
+		{
+			side_dist_y += delta_y;
+			map_y += step_y;
+			side = 1;
+		}
+		if (map_x < 0 || map_x >= game->map->map_width
+			|| map_y < 0 || map_y >= game->map->map_height)
+		{
+			hit = 1;
+			game->hit_tile = '1';
+			break ;
+		}
+		tile = game->map->map[map_y][map_x];
+		if (tile == 'D')
+		{
+			door = door_at(game, map_x, map_y);
+			f = 0.0;
+			if (door)
+				f = door->frac;
+			if (f >= 0.99)
+				continue ;
+			if (side == 0)
+			{
+				if (step_x > 0)
+					xentry = (double)map_x;
+				else
+					xentry = (double)map_x + 1.0;
+				tdoor = (xentry - px) / ray.ray_dir.x;
+				sign = 0;
+				if (map_y + 1 < game->map->map_height
+					&& game->map->map[map_y + 1][map_x] == '1')
+					sign = 1;
+				else if (map_y - 1 >= 0
+					&& game->map->map[map_y - 1][map_x] == '1')
+					sign = -1;
+				if (sign == 0)
+				{
+					if (step_x > 0)
+						xentry = (double)map_x;
+					else
+						xentry = (double)map_x + 1.0;
+					tdoor = (xentry + f * (double)step_x - px) / ray.ray_dir.x;
+					if (tdoor > 0.0 && tdoor <= side_dist_y)
+					{
+						*wall_direction = get_wall_direction(side, step_x, step_y);
+						*wall_x = py + tdoor * ray.ray_dir.y;
+						*wall_x -= floor(*wall_x);
+						game->side_out = 0;
+						game->ray_dir.x = ray.ray_dir.x;
+						game->ray_dir.y = ray.ray_dir.y;
+						game->hit_tile = 'D';
+						return (tdoor);
+					}
+				}
+				else
+				{
+					y_hit = py + tdoor * ray.ray_dir.y;
+					door_y0 = (double)map_y;
+					if (sign > 0)
+						door_y0 = (double)map_y + f;
+					else if (sign < 0)
+						door_y0 = (double)map_y - f;
+					if (tdoor > 0.0 && tdoor <= side_dist_y
+						&& y_hit >= door_y0 && y_hit < door_y0 + 1.0)
+					{
+						*wall_direction = get_wall_direction(side, step_x, step_y);
+						*wall_x = y_hit - door_y0;
+						game->side_out = 0;
+						game->ray_dir.x = ray.ray_dir.x;
+						game->ray_dir.y = ray.ray_dir.y;
+						game->hit_tile = 'D';
+						return (tdoor);
+					}
+				}
+			}
+			else
+			{
+				if (step_y > 0)
+					yentry = (double)map_y;
+				else
+					yentry = (double)map_y + 1.0;
+				tdoor = (yentry - py) / ray.ray_dir.y;
+				sign = 0;
+				if (map_x + 1 < game->map->map_width
+					&& game->map->map[map_y][map_x + 1] == '1')
+					sign = 1;
+				else if (map_x - 1 >= 0
+					&& game->map->map[map_y][map_x - 1] == '1')
+					sign = -1;
+				if (sign == 0)
+				{
+					if (step_y > 0)
+						yentry = (double)map_y;
+					else
+						yentry = (double)map_y + 1.0;
+					tdoor = (yentry + f * (double)step_y - py) / ray.ray_dir.y;
+					if (tdoor > 0.0 && tdoor <= side_dist_x)
+					{
+						*wall_direction = get_wall_direction(side, step_x, step_y);
+						*wall_x = px + tdoor * ray.ray_dir.x;
+						*wall_x -= floor(*wall_x);
+						game->side_out = 1;
+						game->ray_dir.x = ray.ray_dir.x;
+						game->ray_dir.y = ray.ray_dir.y;
+						game->hit_tile = 'D';
+						return (tdoor);
+					}
+				}
+				else
+				{
+					x_hit = px + tdoor * ray.ray_dir.x;
+					door_x0 = (double)map_x;
+					if (sign > 0)
+						door_x0 = (double)map_x + f;
+					else if (sign < 0)
+						door_x0 = (double)map_x - f;
+					if (tdoor > 0.0 && tdoor <= side_dist_x
+						&& x_hit >= door_x0 && x_hit < door_x0 + 1.0)
+					{
+						*wall_direction = get_wall_direction(side, step_x, step_y);
+						*wall_x = x_hit - door_x0;
+						game->side_out = 1;
+						game->ray_dir.x = ray.ray_dir.x;
+						game->ray_dir.y = ray.ray_dir.y;
+						game->hit_tile = 'D';
+						return (tdoor);
+					}
+				}
+			}
+		}
+		else if (tile == '1')
+		{
+			hit = 1;
+			game->hit_tile = '1';
+		}
+	}
+	*wall_direction = get_wall_direction(side, step_x, step_y);
+	if (side == 0)
+		perp_wall_dist = ((double)map_x - px + (1.0 - (double)step_x) / 2.0)
+			/ ray.ray_dir.x;
+	else
+		perp_wall_dist = ((double)map_y - py + (1.0 - (double)step_y) / 2.0)
+			/ ray.ray_dir.y;
+	hit_x = px + perp_wall_dist * ray.ray_dir.x;
+	hit_y = py + perp_wall_dist * ray.ray_dir.y;
+	if (side == 0)
+		*wall_x = hit_y;
+	else
+		*wall_x = hit_x;
+	*wall_x = *wall_x - floor(*wall_x);
+	game->side_out = side;
+	game->ray_dir.x = ray.ray_dir.x;
+	game->ray_dir.y = ray.ray_dir.y;
+	return (perp_wall_dist);
 }
 
 // wall height : line_height = (int)(WIN_HEIGHT / perp_wall_dist);
@@ -1772,10 +2245,10 @@ void	draw_textures(t_game **game, int x, int start, int end, t_text *tex)
 /*                                                        :::      ::::::::   */
 /*   rendering.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 12:29:10 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:01:02 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1805,36 +2278,32 @@ int	render_frame(void *param)
     set_bytespp(&game);
     ceiling_color = create_rgb_color(game->map->ceiling->r, game->map->ceiling->g, game->map->ceiling->b);
     floor_color = create_rgb_color(game->map->floor->r, game->map->floor->g, game->map->floor->b);
-    //printf("Ceiling color: %d, Floor color: %d\n", ceiling_color, floor_color);
     ft_memset(game->addr, 0, WIN_HEIGHT * game->line_length);
     x = 0;
     while (x < WIN_WIDTH)
     {
-        // calculations
         perp_dist = ray_casting(x, game->player, &wall_dir, game, &game->wall_x);
         game->range = calculate_draw_range(perp_dist, game);
-        // draw f and c 
         start = game->range.start;
         end = game->range.end; 
         if (start < 0)
             start = 0;
         if (end >= WIN_HEIGHT)
             end = WIN_HEIGHT - 1;
-       // ceiling
         if (start > 0)
             draw_vertical_line(game, x, 0, start - 1, ceiling_color);
-        tex = get_wall_text(wall_dir, &game);   // use &game only if your fn takes t_game**
+        tex = get_wall_text(wall_dir, &game);
         if (start <= end)
             draw_textures(&game, x, start, end, tex);
         if (end < WIN_HEIGHT - 1)
             draw_vertical_line(game, x, end + 1, WIN_HEIGHT - 1, floor_color);
         // calculate tex_x
-        
         //color = get_wall_color(wall_dir);
         // color = get_shade_color(color, perp_dist);
         x++;
     }
-    draw_minimap(game);
+    if (game->show_minimap)
+        draw_minimap(game);
     draw_reticle(&game, 5, 10);
     mlx_put_image_to_window(game->mlx, game->win, game->img, 0, 0);
     return (0);
@@ -1845,7 +2314,7 @@ int get_wall_direction(int side, int step_x, int step_y)
     if (side == 0) 
     {
         if (step_x > 0)
-            return EAST; //
+            return EAST;
         else
             return WEST;
     }
@@ -1866,6 +2335,7 @@ int game_update(t_game *game)
     double rotation_speed = 0.1;
     
     keys = game->buttons;
+    doors_update(game, 0.0);
     if (keys.w)
         move_forward(game);
     if (keys.s)
@@ -1904,14 +2374,13 @@ int game_update(t_game *game)
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 11:18:51 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 12:38:43 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:14:04 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
 void draw_reticle(t_game **game, int thick, int size)
-
 {
     int cx;
     int cy;
@@ -1962,7 +2431,8 @@ void draw_reticle(t_game **game, int thick, int size)
             draw_minimap_pixel((*game), x++, y ,create_rgb_color(255, 0, 0));
         y++;
     }
-}double ray_cast(int x, t_player *player, t_ray *ray)
+}
+double ray_cast(int x, t_player *player, t_ray *ray)
 {
     double camera_x;
     double side_dist_x, side_dist_y;
@@ -2044,7 +2514,7 @@ void draw_reticle(t_game **game, int thick, int size)
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:40:22 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/07 12:13:42 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:19:57 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -2062,10 +2532,9 @@ void create_window(t_game *game)
     }
     mlx_key_hook(game->win, close_window_hook, game);
     mlx_hook(game->win, 17, 0, close_window_x, game);
-    // Remove mlx_loop from here since it's called in main
 }
 
-int close_window_hook(int keycode, t_game *game) // ESCAPE key
+int close_window_hook(int keycode, t_game *game)
 {
     if (keycode == ESCAPE_KEY)
     {
@@ -2077,7 +2546,7 @@ int close_window_hook(int keycode, t_game *game) // ESCAPE key
     return 0;
 }
 
-int close_window_x(t_game *game) //(x) button
+int close_window_x(t_game *game)
 {
     mlx_destroy_window(game->mlx, game->win);
     mlx_destroy_display(game->mlx);

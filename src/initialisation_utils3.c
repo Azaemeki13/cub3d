@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils3.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/21 16:22:13 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:01:50 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void rgb_error(t_game **game, char **str)
 {
     error_msg("RGB format incorrect.");
     ft_free_string_array(str);
-    free_game(game);
+    free_game_complete(game);
     exit(1);
 }
 

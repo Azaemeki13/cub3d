@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   doors.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:14:23 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/21 14:12:35 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:01:03 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ void validate_doors(t_game **game)
                 if (!is_door_valid(map, x, y, (*game)->map->map_width, (*game)->map->map_height))
                 {
                     error_msg("Door not properly placed between walls.");
-                    free_game(game);
+                    free_game_complete(game);
                     exit(EXIT_FAILURE);
                 }
             }

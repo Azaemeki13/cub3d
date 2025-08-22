@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_map.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:49:34 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/21 16:18:55 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:01:27 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	is_begin(char *line, t_game **game, bool *begin)
 		if (*p != '\n')
 		{
 			error_msg("map not valid.");
-			free_game(game);
+			free_game_complete(game);
 			exit(EXIT_FAILURE);
 		}
 		*begin = true;
@@ -47,7 +47,7 @@ void	is_end(char *line, t_game **game, bool *end, bool *begin)
 		if (!ft_isblank(p))
 		{
 			error_msg("map not valid.");
-			free_game(game);
+			free_game_complete(game);
 			exit(EXIT_FAILURE);
 		}
 		*end = true;
@@ -81,7 +81,7 @@ void	line_checker(char *map_line, t_game **game)
         if (!map_char_check(map_line[i]) && map_line[i] != '\n')
         {
             error_msg("Unauthorized character in map.");
-            free_game(game);
+            free_game_complete(game);
             exit(EXIT_FAILURE);
         }
         i++;
@@ -111,13 +111,13 @@ void validate_player_count(t_game **game)
     if (player_count == 0)
     {
         error_msg("No player start position found in map.");
-        free_game(game);
+        free_game_complete(game);
         exit(EXIT_FAILURE);
     }
     else if (player_count > 1)
     {
         error_msg("Multiple player start positions found in map.");
-        free_game(game);
+        free_game_complete(game);
         exit(EXIT_FAILURE);
     }
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/21 12:54:30 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:01:45 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ void extension_validator(char *str, t_game **game)
     if (!extension)
     {
         error_msg("Wrong extension.");
-        free_game(game);
+        free_game_complete(game);
         exit(1);
     }
     if ((ft_strncmp(extension, ".xpm", 4) != 0) && (!ft_isblank(str + 4)))
     {
         error_msg("Wrong extension || Line after expansion not blank.");
-        free_game(game);
+        free_game_complete(game);
         exit(1);
     }
 }
@@ -84,7 +84,7 @@ void texture_error_helper(void *image, char *nav, t_game **game)
     {
         error_msg("xpm file not found.");
         free(nav);
-        free_game(game);
+        free_game_complete(game);
         exit(1); 
     }
 }

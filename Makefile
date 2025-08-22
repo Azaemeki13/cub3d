@@ -6,7 +6,7 @@
 #    By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/19 16:52:11 by cauffret         ###   ########.fr        #
+#    Updated: 2025/08/22 11:57:11 by cauffret         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ SRCS =	src/main.c \
        src/initialisation_utils4.c \
        src/initialisation.c \
        src/memory.c \
+       src/memory2.c \
        src/miscs.c \
        src/parser.c \
        src/raycasting_engine.c \

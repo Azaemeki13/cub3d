@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window_management.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:40:22 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/21 13:19:57 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:03:01 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,8 @@ void create_window(t_game *game)
     if(game->win == NULL)
     {
         error_msg("Failed to create a new window");
-        mlx_destroy_display(game->mlx);
-        free(game->mlx);
-        return;
+        free_game_complete(&game);
+        exit(1);
     }
     mlx_key_hook(game->win, close_window_hook, game);
     mlx_hook(game->win, 17, 0, close_window_x, game);
@@ -30,9 +29,7 @@ int close_window_hook(int keycode, t_game *game)
 {
     if (keycode == ESCAPE_KEY)
     {
-        mlx_destroy_window(game->mlx, game->win);
-        mlx_destroy_display(game->mlx);
-        free(game->mlx);
+        free_game_complete(&game);
         exit(0);
     }
     return 0;
@@ -40,9 +37,7 @@ int close_window_hook(int keycode, t_game *game)
 
 int close_window_x(t_game *game)
 {
-    mlx_destroy_window(game->mlx, game->win);
-    mlx_destroy_display(game->mlx);
-    free(game->mlx);
+    free_game_complete(&game);
     exit(0);
     return (0);
 }

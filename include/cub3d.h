@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/21 16:01:10 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:05:45 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,7 @@ typedef struct s_game
     t_drawrange range;
     double wall_x;
     int last_mouse_x;
+    int cleanup_done;
     double mouse_sens;
     int     side_out;
     int     bits_per_pixel;
@@ -182,6 +183,13 @@ void	ft_free_string_array(char **arr);
 void ft_free_rgb(t_rgb *rgb);
 void ft_free_map(t_map **map);
 void free_game(t_game **game);
+void free_game_complete(t_game **game);
+
+//memory2.c
+
+void ft_free_map_extended(t_map **map, void *mlx);
+void ft_free_player(t_player *player);
+void ft_free_texture(t_text *texture, void *mlx);
 
 // initialisation.c
 

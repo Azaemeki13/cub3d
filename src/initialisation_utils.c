@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 10:51:19 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:01:32 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ void validate_textures(char *str, t_game **game)
     else
     {
         error_msg("Non texture or RGB or map found.");
-        free_game(game);
+        free_game_complete(game);
         exit(1);
         }
     }

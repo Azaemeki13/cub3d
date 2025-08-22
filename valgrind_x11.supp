@@ -1,0 +1,125 @@
+# ----------------------------
+# X11 reachable allocations
+# ----------------------------
+{
+   X11_reachable_malloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   obj:*libX11.so*
+}
+{
+   X11_reachable_calloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   obj:*libX11.so*
+}
+{
+   X11_reachable_realloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   obj:*libX11.so*
+}
+{
+   X11_reachable_strdup
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:strdup
+   ...
+   obj:*libX11.so*
+}
+
+# Cover pixmap / bitmap helpers frequently used by MLX cursor funcs
+{
+   X11_pixmap_path_malloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:XCreatePixmap
+   ...
+   obj:*libX11.so*
+}
+{
+   X11_bitmap_path_malloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:XCreateBitmapFromData
+   ...
+   obj:*libX11.so*
+}
+
+# ----------------------------
+# Xcursor reachable allocations
+# ----------------------------
+{
+   Xcursor_reachable_malloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   obj:*libXcursor.so*
+}
+{
+   Xcursor_reachable_calloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   obj:*libXcursor.so*
+}
+
+# ----------------------------
+# GLIBC dynamic loader (dlopen/ld-linux) reachable allocations
+# ----------------------------
+{
+   rtld_reachable_strdup
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:strdup
+   ...
+   obj:/lib*/ld-*.so*
+}
+{
+   rtld_reachable_calloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   obj:/lib*/ld-*.so*
+}
+
+# ----------------------------
+# Broad fallbacks for any remaining X11/Xcursor reachable noise
+# ----------------------------
+{
+   X11_any_reachable_malloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   obj:*libX11.so*
+}
+{
+   X11_any_reachable_calloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   obj:*libX11.so*
+}
+{
+   Xcursor_any_reachable_malloc
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   obj:*libXcursor.so*
+}

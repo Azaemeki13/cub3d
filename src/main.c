@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/21 13:19:34 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:00:36 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,11 @@ int main(int argc, char **argv)
     if (!validate_init(&game_data, path))
     {
         error_msg("Failed to initialise.\n");
+        free_game_complete(&game_data);
         exit(1);
     }
     create_window(game_data);
-    if (!game_data->win)
-        return (1);
+
     welcome_message();
     mlx_mouse_hide(game_data->mlx, game_data->win);
     mlx_hook(game_data->win, 2, 1L<<0, on_key_press, game_data);
