@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 11:58:39 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 12:01:50 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:03:28 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,7 @@ char **verify_syntax_rgb(t_game **game, char *str)
     char *nav;
     int i;
 
-    verification = ft_split(str, ',');
-    if (!verification)
-        rgb_error(game, verification);
-    if (count_strings(verification) != 3)
-        rgb_error(game, verification);
-    
+    verification = verify_syntax_rgb_helper(game, str);
     i = 0;
     while (i < 3)
     {
@@ -90,8 +85,7 @@ t_rgb *add_rgb(t_game **game, char **rgb)
         trimmed = rgb[i];
         while (*trimmed && ft_isspace(*trimmed))
             trimmed++;
-        rgb[i] = trimmed;
-        i++;
+        rgb[i++] = trimmed;
     }
     result->r = ft_atoi(rgb[0]);
     result->g = ft_atoi(rgb[1]);

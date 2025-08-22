@@ -6,52 +6,78 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 14:36:27 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/14 12:00:20 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:20:46 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int on_mouse_move(int x, int y,void *param)
+static int	iabs(int v)
 {
-    t_game *game = (t_game *)param;
-    int dx;
-    int dy;
-    double angle;
-    double  old_dir_x;
-    double  old_plane_x;
-    int center_x;
-    int center_y;
+	if (v < 0)
+		return (-v);
+	return (v);
+}
 
-    if (game->game_pause)
-    {
-        game->last_mouse_x = x;
-        return(0); 
-    }
-    center_x = WIN_WIDTH / 2;
-    center_y = WIN_HEIGHT / 2;
-    dx = x - center_x;
-    dy = y - center_y;
-    if (abs(dx) < 2 && abs(dy) < 2)
-        return (0);
-    if (abs(dx) >= 2)
-    {
-        angle = dx * game->mouse_sens;
-        old_dir_x = game->player->vector_dir->x;
-        game->player->vector_dir->x = game->player->vector_dir->x * cos(angle) - game->player->vector_dir->y * sin(angle);
-        game->player->vector_dir->y = old_dir_x * sin(angle) + game->player->vector_dir->y * cos(angle);
-        old_plane_x = game->player->camera_plane->x;
-        game->player->camera_plane->x = game->player->camera_plane->x * cos(angle) - game->player->camera_plane->y * sin(angle);
-        game->player->camera_plane->y = old_plane_x * sin(angle) + game->player->camera_plane->y * cos(angle);
-    }
-    if (abs(dy) >= 2)
-    {
-        game->player->pitch += -dy * game->mouse_sens * 300;
-        if (game->player->pitch > WIN_HEIGHT / 3)
-            game->player->pitch = WIN_HEIGHT / 3;
-        if (game->player->pitch < - WIN_HEIGHT / 3)
-            game->player->pitch = - WIN_HEIGHT / 3;
-    }
-    mlx_mouse_move(game->mlx, game->win, center_x, center_y);
-    return (0);
+static void	yaw_rotate(t_player *p, double angle)
+{
+	double	old_x;
+	double	old_px;
+
+	old_x = p->vector_dir->x;
+	p->vector_dir->x = p->vector_dir->x * cos(angle)
+		- p->vector_dir->y * sin(angle);
+	p->vector_dir->y = old_x * sin(angle)
+		+ p->vector_dir->y * cos(angle);
+	old_px = p->camera_plane->x;
+	p->camera_plane->x = p->camera_plane->x * cos(angle)
+		- p->camera_plane->y * sin(angle);
+	p->camera_plane->y = old_px * sin(angle)
+		+ p->camera_plane->y * cos(angle);
+}
+
+static void	pitch_move(t_game *g, int dy)
+{
+	double	delta;
+	int		limit;
+
+	delta = -dy * g->mouse_sens * 300.0;
+	g->player->pitch += delta;
+	limit = WIN_HEIGHT / 3;
+	if (g->player->pitch > limit)
+		g->player->pitch = limit;
+	if (g->player->pitch < -limit)
+		g->player->pitch = -limit;
+}
+
+static void	recenter_mouse(t_game *g)
+{
+	mlx_mouse_move(g->mlx, g->win, WIN_WIDTH / 2, WIN_HEIGHT / 2);
+}
+
+int	on_mouse_move(int x, int y, void *param)
+{
+	t_game	*game;
+	int		dx;
+	int		dy;
+
+	game = (t_game *)param;
+	if (game->game_pause)
+	{
+		game->last_mouse_x = x;
+		return (0);
+	}
+	dx = x - (WIN_WIDTH / 2);
+	dy = y - (WIN_HEIGHT / 2);
+	if (iabs(dx) < 2 && iabs(dy) < 2)
+	{
+		recenter_mouse(game);
+		return (0);
+	}
+	if (iabs(dx) >= 2)
+		yaw_rotate(game->player, dx * game->mouse_sens);
+	if (iabs(dy) >= 2)
+		pitch_move(game, dy);
+	recenter_mouse(game);
+	return (0);
 }

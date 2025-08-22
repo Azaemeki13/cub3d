@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 12:35:08 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 14:07:25 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,54 +71,6 @@ int map_details(char *line)
         return(0);
 }
 
-void validate_all_textures_present(t_game **game)
-{
-    t_map *map = (*game)->map;
-    
-    if (!map->no || !map->no->text_img)
-    {
-        error_msg("Missing NO texture path.");
-        free_game_complete(game);
-        exit(1);
-    }
-    if (!map->so || !map->so->text_img)
-    {
-        error_msg("Missing SO texture path.");
-        free_game_complete(game);
-        exit(1);
-    }
-    if (!map->ea || !map->ea->text_img)
-    {
-        error_msg("Missing EA texture path.");
-        free_game_complete(game);
-        exit(1);
-    }
-    if (!map->we || !map->we->text_img)
-    {
-        error_msg("Missing WE texture path.");
-        free_game_complete(game);
-        exit(1);
-    }
-    if (!map->door || !map->door->text_img)
-    {
-        error_msg("Missing DOOR texture path.");
-        free_game_complete(game);
-        exit(1);
-    }
-    if (!map->ceiling)
-    {
-        error_msg("Missing ceiling color (C).");
-        free_game_complete(game);
-        exit(1);
-    }
-    if (!map->floor)
-    {
-        error_msg("Missing floor color (F).");
-        free_game_complete(game);
-        exit(1);
-    }
-}
-
 void check_texture_files(t_game **game)
 {
     t_map *map;
@@ -155,13 +107,7 @@ void init_map(t_game **game, char *path)
 
     i = 0;
     map = (*game)->map;
-    count = count_lines(path);
-    if (count == 0)
-    {
-        error_msg("Cannot open file / File empty.");
-        free_game_complete(game);
-        exit(1);
-    }
+    init_map_helper(game, path, &count);
     fd = open(path, O_RDONLY);
     map->content = malloc(sizeof(char *) * (count + 1));
     map->content[count] = NULL;
@@ -173,7 +119,5 @@ void init_map(t_game **game, char *path)
     calculate_map_size(game);
     validate_doors(game);
     validate_player_count(game); // Add this line
-    (*game)->mouse_sens = 0.0008;
-    (*game)->last_mouse_x = WIN_WIDTH / 2;
     close(fd);
 }

@@ -1,18 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   color.c                                            :+:      :+:    :+:   */
+/*   initialisation_utils3_helper.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 10:47:16 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/22 12:48:17 by cauffret         ###   ########.fr       */
+/*   Created: 2025/08/22 13:00:28 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/22 13:03:04 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/cub3d.h"
+#include "cub3d.h"
 
-int create_rgb_color(int r, int g, int b)
+char **verify_syntax_rgb_helper(t_game **game, char *str)
 {
-    return (r << 16 | g << 8 | b);
+    char **verification;
+    
+    verification = ft_split(str, ',');
+    if (!verification)
+        rgb_error(game, verification);
+    if (count_strings(verification) != 3)
+        rgb_error(game, verification);
+    return (verification);
 }

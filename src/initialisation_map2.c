@@ -1,20 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error_management.c                                 :+:      :+:    :+:   */
+/*   initialisation_map2.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/04 12:52:22 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/22 12:51:14 by cauffret         ###   ########.fr       */
+/*   Created: 2025/08/22 12:52:28 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/22 12:53:13 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-void error_msg(const char *msg)
+void validate_player_helper (t_game **game, int player_count)
 {
-        write(2, "Error\n", 6);
-        write (2, msg, ft_strlen(msg));
-        write(2, "\n", 1);
+    if (player_count == 0)
+    {
+        error_msg("No player start position found in map.");
+        free_game_complete(game);
+        exit(EXIT_FAILURE);
+    }
+    else if (player_count > 1)
+    {
+        error_msg("Multiple player start positions found in map.");
+        free_game_complete(game);
+        exit(EXIT_FAILURE);
+    }
 }

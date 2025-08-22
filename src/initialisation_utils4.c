@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils4.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 11:16:22 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/21 16:47:54 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/22 14:18:36 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,11 @@ void init_orientation(t_game **game)
         set_vector(vector, 0.0, 1.0);
         set_vector(plane, -0.66, 0.0);
     }
+    init_orientation_help(orientation, vector, plane);
+}
+
+void init_orientation_help(char orientation, t_vector *vector, t_vector *plane)
+{
     if (orientation == 'E')
     {
         set_vector(vector, 1.0, 0.0);
@@ -57,6 +62,7 @@ void init_orientation(t_game **game)
         set_vector(plane, 0.0, -0.66);
     }
 }
+
 
 void init_start(t_game **game)
 {
@@ -85,53 +91,4 @@ void init_start(t_game **game)
         i++;
     }
     return ;
-}
-
-void calculate_map_size(t_game **game)
-{
-    char **map;
-    int i;
-    int j;
-    int max_length;
-    int y;
-    int len;
-    int x;
-    char *new_line;
-
-    j = 0;
-    max_length = 0;
-    map = (*game)->map->map;
-    while(map[j])
-    {
-        if (ft_isblank(map[j]))
-            break;
-        i = 0;
-        while(map[j][i] && map[j][i] != '\n')
-            i++;
-        if (i > max_length)
-            max_length = i;
-        j++;
-    }
-    (*game)->map->map_height = j;
-    (*game)->map->map_width = max_length;
-    y = 0;
-    while (y < j)
-    {
-        len = ft_strlen(map[y]);
-        if (len < max_length)
-        {
-            new_line = ft_calloc(max_length + 1, sizeof(char));
-            ft_strlcpy(new_line, map[y], len + 1);
-            x = len;
-            while (x < max_length)
-            {
-                new_line[x] = ' ';
-                x++;
-            }
-            new_line[max_length] = '\0';
-            free(map[y]);
-            map[y] = new_line;
-        }
-        y++;
-    }
 }

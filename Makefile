@@ -6,7 +6,7 @@
 #    By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/22 11:57:11 by cauffret         ###   ########.fr        #
+#    Updated: 2025/08/22 16:33:19 by cauffret         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,11 +20,15 @@ SRCS =	src/main.c \
        src/window_management.c \
        src/error_management.c \
        src/initialisation_map.c \
+       src/initialisation_map2.c \
        src/initialisation_utils.c \
        src/initialisation_utils2.c \
        src/initialisation_utils3.c \
+       src/initialisation_utils3_helper.c \
        src/initialisation_utils4.c \
+       src/initialisation_utils4_helper.c \
        src/initialisation.c \
+       src/initialisation_helper.c \
        src/memory.c \
        src/memory2.c \
        src/miscs.c \
@@ -33,12 +37,18 @@ SRCS =	src/main.c \
        src/rendering.c \
        src/color.c \
        src/minimap.c \
+       src/minimap2.c \
+       src/minimap3.c \
        src/raycasting_engine_utils.c \
+       src/raycasting_engine_utils2.c \
        src/key_hook_moves.c \
+       src/key_hook_moves_helper.c \
        src/moves.c \
        src/reticle.c \
        src/mini_dda.c \
+       src/mini_dda2.c \
        src/doors.c \
+       src/doors2.c \
        src/mouse_hook.c
 
 INCLUDE = -I include -I minilibx-linux

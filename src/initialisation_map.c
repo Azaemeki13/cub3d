@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 13:49:34 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 12:01:27 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:53:28 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,8 @@ void validate_player_count(t_game **game)
 {
     char **map = (*game)->map->map;
     int player_count = 0;
-    int x, y;
+    int x;
+    int y;
     
     y = 0;
     while (y < (*game)->map->map_height)
@@ -107,17 +108,5 @@ void validate_player_count(t_game **game)
         }
         y++;
     }
-    
-    if (player_count == 0)
-    {
-        error_msg("No player start position found in map.");
-        free_game_complete(game);
-        exit(EXIT_FAILURE);
-    }
-    else if (player_count > 1)
-    {
-        error_msg("Multiple player start positions found in map.");
-        free_game_complete(game);
-        exit(EXIT_FAILURE);
-    }
+    validate_player_helper(game, player_count);
 }

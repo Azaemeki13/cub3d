@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/22 12:05:45 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:34:48 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 768
-#define USE_RANGE 2.0
+#define USE_RANGE 1.3
 
 #define MINIMAP_TILE_SIZE 8
 #define MINIMAP_OFFSET_X 10
@@ -47,6 +47,7 @@
 #define EAST 1
 #define SOUTH 2
 #define WEST 3
+
 
 typedef struct s_door
 {
@@ -135,6 +136,64 @@ typedef struct s_drawrange
     int height;
 }t_drawrange;
 
+typedef struct s_dda
+{
+	t_ray	ray;
+	double	px;
+	double	py;
+	int		map_x;
+	int		map_y;
+	int		step_x;
+	int		step_y;
+	double	delta_x;
+	double	delta_y;
+	double	side_dist_x;
+	double	side_dist_y;
+	int		side;
+	double	t;
+}	t_dda;
+
+typedef struct s_px
+{
+	int	x;
+	int	y;
+    int color;
+}	t_px;
+
+typedef struct s_rect
+{
+	int	x;
+	int	y;
+	int	w;
+    int h;
+}	t_rect;
+
+typedef struct s_circle
+{
+    int cx;
+	int	cy;
+	int	r;
+}	t_circle;
+
+typedef struct s_mm
+{
+	int	tile;
+	t_circle clip;
+	int	start_x;
+	int	start_y;
+	int	end_x;
+	int	end_y;
+}	t_mm;
+
+typedef struct s_texspan {
+	int		x;
+	int		start;
+	int		end;
+	t_text	*tex;
+	int		tex_x;
+	double	step;
+}	t_texspan;
+
 typedef struct s_game 
 {
     void    *mlx;
@@ -199,6 +258,11 @@ int map_details(char *line);
 void check_texture_files(t_game **game);
 void init_map(t_game **game, char *path);
 
+// initialisation_helper.c
+
+void validate_all_textures_present(t_game **game);
+void init_map_helper(t_game **game, char *path, int *i);
+
 //initialisation_utils.c
 
 int texture_helper(char *str);
@@ -224,22 +288,34 @@ char **verify_syntax_rgb(t_game **game, char *str);
 t_rgb *add_rgb(t_game **game, char **rgb);
 void  malloc_texture(t_game **game);
 
+//initialisation_utils3_helper.c
+
+char **verify_syntax_rgb_helper(t_game **game, char *str);
+
 //initialisation_utils4.c
 
 int start_helper(char c);
 void set_vector(t_vector *vector, double x, double y);
 void init_orientation(t_game **game);
 void init_start(t_game **game);
+void init_orientation_help(char orientation, t_vector *vector, t_vector *plane);
+
+//initialisation_utils4_helper.c
+
 void calculate_map_size(t_game **game);
+
 
 //initialisation_map.c
 
 int	map_char_check(char c);
 void	line_checker(char *map_line, t_game **game);
-void validate_doors(t_game **game);
 void is_begin(char *line, t_game **game, bool *begin);
 void is_end(char *line, t_game **game, bool *end, bool *begin);
 void validate_player_count(t_game **game);
+
+//initialisation_map2.c
+
+void validate_player_helper (t_game **game, int player_count);
 
 // miscs.c 
 
@@ -259,7 +335,13 @@ void draw_vertical_line(t_game *game_data, int x, int start, int end, int color)
 
 t_text *get_wall_text(int wall_dir, t_game **game);
 void set_bytespp(t_game **game);
-void draw_textures(t_game **game, int x, int start, int end, t_text *text );
+int	clampi(int v, int lo, int hi);
+t_text *get_wall_text(int wall_dir, t_game **game);
+int	compute_tex_x(t_game *g, t_text *tex);
+
+//raycasting_engine_utils2.c
+
+void draw_textures(t_game **game, int x, int start, int end, t_text *text );;
 
 // rendering.c
 
@@ -274,10 +356,12 @@ int create_rgb_color(int r, int g, int b);
 int key_hook(int keycode, t_game *game);
 int get_wall_color(int wall_dir);
 
-//minimap.c
+//minimap.c && minimap2.c
 
-void draw_minimap(t_game *game);
-void draw_minimap_pixel(t_game *game, int x, int y, int color);
+void mm_fill_rect_clip(t_game *g, t_rect *r, t_circle *clip, int color);
+void draw_circle_border(t_game *g, t_circle *c, int thickness);
+void draw_minimap(t_game *g);
+int	mm_in_bounds(t_game *g, int mx, int my);
 
 // reticle.c
 
@@ -285,14 +369,27 @@ void draw_reticle(t_game **game, int thick, int size);
 
 // mini_dda.c
 
- int interact_cast(t_game *g);
-void door_use(t_game *game);
+void	dda_setup_dirs(t_game *g, t_dda *s);
+void	dda_setup_steps(t_dda *s);
+int	    dda_oob(t_game *g, t_dda *s);
+int     interact_cast(t_game *g);
+void    door_use(t_game *game);
+
+//mini_dda2.c
+
+int	dda_step_and_hit(t_game *g, t_dda *s);
+int	dda_compute_t(t_dda *s);
 
  // doors.c
 
  void doors_init(t_game *game);
 t_door *door_at(t_game *game, int x, int y);
- void doors_update(t_game *game, double dt);
+void validate_doors(t_game **game);
+
+
+ //doors2.c
+ 
+void doors_update(t_game *game, double dt);
  void door_toggle_at(t_game *game, int x, int y);
  
 // mouse_hook.c
@@ -312,5 +409,10 @@ int on_key_press(int keycode, t_game *game);
 int on_key_release(int keycode, t_game *game);
 bool collision_detection(t_game *game, double new_x, double new_y);
 void pause_screen(t_game *game);
+
+//key_hook_moves_helper.c
+
+void key_hook_helper(int keycode, t_game *game, double move_speed, double new_y);
+void key_hook_helper2(int keycode, t_game *game, double move_speed);
 
 #endif

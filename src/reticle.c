@@ -6,11 +6,21 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 11:18:51 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 16:14:04 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:08:21 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+void draw_minimap_pixel(t_game *game, int x, int y, int color)
+{
+    char *dst;
+
+    if (x < 0 || x >= WIN_WIDTH || y < 0 || y >= WIN_HEIGHT)
+        return;
+    dst = game->addr + (y * game->line_length + x * (game->bits_per_pixel / 8));
+    *(unsigned int*)dst = color;
+}
 
 void draw_reticle(t_game **game, int thick, int size)
 {

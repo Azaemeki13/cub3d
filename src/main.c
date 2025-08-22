@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:13:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/22 12:00:36 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/22 15:07:26 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,22 @@ void welcome_message(void)
     ft_putstr_fd("Press 'P' to pause.\n", 1);
 }
 
+static void main_helper(t_game **game_data, char *path)
+{
+    if (!validate_init(game_data, path))
+    {
+        error_msg("Failed to initialise.\n");
+        free_game_complete(game_data);
+        exit(1);
+    }
+}
+
 int main(int argc, char **argv)
 {
     t_game *game_data;
     char *path;
 
+    game_data = NULL;
     if (argc != 2)
     {
         error_msg("Wrong amount of arguments.");
@@ -39,14 +50,8 @@ int main(int argc, char **argv)
         exit(1);
     }
     path = *argv;
-    if (!validate_init(&game_data, path))
-    {
-        error_msg("Failed to initialise.\n");
-        free_game_complete(&game_data);
-        exit(1);
-    }
+    main_helper(&game_data, path);
     create_window(game_data);
-
     welcome_message();
     mlx_mouse_hide(game_data->mlx, game_data->win);
     mlx_hook(game_data->win, 2, 1L<<0, on_key_press, game_data);

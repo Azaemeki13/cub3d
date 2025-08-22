@@ -1,0 +1,126 @@
+==1433780== Memcheck, a memory error detector
+==1433780== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1433780== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1433780== Command: ./cub3D ./maps/scary.cub
+==1433780== Parent PID: 1433777
+==1433780== 
+==1433780== 
+==1433780== HEAP SUMMARY:
+==1433780==     in use at exit: 31,567 bytes in 400 blocks
+==1433780==   total heap usage: 3,405 allocs, 3,005 frees, 300,293 bytes allocated
+==1433780== 
+==1433780== 38 bytes in 1 blocks are still reachable in loss record 12 of 60
+==1433780==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1433780==    by 0x40271DF: malloc (rtld-malloc.h:56)
+==1433780==    by 0x40271DF: strdup (strdup.c:42)
+==1433780==    by 0x4016A66: _dl_load_cache_lookup (dl-cache.c:527)
+==1433780==    by 0x400A981: _dl_map_object (dl-load.c:2193)
+==1433780==    by 0x400E9A8: dl_open_worker_begin (dl-open.c:534)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400DF99: dl_open_worker (dl-open.c:782)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400E34D: _dl_open (dl-open.c:883)
+==1433780==    by 0x4B3E63B: dlopen_doit (dlopen.c:56)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x4C22B62: _dl_catch_error (dl-error-skeleton.c:227)
+==1433780== 
+==1433780== 38 bytes in 1 blocks are still reachable in loss record 13 of 60
+==1433780==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1433780==    by 0x400DD20: malloc (rtld-malloc.h:56)
+==1433780==    by 0x400DD20: _dl_new_object (dl-object.c:199)
+==1433780==    by 0x4008C82: _dl_map_object_from_fd (dl-load.c:1063)
+==1433780==    by 0x400A600: _dl_map_object (dl-load.c:2327)
+==1433780==    by 0x400E9A8: dl_open_worker_begin (dl-open.c:534)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400DF99: dl_open_worker (dl-open.c:782)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400E34D: _dl_open (dl-open.c:883)
+==1433780==    by 0x4B3E63B: dlopen_doit (dlopen.c:56)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x4C22B62: _dl_catch_error (dl-error-skeleton.c:227)
+==1433780== 
+==1433780== 75 bytes in 2 blocks are still reachable in loss record 39 of 60
+==1433780==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1433780==    by 0x40271DF: malloc (rtld-malloc.h:56)
+==1433780==    by 0x40271DF: strdup (strdup.c:42)
+==1433780==    by 0x4016A66: _dl_load_cache_lookup (dl-cache.c:527)
+==1433780==    by 0x400A981: _dl_map_object (dl-load.c:2193)
+==1433780==    by 0x4003494: openaux (dl-deps.c:64)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x4003C7B: _dl_map_object_deps (dl-deps.c:248)
+==1433780==    by 0x400EA0E: dl_open_worker_begin (dl-open.c:592)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400DF99: dl_open_worker (dl-open.c:782)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400E34D: _dl_open (dl-open.c:883)
+==1433780== 
+==1433780== 75 bytes in 2 blocks are still reachable in loss record 40 of 60
+==1433780==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1433780==    by 0x400DD20: malloc (rtld-malloc.h:56)
+==1433780==    by 0x400DD20: _dl_new_object (dl-object.c:199)
+==1433780==    by 0x4008C82: _dl_map_object_from_fd (dl-load.c:1063)
+==1433780==    by 0x400A600: _dl_map_object (dl-load.c:2327)
+==1433780==    by 0x4003494: openaux (dl-deps.c:64)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x4003C7B: _dl_map_object_deps (dl-deps.c:248)
+==1433780==    by 0x400EA0E: dl_open_worker_begin (dl-open.c:592)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400DF99: dl_open_worker (dl-open.c:782)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400E34D: _dl_open (dl-open.c:883)
+==1433780== 
+==1433780== 384 bytes in 3 blocks are still reachable in loss record 48 of 60
+==1433780==    at 0x484DA83: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1433780==    by 0x40162DC: calloc (rtld-malloc.h:44)
+==1433780==    by 0x40162DC: _dl_check_map_versions (dl-version.c:273)
+==1433780==    by 0x400ED13: dl_open_worker_begin (dl-open.c:600)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400DF99: dl_open_worker (dl-open.c:782)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400E34D: _dl_open (dl-open.c:883)
+==1433780==    by 0x4B3E63B: dlopen_doit (dlopen.c:56)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x4C22B62: _dl_catch_error (dl-error-skeleton.c:227)
+==1433780==    by 0x4B3E12D: _dlerror_run (dlerror.c:138)
+==1433780==    by 0x4B3E6C7: dlopen_implementation (dlopen.c:71)
+==1433780==    by 0x4B3E6C7: dlopen@@GLIBC_2.34 (dlopen.c:81)
+==1433780== 
+==1433780== 1,208 bytes in 1 blocks are still reachable in loss record 54 of 60
+==1433780==    at 0x484DA83: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1433780==    by 0x400DA02: calloc (rtld-malloc.h:44)
+==1433780==    by 0x400DA02: _dl_new_object (dl-object.c:92)
+==1433780==    by 0x4008C82: _dl_map_object_from_fd (dl-load.c:1063)
+==1433780==    by 0x400A600: _dl_map_object (dl-load.c:2327)
+==1433780==    by 0x400E9A8: dl_open_worker_begin (dl-open.c:534)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400DF99: dl_open_worker (dl-open.c:782)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400E34D: _dl_open (dl-open.c:883)
+==1433780==    by 0x4B3E63B: dlopen_doit (dlopen.c:56)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x4C22B62: _dl_catch_error (dl-error-skeleton.c:227)
+==1433780== 
+==1433780== 2,415 bytes in 2 blocks are still reachable in loss record 56 of 60
+==1433780==    at 0x484DA83: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1433780==    by 0x400DA02: calloc (rtld-malloc.h:44)
+==1433780==    by 0x400DA02: _dl_new_object (dl-object.c:92)
+==1433780==    by 0x4008C82: _dl_map_object_from_fd (dl-load.c:1063)
+==1433780==    by 0x400A600: _dl_map_object (dl-load.c:2327)
+==1433780==    by 0x4003494: openaux (dl-deps.c:64)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x4003C7B: _dl_map_object_deps (dl-deps.c:248)
+==1433780==    by 0x400EA0E: dl_open_worker_begin (dl-open.c:592)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400DF99: dl_open_worker (dl-open.c:782)
+==1433780==    by 0x4C22A97: _dl_catch_exception (dl-error-skeleton.c:208)
+==1433780==    by 0x400E34D: _dl_open (dl-open.c:883)
+==1433780== 
+==1433780== LEAK SUMMARY:
+==1433780==    definitely lost: 0 bytes in 0 blocks
+==1433780==    indirectly lost: 0 bytes in 0 blocks
+==1433780==      possibly lost: 0 bytes in 0 blocks
+==1433780==    still reachable: 4,233 bytes in 12 blocks
+==1433780==         suppressed: 27,334 bytes in 388 blocks
+==1433780== 
+==1433780== For lists of detected and suppressed errors, rerun with: -s
+==1433780== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 2 from 1)

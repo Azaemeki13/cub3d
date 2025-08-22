@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   color.c                                            :+:      :+:    :+:   */
+/*   minimap3.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 10:47:16 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/22 12:48:17 by cauffret         ###   ########.fr       */
+/*   Created: 2025/08/22 16:21:26 by cauffret          #+#    #+#             */
+/*   Updated: 2025/08/22 16:21:56 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/cub3d.h"
+#include "cub3d.h"
 
-int create_rgb_color(int r, int g, int b)
+int	mm_in_bounds(t_game *g, int mx, int my)
 {
-    return (r << 16 | g << 8 | b);
+	return (mx >= 0 && my >= 0
+		&& mx < g->map->map_width && my < g->map->map_height);
 }
