@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine_utils.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 09:51:29 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 16:33:54 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:19:13 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

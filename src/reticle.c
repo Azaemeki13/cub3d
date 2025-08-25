@@ -6,7 +6,7 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 11:18:51 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 16:08:21 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:10:38 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void	draw_reticle(t_game **game, int thick, int size)
 	y = cy - size;
 	if (size <= gap)
 		return ;
-	// top half of arm
 	while (y <= (cy - gap - 1))
 	{
 		x = x_start;
@@ -52,7 +51,6 @@ void	draw_reticle(t_game **game, int thick, int size)
 			draw_minimap_pixel((*game), x++, y, create_rgb_color(255, 0, 0));
 		y++;
 	}
-	// middle now
 	y = y_start;
 	while (y <= y_end)
 	{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 10:36:40 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 12:56:16 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 13:56:35 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,39 +29,6 @@ void	extension_validator(char *str, t_game **game)
 		free_game_complete(game);
 		exit(1);
 	}
-}
-
-void	case_texture_helper(t_game **game, int option, char *str)
-{
-	char	*nav;
-	t_map	*map;
-	t_text	*text;
-
-	nav = NULL;
-	map = (*game)->map;
-	if (option == 3)
-	{
-		text = map->so;
-		nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
-		text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width,
-				&text->height);
-		texture_error_helper(text->text_img, nav, game);
-		text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl,
-				&text->end);
-	}
-	if (option == 4)
-	{
-		text = map->we;
-		nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
-		text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width,
-				&text->height);
-		texture_error_helper(text->text_img, nav, game);
-		text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl,
-				&text->end);
-	}
-	case_texture_door(game, option, str);
-	if (nav)
-		free(nav);
 }
 
 void	case_texture_door(t_game **game, int option, char *str)
@@ -110,7 +77,7 @@ void	init_player(t_game **game)
 	ft_memset(player->camera_plane, 0, sizeof(t_vector));
 	ft_memset(player->vector_dir, 0, sizeof(t_vector));
 	player->pitch = 0;
-	player->orientation = 'N'; // not sure bout that one
+	player->orientation = 'N';
 	init_start(game);
 	init_orientation(game);
 }

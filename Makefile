@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+         #
+#    By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/22 16:33:19 by cauffret         ###   ########.fr        #
+#    Updated: 2025/08/25 17:20:22 by chsauvag         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRCS =	src/main.c \
        src/initialisation_utils3_helper.c \
        src/initialisation_utils4.c \
        src/initialisation_utils4_helper.c \
+       src/initialisation_utils5.c \
        src/initialisation.c \
        src/initialisation_helper.c \
        src/memory.c \
@@ -41,15 +42,17 @@ SRCS =	src/main.c \
        src/minimap3.c \
        src/raycasting_engine_utils.c \
        src/raycasting_engine_utils2.c \
+       src/raycasting_engine_utils3.c \
        src/key_hook_moves.c \
        src/key_hook_moves_helper.c \
-       src/moves.c \
        src/reticle.c \
        src/mini_dda.c \
        src/mini_dda2.c \
        src/doors.c \
        src/doors2.c \
-       src/mouse_hook.c
+       src/doors3.c \
+       src/mouse_hook.c \
+       src/raycasting_door_handling.c \
 
 INCLUDE = -I include -I minilibx-linux
 MLX_LIB = -L ./minilibx-linux -lmlx -lXext -lX11

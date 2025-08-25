@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   doors.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 16:14:23 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 12:51:10 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 11:39:40 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../include/cub3d.h"
 
 static void	init_cell(t_game *g, int i, int x, int y)
 {
@@ -65,44 +65,13 @@ t_door	*door_at(t_game *game, int x, int y)
 	return (&game->doors[y * w + x]);
 }
 
-static bool	is_door_valid(char **map, int x, int y, int map_width,
-		int map_height)
+bool	has_valid_walls(char **map, int x, int y)
 {
 	bool	horizontal_walls;
 	bool	vertical_walls;
 
-	if (x <= 0 || x >= map_width - 1 || y <= 0 || y >= map_height - 1)
-		return (false);
 	horizontal_walls = (map[y][x - 1] == '1' && map[y][x + 1] == '1');
 	vertical_walls = (map[y - 1][x] == '1' && map[y + 1][x] == '1');
-	return (horizontal_walls && !vertical_walls) || (!horizontal_walls
-		&& vertical_walls);
-}
-
-void	validate_doors(t_game **game)
-{
-	char	**map;
-
-	map = (*game)->map->map;
-	int x, y;
-	y = 0;
-	while (y < (*game)->map->map_height)
-	{
-		x = 0;
-		while (x < (*game)->map->map_width)
-		{
-			if (map[y][x] == 'D' || map[y][x] == 'd')
-			{
-				if (!is_door_valid(map, x, y, (*game)->map->map_width,
-						(*game)->map->map_height))
-				{
-					error_msg("Door not properly placed between walls.");
-					free_game_complete(game);
-					exit(EXIT_FAILURE);
-				}
-			}
-			x++;
-		}
-		y++;
-	}
+	return ((horizontal_walls && !vertical_walls) || (!horizontal_walls
+			&& vertical_walls));
 }

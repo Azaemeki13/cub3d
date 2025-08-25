@@ -3,24 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:15:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/19 17:47:27 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:08:47 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/*double ray_casting(int x, t_player player)
+/*double	ray_casting(int x, t_player *player, int *wall_direction,
+		t_game *game,
+		double *wall_x)
 {
-	double	camera_x;
-	int		wall_hit;
-		t_ray ray;
-		t_vector side_dist;
-	int		hit;
-	int		side;
-	double	perp_wall_dist;
 	double	camera_x;
 	t_ray	ray;
 	int		map_x;
@@ -50,77 +45,6 @@
 	double	y_hit;
 	double	x_hit;
 
-	wall_hit = 0;
-	while(x < WIN_WIDTH)
-	{
-		///////////////////// RAY DIRECTION CALCULATIONS ///////////////////////
-		camera_x = 2 * x / (double)WIN_WIDTH - 1; // that's 2 * 0 / 1024 - 1 =
-			-1.0 (far left) if camera_x = 0
-		ray->ray_dir.x = player.dir.x + player.plane.x * camera_x;
-			// ray direction in x ray_dir = center_direction + spread_left_right
-		ray->ray_dir.y = player.dir.y + player.plane.y * camera_x;
-		ray.map.x = (int)player.pos.x;
-			//takes the current floating point and converts
-		ray.map.y = (int)player.pos.y;
-			//it to an integer to indicate the current tile the character is standing on
-		delta.x = fabs(1 / ray->ray_dir.x);
-			//delta x is the distance to the next vertical line
-		delta.y = fabs(1 / ray->ray_dir.y);
-			//delta y is the distance to the next horizontal line
-		/////////////////// STEP DIRECTIONS CALCULATIONS //////////////////////
-		if(ray.ray_dir.x < 0) //left
-		{
-			step_dir_x = -1; //if ray direction is negative, we step left
-			side_dist.x = (player.pos.x - ray.map.x) * delta.x;
-			//side is the distance to hit the edge of the current tile to the left
-		}
-		else if (ray.ray_dir.x > 0) //right
-		{
-			step_dir_x = 1;
-			side_dist.x = (ray.map.x + 1.0 - player.pos.x) * delta.x;
-		}
-		if(ray.ray_dir.y < 0) //up
-		{
-			step_dir_y = -1;
-			side_dist.y = (player.pos.y - ray.map.y) * delta.y;
-		}
-		else if (ray.ray_dir.y > 0) //down
-		{
-			step_dir_y = 1;
-			side_dist.y = (ray.map.y + 1.0 - player.pos.y) * delta.y;
-		}
-		/////////////////// DDA LOOP //////////////////////
-	hit = 0;
-	side = 0;
-	while (hit == 0)
-	{
-		if (side_dist_x < side_dist_y)
-		{
-			side_dist_x += delta_x;
-			map_x += step_x;
-			side = 0;
-		}
-		else
-		{
-			side_dist_y += delta_y;
-			map_y += step_y;
-			side = 1;
-		}
-		if (world_map[map_x][map_y] > 0)
-			hit = 1;
-	}
-	if (side == 0)
-		perp_wall_dist = (map_x - player.pos.x + (1 - step_x) / 2)
-			/ ray.ray_dir.x;
-	else
-		perp_wall_dist = (map_y - player.pos.y + (1 - step_y) / 2)
-			/ ray.ray_dir.y;
-	printf("Column %d hit wall at distance: %f\n", x, perp_wall_dist);
-	return (perp_wall_dist);
-}*/
-double	ray_casting(int x, t_player *player, int *wall_direction, t_game *game,
-		double *wall_x)
-{
 	camera_x = 2.0 * (double)x / (double)WIN_WIDTH - 1.0;
 	ray.ray_dir.x = player->vector_dir->x + player->camera_plane->x * camera_x;
 	ray.ray_dir.y = player->vector_dir->y + player->camera_plane->y * camera_x;
@@ -326,8 +250,6 @@ double	ray_casting(int x, t_player *player, int *wall_direction, t_game *game,
 	return (perp_wall_dist);
 }
 
-// wall height : line_height = (int)(WIN_HEIGHT / perp_wall_dist);
-
 t_drawrange	calculate_draw_range(double perp_wall_dist, t_game *game)
 {
 	t_drawrange	range;
@@ -339,9 +261,7 @@ t_drawrange	calculate_draw_range(double perp_wall_dist, t_game *game)
 		range.height = WIN_HEIGHT;
 		return (range);
 	}
-	// calculate the height of the wall line
 	range.height = (int)(WIN_HEIGHT / perp_wall_dist);
-	// calculate the start and end of the wall line
 	range.start = (WIN_HEIGHT - range.height) / 2 + game->player->pitch;
 	range.end = (WIN_HEIGHT + range.height) / 2 + game->player->pitch;
 	return (range);
@@ -350,8 +270,10 @@ t_drawrange	calculate_draw_range(double perp_wall_dist, t_game *game)
 void	draw_vertical_line(t_game *game_data, int x, int start, int end,
 		int color)
 {
-	int y;
-	char *dst;
+	int		y;
+	char	*dst;
+	double	camera_x;
+	double	camera_x;
 
 	if (start < 0)
 		start = 0;
@@ -359,15 +281,127 @@ void	draw_vertical_line(t_game *game_data, int x, int start, int end,
 		end = WIN_HEIGHT - 1;
 	if (start > end)
 		return ;
-
 	y = start;
 	while (y <= end)
 	{
 		dst = game_data->addr + (y * game_data->line_length + x
 				* (game_data->bits_per_pixel / 8));
-		// frame buffer address calculation for rendering
 		*(unsigned int *)dst = color;
-		// set pixel color
 		y++;
 	}
+}*/
+static void	init_ray(t_raycaster *rc, int x, t_player *player)
+{
+	double	camera_x;
+
+	camera_x = 2.0 * (double)x / (double)WIN_WIDTH - 1.0;
+	rc->ray.ray_dir.x = player->vector_dir->x + player->camera_plane->x
+		* camera_x;
+	rc->ray.ray_dir.y = player->vector_dir->y + player->camera_plane->y
+		* camera_x;
+	rc->map_x = (int)player->player_pos->x;
+	rc->map_y = (int)player->player_pos->y;
+	rc->px = player->player_pos->x;
+	rc->py = player->player_pos->y;
+}
+
+static void	set_deltas(t_raycaster *rc)
+{
+	if (rc->ray.ray_dir.x == 0.0)
+		rc->delta_x = 1e30;
+	else
+		rc->delta_x = fabs(1.0 / rc->ray.ray_dir.x);
+	if (rc->ray.ray_dir.y == 0.0)
+		rc->delta_y = 1e30;
+	else
+		rc->delta_y = fabs(1.0 / rc->ray.ray_dir.y);
+}
+
+static void	set_steps(t_raycaster *rc)
+{
+	if (rc->ray.ray_dir.x < 0.0)
+	{
+		rc->step_x = -1;
+		rc->side_dist_x = (rc->px - (double)rc->map_x) * rc->delta_x;
+	}
+	else
+	{
+		rc->step_x = 1;
+		rc->side_dist_x = ((double)rc->map_x + 1.0 - rc->px) * rc->delta_x;
+	}
+	if (rc->ray.ray_dir.y < 0.0)
+	{
+		rc->step_y = -1;
+		rc->side_dist_y = (rc->py - (double)rc->map_y) * rc->delta_y;
+	}
+	else
+	{
+		rc->step_y = 1;
+		rc->side_dist_y = ((double)rc->map_y + 1.0 - rc->py) * rc->delta_y;
+	}
+}
+
+static int	dda_step(t_raycaster *rc, t_game *game)
+{
+	if (rc->side_dist_x < rc->side_dist_y)
+	{
+		rc->side_dist_x += rc->delta_x;
+		rc->map_x += rc->step_x;
+		rc->side = 0;
+	}
+	else
+	{
+		rc->side_dist_y += rc->delta_y;
+		rc->map_y += rc->step_y;
+		rc->side = 1;
+	}
+	if (rc->map_x < 0 || rc->map_x >= game->map->map_width || rc->map_y < 0
+		|| rc->map_y >= game->map->map_height)
+	{
+		game->hit_tile = '1';
+		return (1);
+	}
+	rc->tile = game->map->map[rc->map_y][rc->map_x];
+	return (0);
+}
+
+double	ray_casting(int x, t_player *player, int *wall_direction, t_game *game,
+		double *wall_x)
+{
+	t_raycaster	rc;
+	int			hit;
+	double		door_dist;
+
+	init_ray(&rc, x, player);
+	set_deltas(&rc);
+	set_steps(&rc);
+	hit = 0;
+	while (!hit)
+	{
+		if (dda_step(&rc, game))
+			break ;
+		if (rc.tile == 'D')
+		{
+			door_dist = handle_door_collision(&rc, game, wall_direction,
+					wall_x);
+			if (door_dist >= 0.0)
+				return (door_dist);
+		}
+		else if (rc.tile == '1')
+		{
+			hit = 1;
+			game->hit_tile = '1';
+		}
+	}
+	*wall_direction = get_wall_direction(rc.side, rc.step_x, rc.step_y);
+	compute_perp_dist(&rc);
+	if (rc.side == 0)
+		*wall_x = rc.py + rc.perp_wall_dist * rc.ray.ray_dir.y;
+	else
+		*wall_x = rc.px + rc.perp_wall_dist * rc.ray.ray_dir.x;
+	*wall_x -= floor(*wall_x);
+	game->side_out = rc.side;
+	game->ray_dir.x = rc.ray.ray_dir.x;
+	game->ray_dir.y = rc.ray.ray_dir.y;
+	return (rc.perp_wall_dist);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation_utils.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 12:01:32 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 13:39:40 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,40 +32,6 @@ int	texture_helper(char *str)
 		return (7);
 	else
 		return (0);
-}
-
-void	case_texture(t_game **game, int option, char *str)
-{
-	char	*nav;
-	t_map	*map;
-	t_text	*text;
-
-	nav = NULL;
-	map = (*game)->map;
-	extension_validator(str, game);
-	if (option == 1)
-	{
-		text = map->no;
-		nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
-		text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width,
-				&text->height);
-		texture_error_helper(text->text_img, nav, game);
-		text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl,
-				&text->end);
-	}
-	if (option == 2)
-	{
-		text = map->ea;
-		nav = ft_strndup(str, (size_t)ft_special_len(str, ' '));
-		text->text_img = mlx_xpm_file_to_image((*game)->mlx, nav, &text->width,
-				&text->height);
-		texture_error_helper(text->text_img, nav, game);
-		text->addr = mlx_get_data_addr(text->text_img, &text->bpp, &text->sl,
-				&text->end);
-	}
-	case_texture_helper(game, option, str);
-	if (nav)
-		free(nav);
 }
 
 void	case_rgb(t_game **game, int option, char *str)

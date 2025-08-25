@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   doors2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 12:49:18 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 15:27:41 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:05:32 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../include/cub3d.h"
 
 void	door_toggle_at(t_game *game, int x, int y)
 {
@@ -32,6 +32,24 @@ void	door_toggle_at(t_game *game, int x, int y)
 		door->target = 1;
 }
 
+static void	update_single_door(t_door *door, double step)
+{
+	if (!door->active)
+		return ;
+	if (door->target && door->frac < 1.0)
+	{
+		door->frac += step;
+		if (door->frac > 1.0)
+			door->frac = 1.0;
+	}
+	else if (!door->target && door->frac > 0.0)
+	{
+		door->frac -= step;
+		if (door->frac < 0.0)
+			door->frac = 0.0;
+	}
+}
+
 void	doors_update(t_game *game, double dt)
 {
 	int		i;
@@ -48,19 +66,6 @@ void	doors_update(t_game *game, double dt)
 	while (i < n)
 	{
 		door = &game->doors[i++];
-		if (!door->active)
-			continue ;
-		if (door->target && door->frac < 1.0)
-		{
-			door->frac += step;
-			if (door->frac > 1.0)
-				door->frac = 1.0;
-		}
-		else if (!door->target && door->frac > 0.0)
-		{
-			door->frac -= step;
-			if (door->frac < 0.0)
-				door->frac = 0.0;
-		}
+		update_single_door(door, step);
 	}
 }

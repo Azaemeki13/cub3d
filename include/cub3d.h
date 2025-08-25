@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/22 16:34:48 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:28:26 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,26 @@ typedef struct s_game
     int game_pause;
     int hit_tile;
     int show_minimap;
+    int     current_color;
 } t_game;
+
+typedef struct s_raycaster
+{
+    t_ray        ray;
+    int          map_x;
+    int          map_y;
+    double       delta_x;
+    double       delta_y;
+    int          step_x;
+    int          step_y;
+    double       side_dist_x;
+    double       side_dist_y;
+    int          side;
+    double       perp_wall_dist;
+    double       px;
+    double       py;
+    char         tile;
+}   t_raycaster;
 
 //window_management.c
 
@@ -266,10 +285,12 @@ void init_map_helper(t_game **game, char *path, int *i);
 //initialisation_utils.c
 
 int texture_helper(char *str);
-void case_texture(t_game **game, int option, char *str);
 void case_rgb(t_game **game, int option, char *str);
 void add_texture(t_game **game, int option, char *str);
 void validate_textures(char *str, t_game **game);
+void	load_texture(t_game **game, t_text *text, char *str);
+void	load_texture2(t_game **game, t_text *text, char *str);
+void	case_texture(t_game **game, int option, char *str);
 
 //initialisation_utils2.c
 
@@ -329,11 +350,10 @@ int count_strings(char **str);
 
 double ray_casting(int x, t_player *player, int *wall_direction, t_game *game, double *wall_x);
 t_drawrange calculate_draw_range(double perp_wall_dist, t_game *game);
-void draw_vertical_line(t_game *game_data, int x, int start, int end, int color);
+void draw_vertical_line(t_game *game_data, int x, int start, int end);
 
 // raycasting_engine_utils.c
 
-t_text *get_wall_text(int wall_dir, t_game **game);
 void set_bytespp(t_game **game);
 int	clampi(int v, int lo, int hi);
 t_text *get_wall_text(int wall_dir, t_game **game);
@@ -341,7 +361,7 @@ int	compute_tex_x(t_game *g, t_text *tex);
 
 //raycasting_engine_utils2.c
 
-void draw_textures(t_game **game, int x, int start, int end, t_text *text );;
+void draw_textures(t_game **game, int x, int start, int end, t_text *text );
 
 // rendering.c
 
@@ -382,15 +402,12 @@ int	dda_compute_t(t_dda *s);
 
  // doors.c
 
- void doors_init(t_game *game);
+void doors_init(t_game *game);
 t_door *door_at(t_game *game, int x, int y);
 void validate_doors(t_game **game);
-
-
- //doors2.c
- 
 void doors_update(t_game *game, double dt);
- void door_toggle_at(t_game *game, int x, int y);
+void door_toggle_at(t_game *game, int x, int y);
+bool	has_valid_walls(char **map, int x, int y);
  
 // mouse_hook.c
 
@@ -398,10 +415,10 @@ int on_mouse_move(int x, int y,void *param);
 
 // moves.c
 
-void move_forward(t_game *game);
-void move_backwards(t_game *game);
-void move_left(t_game *game);
-void move_right(t_game *game);
+//void move_forward(t_game *game);
+//void move_backwards(t_game *game);
+//void move_left(t_game *game);
+//void move_right(t_game *game);
 
 // key_hook_moves.c
 
@@ -412,7 +429,18 @@ void pause_screen(t_game *game);
 
 //key_hook_moves_helper.c
 
-void key_hook_helper(int keycode, t_game *game, double move_speed, double new_y);
-void key_hook_helper2(int keycode, t_game *game, double move_speed);
+void	move_forward(t_game *game, double move_speed);
+void	move_backward(t_game *game, double move_speed);
+void	move_left(t_game *game, double move_speed);
+void	move_right(t_game *game, double move_speed);
+void	key_hook_helper(int keycode, t_game *game, double move_speed);
+
+
+int		get_wall_sign(t_game *game, int map_x, int map_y, int side);
+void	set_collision_result(t_game *game, t_raycaster *rc, int *wall_direction);
+double	handle_vertical_door(t_raycaster *rc, t_game *game, int *wall_direction, double *wall_x);
+double	handle_horizontal_door(t_raycaster *rc, t_game *game, int *wall_direction, double *wall_x);
+double	handle_door_collision(t_raycaster *rc, t_game *game, int *wall_direction, double *wall_x);
+double	compute_perp_dist(t_raycaster *rc);
 
 #endif

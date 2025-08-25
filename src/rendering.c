@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:58:49 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/21 16:01:02 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/25 17:28:06 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ int	render_frame(void *param)
 	int		start;
 	int		end;
 
-	// int			color;
 	game = (t_game *)param;
 	game_update(game);
 	if (!game->img)
@@ -52,15 +51,18 @@ int	render_frame(void *param)
 		if (end >= WIN_HEIGHT)
 			end = WIN_HEIGHT - 1;
 		if (start > 0)
-			draw_vertical_line(game, x, 0, start - 1, ceiling_color);
+		{
+			game->current_color = ceiling_color;
+			draw_vertical_line(game, x, 0, start - 1);
+		}
 		tex = get_wall_text(wall_dir, &game);
 		if (start <= end)
 			draw_textures(&game, x, start, end, tex);
 		if (end < WIN_HEIGHT - 1)
-			draw_vertical_line(game, x, end + 1, WIN_HEIGHT - 1, floor_color);
-		// calculate tex_x
-		// color = get_wall_color(wall_dir);
-		// color = get_shade_color(color, perp_dist);
+		{
+			game->current_color = floor_color;
+			draw_vertical_line(game, x, end + 1, WIN_HEIGHT - 1);
+		}
 		x++;
 	}
 	if (game->show_minimap)
@@ -94,18 +96,20 @@ int	game_update(t_game *game)
 	double		old_dir_x;
 	double		old_plane_x;
 	double		rotation_speed;
+	double		move_speed;
 
 	rotation_speed = 0.1;
+	move_speed = 0.05;
 	keys = game->buttons;
 	doors_update(game, 0.0);
 	if (keys.w)
-		move_forward(game);
+		move_forward(game, move_speed);
 	if (keys.s)
-		move_backwards(game);
+		move_backward(game, move_speed);
 	if (keys.q)
-		move_left(game);
+		move_left(game, move_speed);
 	if (keys.d)
-		move_right(game);
+		move_right(game, move_speed);
 	if (keys.rotate_left)
 	{
 		old_dir_x = game->player->vector_dir->x;

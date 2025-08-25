@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_hook_moves.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 12:51:32 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/22 14:19:08 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/25 14:17:56 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ bool	collision_detection(t_game *game, double new_x, double new_y)
 	map_y = (int)new_y;
 	tile = game->map->map[map_y][map_x];
 	if (map_x < 0 || map_x >= game->map->map_width || map_y < 0
-		|| map_y >= game->map->map_height) // out of bounds
+		|| map_y >= game->map->map_height)
 		return (false);
-	if (tile == '1') // hit a wall
+	if (tile == '1')
 		return (false);
 	else if (tile == 'D')
 	{
@@ -106,8 +106,7 @@ int	key_hook(int keycode, t_game *game)
 
 	move_speed = 0.5;
 	new_y = 0;
-	key_hook_helper(keycode, game, move_speed, new_y);
-	key_hook_helper2(keycode, game, move_speed);
+	key_hook_helper(keycode, game, move_speed);
 	if (keycode == A)
 	{
 		new_x = game->player->player_pos->x + game->player->vector_dir->y
