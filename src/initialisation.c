@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/25 11:48:21 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/26 17:27:34 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,13 @@ void	init_map(t_game **game, char *path)
 		map->content[i++] = get_next_line(fd);
 	check_texture_files(game);
 	calculate_map_size(game);
+	if (!is_map_closed((*game)->map->map, (*game)->map->map_width,
+			(*game)->map->map_height))
+	{
+		error_msg("Map is not closed by walls.");
+		free_game_complete(game);
+		exit(1);
+	}
 	validate_doors(game);
 	validate_player_count(game);
 	close(fd);

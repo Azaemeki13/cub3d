@@ -34,7 +34,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (s3);
 }
 
-
 char	*ft_strdup(const char *s)
 {
 	char	*dest;

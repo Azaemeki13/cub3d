@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:48:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/25 16:58:45 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/26 14:31:10 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,46 +45,25 @@ void	set_collision_result(t_game *game, t_raycaster *rc, int *wall_direction)
 double	handle_vertical_door(t_raycaster *rc, t_game *game, int *wall_direction,
 		double *wall_x)
 {
-	double	f;
-	double	xentry;
-	double	tdoor;
-	int		sign;
-	double	y_hit;
-	double	door_y0;
+	t_vert_door	vd;
+	double		t;
 
-	f = door_at(game, rc->map_x, rc->map_y)->frac;
-	sign = get_wall_sign(game, rc->map_x, rc->map_y, 0);
+	vd.f = door_at(game, rc->map_x, rc->map_y)->frac;
+	vd.sign = get_wall_sign(game, rc->map_x, rc->map_y, 0);
 	if (rc->step_x > 0)
-		xentry = (double)rc->map_x;
+		vd.xentry = (double)rc->map_x;
 	else
-		xentry = (double)rc->map_x + 1.0;
-	tdoor = (xentry - rc->px) / rc->ray.ray_dir.x;
-	if (sign == 0)
-	{
-		tdoor = (xentry + f * (double)rc->step_x - rc->px) / rc->ray.ray_dir.x;
-		if (tdoor > 0.0 && tdoor <= rc->side_dist_y)
-		{
-			*wall_x = rc->py + tdoor * rc->ray.ray_dir.y;
-			*wall_x -= floor(*wall_x);
-			set_collision_result(game, rc, wall_direction);
-			return (tdoor);
-		}
-	}
+		vd.xentry = (double)rc->map_x + 1.0;
+	vd.tdoor = (vd.xentry - rc->px) / rc->ray.ray_dir.x;
+	if (vd.sign == 0)
+		t = vert_door_closed(&vd, rc, game);
 	else
+		t = vert_door_open(&vd, rc, game);
+	if (t > 0.0)
 	{
-		y_hit = rc->py + tdoor * rc->ray.ray_dir.y;
-		door_y0 = (double)rc->map_y;
-		if (sign > 0)
-			door_y0 = (double)rc->map_y + f;
-		else if (sign < 0)
-			door_y0 = (double)rc->map_y - f;
-		if (tdoor > 0.0 && tdoor <= rc->side_dist_y && y_hit >= door_y0
-			&& y_hit < door_y0 + 1.0)
-		{
-			*wall_x = y_hit - door_y0;
-			set_collision_result(game, rc, wall_direction);
-			return (tdoor);
-		}
+		*wall_x = vd.wall_x;
+		*wall_direction = vd.wall_direction;
+		return (t);
 	}
 	return (-1);
 }
@@ -92,46 +71,25 @@ double	handle_vertical_door(t_raycaster *rc, t_game *game, int *wall_direction,
 double	handle_horizontal_door(t_raycaster *rc, t_game *game,
 		int *wall_direction, double *wall_x)
 {
-	double	f;
-	double	yentry;
-	double	tdoor;
-	int		sign;
-	double	x_hit;
-	double	door_x0;
+	t_horiz_door	hd;
+	double			t;
 
-	f = door_at(game, rc->map_x, rc->map_y)->frac;
-	sign = get_wall_sign(game, rc->map_x, rc->map_y, 1);
+	hd.f = door_at(game, rc->map_x, rc->map_y)->frac;
+	hd.sign = get_wall_sign(game, rc->map_x, rc->map_y, 1);
 	if (rc->step_y > 0)
-		yentry = (double)rc->map_y;
+		hd.yentry = (double)rc->map_y;
 	else
-		yentry = (double)rc->map_y + 1.0;
-	tdoor = (yentry - rc->py) / rc->ray.ray_dir.y;
-	if (sign == 0)
-	{
-		tdoor = (yentry + f * (double)rc->step_y - rc->py) / rc->ray.ray_dir.y;
-		if (tdoor > 0.0 && tdoor <= rc->side_dist_x)
-		{
-			*wall_x = rc->px + tdoor * rc->ray.ray_dir.x;
-			*wall_x -= floor(*wall_x);
-			set_collision_result(game, rc, wall_direction);
-			return (tdoor);
-		}
-	}
+		hd.yentry = (double)rc->map_y + 1.0;
+	hd.tdoor = (hd.yentry - rc->py) / rc->ray.ray_dir.y;
+	if (hd.sign == 0)
+		t = horiz_door_closed(&hd, rc, game);
 	else
+		t = horiz_door_open(&hd, rc, game);
+	if (t > 0.0)
 	{
-		x_hit = rc->px + tdoor * rc->ray.ray_dir.x;
-		door_x0 = (double)rc->map_x;
-		if (sign > 0)
-			door_x0 = (double)rc->map_x + f;
-		else if (sign < 0)
-			door_x0 = (double)rc->map_x - f;
-		if (tdoor > 0.0 && tdoor <= rc->side_dist_x && x_hit >= door_x0
-			&& x_hit < door_x0 + 1.0)
-		{
-			*wall_x = x_hit - door_x0;
-			set_collision_result(game, rc, wall_direction);
-			return (tdoor);
-		}
+		*wall_x = hd.wall_x;
+		*wall_direction = hd.wall_direction;
+		return (t);
 	}
 	return (-1);
 }

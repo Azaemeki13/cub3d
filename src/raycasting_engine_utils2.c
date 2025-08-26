@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_engine_utils2.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
+/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 16:24:04 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/22 16:35:40 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/08/26 16:55:37 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,13 @@ static void	draw_tex_column(t_game *g, t_texspan *s)
 	draw_span_loop(g, s);
 }
 
-void	draw_textures(t_game **game, int x, int start, int end, t_text *tex)
+void	draw_textures(t_game **game, int x, int start, int end)
 {
 	t_texspan	s;
 
 	s.x = x;
 	s.start = start;
 	s.end = end;
-	s.tex = tex;
+	s.tex = (*game)->current_tex;
 	draw_tex_column(*game, &s);
 }

@@ -6,11 +6,38 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:32:37 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/11 13:31:15 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/26 17:27:20 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
+
+bool	is_map_closed(char **map, int width, int height)
+{
+	int	x;
+	int	y;
+
+	x = 0;
+	y = 0;
+	while (x < width)
+	{
+		if (map[0][x] != '1' && map[0][x] != ' ')
+			return (false);
+		if (map[height - 1][x] != '1' && map[height - 1][x] != ' ')
+			return (false);
+		x++;
+	}
+	y = 0;
+	while (y < height)
+	{
+		if (map[y][0] != '1' && map[y][0] != ' ')
+			return (false);
+		if (map[y][width - 1] != '1' && map[y][width - 1] != ' ')
+			return (false);
+		y++;
+	}
+	return (true);
+}
 
 int	validate_arg(char *str)
 {

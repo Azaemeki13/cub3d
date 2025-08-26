@@ -6,7 +6,7 @@
 #    By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/04 12:12:31 by chsauvag          #+#    #+#              #
-#    Updated: 2025/08/25 17:20:22 by chsauvag         ###   ########.fr        #
+#    Updated: 2025/08/26 16:16:44 by chsauvag         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,9 @@ SRCS =	src/main.c \
        src/miscs.c \
        src/parser.c \
        src/raycasting_engine.c \
+       src/raycasting_engine2.c \
        src/rendering.c \
+       src/rendering2.c \
        src/color.c \
        src/minimap.c \
        src/minimap2.c \
@@ -53,6 +55,8 @@ SRCS =	src/main.c \
        src/doors3.c \
        src/mouse_hook.c \
        src/raycasting_door_handling.c \
+       src/raycasting_door_handling2.c \
+
 
 INCLUDE = -I include -I minilibx-linux
 MLX_LIB = -L ./minilibx-linux -lmlx -lXext -lX11
