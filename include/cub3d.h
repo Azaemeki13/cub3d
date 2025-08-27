@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/26 17:33:41 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/27 09:09:39 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -414,6 +414,7 @@ void				set_bytespp(t_game **game);
 int					clampi(int v, int lo, int hi);
 t_text				*get_wall_text(int wall_dir, t_game **game);
 int					compute_tex_x(t_game *g, t_text *tex);
+void				load_map_content(t_map *map, char *path, int count);
 
 // raycasting_engine_utils2.c
 

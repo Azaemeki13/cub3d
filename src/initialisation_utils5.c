@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 13:39:21 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/25 13:56:44 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/27 09:08:38 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,20 @@ void	case_texture(t_game **game, int option, char *str)
 	else if (option == 2)
 		load_texture(game, map->ea, str);
 	case_texture_helper(game, option, str);
+}
+
+void	load_map_content(t_map *map, char *path, int count)
+{
+	int	fd;
+	int	i;
+
+	i = 0;
+	fd = open(path, O_RDONLY);
+	map->content = malloc(sizeof(char *) * (count + 1));
+	map->content[count] = NULL;
+	map->height = 200;
+	map->width = 200;
+	while (i != count)
+		map->content[i++] = get_next_line(fd);
+	close(fd);
 }

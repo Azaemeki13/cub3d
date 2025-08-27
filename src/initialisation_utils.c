@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 09:39:16 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/26 17:33:26 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/27 09:05:27 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,13 @@ int	texture_helper(char *str)
 		return (0);
 }
 
+static void	duplicate_error(t_game **game)
+{
+	error_msg("Duplicate texture or color found.");
+	free_game_complete(game);
+	exit(1);
+}
+
 void	case_rgb(t_game **game, int option, char *str)
 {
 	char	**rgb;
@@ -42,21 +49,13 @@ void	case_rgb(t_game **game, int option, char *str)
 	if (option == 5)
 	{
 		if ((*game)->map->ceiling)
-		{
-			error_msg("Duplicate ceiling color (C) found.");
-			free_game_complete(game);
-			exit(1);
-		}
+			duplicate_error(game);
 		(*game)->map->ceiling = add_rgb(game, rgb);
 	}
-	if (option == 6)
+	else if (option == 6)
 	{
 		if ((*game)->map->floor)
-		{
-			error_msg("Duplicate floor color (F) found.");
-			free_game_complete(game);
-			exit(1);
-		}
+			duplicate_error(game);
 		(*game)->map->floor = add_rgb(game, rgb);
 	}
 	ft_free_string_array(rgb);
@@ -67,56 +66,16 @@ void	add_texture(t_game **game, int option, char *str)
 	t_map	*map;
 
 	map = (*game)->map;
-	if (option == 1)
-	{
-		if (map->no && map->no->text_img)
-		{
-			error_msg("Duplicate NO texture found.");
-			free_game_complete(game);
-			exit(1);
-		}
+	if ((option == 1 && map->no && map->no->text_img) || (option == 2 && map->ea
+			&& map->ea->text_img) || (option == 3 && map->so
+			&& map->so->text_img) || (option == 4 && map->we
+			&& map->we->text_img) || (option == 7 && map->door
+			&& map->door->text_img))
+		duplicate_error(game);
+	if (option >= 1 && option <= 4)
 		case_texture(game, option, str);
-	}
-	else if (option == 2)
-	{
-		if (map->ea && map->ea->text_img)
-		{
-			error_msg("Duplicate EA texture found.");
-			free_game_complete(game);
-			exit(1);
-		}
-		case_texture(game, option, str);
-	}
-	else if (option == 3)
-	{
-		if (map->so && map->so->text_img)
-		{
-			error_msg("Duplicate SO texture found.");
-			free_game_complete(game);
-			exit(1);
-		}
-		case_texture(game, option, str);
-	}
-	else if (option == 4)
-	{
-		if (map->we && map->we->text_img)
-		{
-			error_msg("Duplicate WE texture found.");
-			free_game_complete(game);
-			exit(1);
-		}
-		case_texture(game, option, str);
-	}
 	else if (option == 7)
-	{
-		if (map->door && map->door->text_img)
-		{
-			error_msg("Duplicate DOOR texture found.");
-			free_game_complete(game);
-			exit(1);
-		}
 		case_texture(game, option, str);
-	}
 	else
 		case_rgb(game, option, str);
 }

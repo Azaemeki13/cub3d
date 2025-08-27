@@ -6,7 +6,7 @@
 /*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/26 17:27:34 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/08/27 09:10:22 by chsauvag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,24 +102,14 @@ void	check_texture_files(t_game **game)
 void	init_map(t_game **game, char *path)
 {
 	t_map	*map;
-	int		fd;
-	int		i;
 	int		count;
 
-	i = 0;
 	map = (*game)->map;
 	init_map_helper(game, path, &count);
-	fd = open(path, O_RDONLY);
-	map->content = malloc(sizeof(char *) * (count + 1));
-	map->content[count] = NULL;
-	map->height = 200;
-	map->width = 200;
-	while (i != count)
-		map->content[i++] = get_next_line(fd);
+	load_map_content(map, path, count);
 	check_texture_files(game);
 	calculate_map_size(game);
-	if (!is_map_closed((*game)->map->map, (*game)->map->map_width,
-			(*game)->map->map_height))
+	if (!is_map_closed(map->map, map->map_width, map->map_height))
 	{
 		error_msg("Map is not closed by walls.");
 		free_game_complete(game);
@@ -127,5 +117,4 @@ void	init_map(t_game **game, char *path)
 	}
 	validate_doors(game);
 	validate_player_count(game);
-	close(fd);
 }
