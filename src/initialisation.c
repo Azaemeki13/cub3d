@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialisation.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 14:23:36 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/27 09:10:22 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/09/04 09:36:58 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,13 @@ void	init_map(t_game **game, char *path)
 	load_map_content(map, path, count);
 	check_texture_files(game);
 	calculate_map_size(game);
+	if (!map_no_exposed_to_void((*game)->map->map, (*game)->map->map_width,
+			(*game)->map->map_height))
+	{
+		error_msg("Map leaks to void (door/floor next to space).");
+		free_game_complete(game);
+		exit(1);
+	}
 	if (!is_map_closed(map->map, map->map_width, map->map_height))
 	{
 		error_msg("Map is not closed by walls.");

@@ -6,11 +6,11 @@
 /*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 11:22:53 by cauffret          #+#    #+#             */
-/*   Updated: 2025/08/19 16:44:57 by cauffret         ###   ########.fr       */
+/*   Updated: 2025/09/04 09:30:12 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../include/cub3d.h"
 
 void	move_forward(t_game *game)
 {

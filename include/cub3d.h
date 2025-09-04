@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 12:16:03 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/27 09:09:39 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/09/04 09:33:30 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,6 +287,10 @@ typedef struct s_reticle
 	int				y_start;
 	int				y_end;
 }					t_reticle;
+
+// parser_2.c
+
+bool				map_no_exposed_to_void(char **map, int w, int h);
 
 // window_management.c
 

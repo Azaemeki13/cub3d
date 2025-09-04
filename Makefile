@@ -34,6 +34,7 @@ SRCS =	src/main.c \
        src/memory2.c \
        src/miscs.c \
        src/parser.c \
+       src/parser_2.c \
        src/raycasting_engine.c \
        src/raycasting_engine2.c \
        src/rendering.c \

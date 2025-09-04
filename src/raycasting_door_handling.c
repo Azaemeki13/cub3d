@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_door_handling.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chsauvag <chsauvag@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cauffret <cauffret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:48:42 by chsauvag          #+#    #+#             */
-/*   Updated: 2025/08/26 14:31:10 by chsauvag         ###   ########.fr       */
+/*   Updated: 2025/09/04 09:44:54 by cauffret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
